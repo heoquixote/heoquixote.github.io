@@ -4,7 +4,7 @@ GitHub Actions에서 매일 실행됨. 외부 소스별로 원본을 kti/data/ra
 주 단위 지수를 계산해 kti/data/kti.json 으로 내보냄.
 
 소스
-- GDELT DOC 2.0 API: 북한 관련 기사 비중(군사·위협·대응 키워드), 평균 논조
+- GDELT 1.0 일별 이벤트 파일: 북한 관련 CAMEO 이벤트(군사·위협·대응) 기사 비중, 가중 평균 논조
 - FRED: 원/달러(DEXKOUS), 달러인덱스(DTWEXBGS)
 - Yahoo Finance(yfinance): KOSPI, 방산 4종
 - Wikimedia Pageviews: 한국어 위키백과 조회수
@@ -34,15 +34,9 @@ START = date(2023, 1, 1)
 TODAY = datetime.now(timezone.utc).date()
 UA = {"User-Agent": "DataLearners-KTI/1.0 (https://www.data-learners.com/kti/; heoquixote@gmail.com)"}
 STATUS: dict[str, dict] = {}
-GDELT_BUDGET_SEC = 15 * 60  # GDELT 전체 시간 상한 (다른 소스와 커밋이 막히지 않도록)
+GDELT_BUDGET_SEC = 18 * 60  # GDELT 수집 시간 상한 (넘으면 다음 실행에서 이어서 수집)
 T0 = time.time()
 
-GDELT_QUERIES = {
-    "military": '"north korea" (missile OR artillery OR ballistic OR "military demarcation")',
-    "threat": '"north korea" (threatens OR warns OR "kim yo jong" OR "nuclear attack")',
-    "response": '"north korea" ("joint drills" OR "military exercise" OR "aircraft carrier" OR "strategic bomber")',
-}
-GDELT_TONE_QUERY = '"north korea"'
 PAGEVIEW_ARTICLES = ["조선민주주의인민공화국", "6·25_전쟁", "김정은", "전쟁", "핵무기", "민방위"]
 TICKERS = {"^KS11": "KOSPI", "012450.KS": "한화에어로스페이스", "079550.KS": "LIG넥스원",
            "064350.KS": "현대로템", "047810.KS": "한국항공우주"}
@@ -83,53 +77,101 @@ def chunks(start: date, end: date, days: int):
 
 
 # ---------------------------------------------------------------- GDELT
-def gdelt_call(query: str, mode: str, s: date, e: date) -> list[dict]:
-    params = {"query": query, "mode": mode, "format": "json",
-              "startdatetime": s.strftime("%Y%m%d") + "000000",
-              "enddatetime": e.strftime("%Y%m%d") + "235959"}
-    for attempt in range(4):
-        if time.time() - T0 > GDELT_BUDGET_SEC:
-            raise RuntimeError("GDELT 시간 상한 초과 (다음 실행에서 이어서 수집)")
-        r = requests.get("https://api.gdeltproject.org/api/v2/doc/doc", params=params, headers=UA, timeout=90)
-        if r.status_code == 429 or not r.text.strip().startswith("{"):
-            # 공용 러너 IP는 다른 사용자와 한도를 나눠 쓰므로 길게 물러남
-            time.sleep(20 * (attempt + 1))
-            continue
-        r.raise_for_status()
-        tl = r.json().get("timeline", [])
-        return tl[0]["data"] if tl else []
-    raise RuntimeError(f"GDELT 응답 실패: {r.status_code} {r.text[:120]}")
+# DOC API는 IP당 5초 1회 제한이 있어, 여러 사용자가 IP를 공유하는 GitHub Actions 러너에서는
+# 429로 거의 막힘. 대신 GDELT 1.0 일별 이벤트 원본 파일(정적 파일 서버)을 받아 직접 집계함.
+GDELT_EVENTS_URL = "http://data.gdeltproject.org/events/{d:%Y%m%d}.export.CSV.zip"
+# 열 번호 (GDELT 1.0 이벤트 테이블, 58열)
+C_DATE, C_A1C, C_A2C, C_ROOT, C_GOLD, C_NART, C_TONE, C_GEO = 1, 7, 17, 28, 30, 33, 34, 51
+MIL_ROOTS = {"15", "18", "19", "20"}      # 무력 시위, 공격, 교전, 대량 폭력
+THREAT_ROOTS = {"13", "16", "17"}         # 위협, 관계 축소, 강압
+RESP_ACTORS = {"KOR", "USA", "JPN"}
+
+
+def gdelt_day(d: date) -> dict | None:
+    import io
+    import zipfile
+    r = requests.get(GDELT_EVENTS_URL.format(d=d), headers=UA, timeout=120)
+    if r.status_code == 404:
+        return None
+    r.raise_for_status()
+    with zipfile.ZipFile(io.BytesIO(r.content)) as z:
+        raw = z.read(z.namelist()[0])
+    df = pd.read_csv(io.BytesIO(raw), sep="\t", header=None, dtype=str, quoting=3,
+                     usecols=[C_A1C, C_A2C, C_ROOT, C_GOLD, C_NART, C_TONE, C_GEO], on_bad_lines="skip")
+    df.columns = ["a1", "a2", "root", "gold", "nart", "tone", "geo"]
+    df["nart"] = pd.to_numeric(df["nart"], errors="coerce").fillna(0)
+    df["tone"] = pd.to_numeric(df["tone"], errors="coerce")
+    df["gold"] = pd.to_numeric(df["gold"], errors="coerce")
+    root = df["root"].fillna("").str.zfill(2)
+    prk = (df["a1"] == "PRK") | (df["a2"] == "PRK") | (df["geo"] == "KN")
+    mil = prk & root.isin(MIL_ROOTS)
+    thr = (df["a1"] == "PRK") & root.isin(THREAT_ROOTS)
+    resp = df["a1"].isin(RESP_ACTORS) & (df["a2"] == "PRK") & root.isin(MIL_ROOTS | THREAT_ROOTS)
+    p = df[prk]
+    wsum = p["nart"].sum()
+    return {
+        "date": d.isoformat(),
+        "total": float(df["nart"].sum()),
+        "military": float(df.loc[mil, "nart"].sum()),
+        "threat": float(df.loc[thr, "nart"].sum()),
+        "response": float(df.loc[resp, "nart"].sum()),
+        "prk": float(wsum),
+        "tone": float((p["tone"] * p["nart"]).sum() / wsum) if wsum else None,
+        "goldstein": float((p["gold"] * p["nart"]).sum() / wsum) if wsum else None,
+    }
 
 
 def fetch_gdelt():
-    for key, q in list(GDELT_QUERIES.items()) + [("tone", GDELT_TONE_QUERY)]:
-        path = RAW / f"gdelt_{key}.csv"
-        name = f"gdelt_{key}"
-        try:
-            ld = last_date(path)
-            start = START if ld is None else ld - timedelta(days=10)
-            rows = []
-            for s, e in chunks(start, TODAY, 400):
-                mode = "timelinetone" if key == "tone" else "timelinevolraw"
-                data = gdelt_call(q, mode, s, e)
-                chunk = []
-                for d in data:
-                    day = datetime.strptime(d["date"][:8], "%Y%m%d").date().isoformat()
-                    chunk.append({"date": day, "value": d.get("value"), "norm": d.get("norm")})
-                if chunk:
-                    df = pd.DataFrame(chunk)
-                    if key == "tone":
-                        df = df.groupby("date", as_index=False)["value"].mean()
-                    else:
-                        df = df.groupby("date", as_index=False)[["value", "norm"]].sum()
-                    merge_store(path, df, ["date"])
-                rows += chunk
-                time.sleep(8)
-            STATUS[name] = {"ok": True, "last": str(last_date(path)), "label": f"GDELT 기사 {key}"}
-            log("gdelt", key, "rows", len(rows))
-        except Exception as ex:  # noqa: BLE001
-            STATUS[name] = {"ok": False, "last": str(last_date(path)), "error": str(ex)[:200], "label": f"GDELT 기사 {key}"}
-            log("gdelt fail", key, ex)
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    path = RAW / "gdelt_events.csv"
+    have = set(pd.read_csv(path, usecols=["date"], dtype=str)["date"]) if path.exists() else set()
+    # 최근 3일은 파일이 늦게 갱신될 수 있어 다시 받음
+    recent = {(TODAY - timedelta(days=i)).isoformat() for i in range(1, 4)}
+    todo = [START + timedelta(days=i) for i in range((TODAY - START).days)]
+    todo = [d for d in todo if d.isoformat() not in have or d.isoformat() in recent]
+    todo.sort(reverse=True)  # 최신부터 받아 현재 지수가 먼저 채워지게 함
+    rows, fails, missing = [], 0, 0
+    try:
+        with ThreadPoolExecutor(max_workers=6) as ex:
+            futs = {}
+            it = iter(todo)
+            def submit_next():
+                d = next(it, None)
+                if d is not None:
+                    futs[ex.submit(gdelt_day, d)] = d
+            for _ in range(12):
+                submit_next()
+            while futs:
+                for f in as_completed(list(futs)):
+                    d = futs.pop(f)
+                    try:
+                        res = f.result()
+                        if res is None:
+                            missing += 1
+                        else:
+                            rows.append(res)
+                    except Exception as e:  # noqa: BLE001
+                        fails += 1
+                        log("gdelt day fail", d, str(e)[:120])
+                    if time.time() - T0 < GDELT_BUDGET_SEC:
+                        submit_next()
+                    if len(rows) and len(rows) % 50 == 0:
+                        merge_store(path, pd.DataFrame(rows), ["date"])
+                    break
+        if rows:
+            merge_store(path, pd.DataFrame(rows), ["date"])
+        left = len([d for d in todo]) - len(rows) - missing - fails
+        label = "GDELT 이벤트 (일별 원본 파일)"
+        ok = path.exists() and len(rows) + len(have) > 0
+        note = f"이번 실행 {len(rows)}일 수집" + (f", 남은 {left}일은 다음 실행에서 이어서 수집" if left > 0 else "")
+        STATUS["gdelt"] = {"ok": bool(ok and fails < max(5, len(rows))), "last": str(last_date(path)), "label": label,
+                           "error": note if left > 0 or fails else ""}
+        log("gdelt rows", len(rows), "fails", fails, "missing", missing, "left", left)
+    except Exception as ex:  # noqa: BLE001
+        if rows:
+            merge_store(path, pd.DataFrame(rows), ["date"])
+        STATUS["gdelt"] = {"ok": False, "last": str(last_date(path)), "error": str(ex)[:200], "label": "GDELT 이벤트 (일별 원본 파일)"}
+        log("gdelt fail", ex)
 
 
 # ---------------------------------------------------------------- FRED
@@ -244,20 +286,19 @@ def compute():
     cols: dict[str, pd.Series] = {}  # 소스마다 주 범위가 달라 dict로 모은 뒤 합침
     daily_media, daily_fin, daily_att = None, None, None
 
-    # GDELT 비중
-    for key in GDELT_QUERIES:
-        df = load(RAW / f"gdelt_{key}.csv")
-        if df is None or df.empty:
-            continue
-        df["week"] = week_start(df["date"])
-        w = df.groupby("week").agg(v=("value", "sum"), n=("norm", "sum"))
-        cols[f"share_{key}"] = w["v"] / w["n"].replace(0, np.nan) * 1e4  # 만 건당
-        d = df.assign(share=df["value"] / df["norm"].replace(0, np.nan) * 1e4)[["date", "share"]].rename(columns={"share": key})
-        daily_media = d if daily_media is None else daily_media.merge(d, on="date", how="outer")
-    tone = load(RAW / "gdelt_tone.csv")
-    if tone is not None and not tone.empty:
-        tone["week"] = week_start(tone["date"])
-        cols["tone"] = tone.groupby("week")["value"].mean()
+    # GDELT 비중 (전체 기사 1만 건당)
+    ge = load(RAW / "gdelt_events.csv")
+    if ge is not None and not ge.empty:
+        ge = ge.sort_values("date")
+        ge["week"] = week_start(ge["date"])
+        g = ge.groupby("week")
+        for key in ("military", "threat", "response"):
+            cols[f"share_{key}"] = g[key].sum() / g["total"].sum().replace(0, np.nan) * 1e4
+        ge["tw"] = ge["tone"] * ge["prk"]
+        cols["tone"] = ge.groupby("week")["tw"].sum() / g["prk"].sum().replace(0, np.nan)
+        daily_media = ge[["date"]].copy()
+        for key in ("military", "threat", "response"):
+            daily_media[key] = ge[key] / ge["total"].replace(0, np.nan) * 1e4
 
     # 금융
     fred, yh = load(RAW / "fred.csv"), load(RAW / "yahoo.csv")

@@ -154,10 +154,10 @@
       </article>
 
       <article class="card wide" id="media">
-        <h2>뉴스 보도 비중 (GDELT)</h2>
-        <p class="note">전 세계 온라인 뉴스 1만 건당 북한 관련 키워드 기사 수, 최근 200일 일 단위(7일 이동평균).</p>
+        <h2>뉴스 이벤트 비중 (GDELT)</h2>
+        <p class="note">GDELT 이벤트 DB에서 북한이 관련된 CAMEO 이벤트의 기사 수를 전체 기사 1만 건당으로 환산했습니다. 최근 200일, 7일 이동평균.</p>
         <div class="chart" id="c-media" style="min-height:220px"></div>
-        <div class="legend"><span><i style="background:var(--lime)"></i>군사 (미사일·포격)</span><span><i style="background:var(--violet)"></i>위협 (경고·김여정·핵공격)</span><span><i style="background:var(--cyan)"></i>대응 (연합훈련·전략자산)</span></div>
+        <div class="legend"><span><i style="background:var(--lime)"></i>군사 (무력 시위·공격·교전)</span><span><i style="background:var(--violet)"></i>위협 (북한발 위협·강압·관계 축소)</span><span><i style="background:var(--cyan)"></i>대응 (한미일발 대북 군사·위협 이벤트)</span></div>
       </article>
 
       <article class="card wide" id="finance">
@@ -213,9 +213,9 @@
           <div>
             <h3>영역 구성</h3>
             <ul>
-              <li>군사: GDELT 미사일·포격 기사 비중</li>
-              <li>위협: GDELT 위협 기사 비중 + 북한 관련 기사 논조(부정일수록 상승)</li>
-              <li>대응: GDELT 연합훈련·전략자산 기사 비중</li>
+              <li>군사: GDELT 북한 관련 무력 시위·공격·교전 이벤트(CAMEO 15·18·19·20) 기사 비중 + 큐레이션 이벤트 점수</li>
+              <li>위협: 북한이 주체인 위협·관계 축소·강압 이벤트(CAMEO 13·16·17) 비중 + 북한 관련 기사 가중 평균 논조(부정일수록 상승)</li>
+              <li>대응: 한국·미국·일본이 주체이고 북한이 대상인 군사·위협 이벤트 비중</li>
               <li>금융: 원/달러 초과변동 크기, KOSPI 변동성, 방산주 초과수익</li>
               <li>관심도: 한국어 위키백과 조회수</li>
             </ul>
