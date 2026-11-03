@@ -70,6 +70,16 @@ a { color:inherit; text-decoration:none; }
 .btn-primary:hover { background:#d6ff6a; border-color:#d6ff6a; }
 .btn-sm { min-height:36px; padding:0 12px; font-size:13px; }
 .btn-ghost { border-color:transparent; color:var(--muted); }
+.btn-face { min-height:52px; font-size:15px; }
+.btn-face svg { width:22px; height:22px; }
+.login-or { display:flex; align-items:center; gap:10px; color:var(--subtle); font-size:12px; }
+.login-or:before, .login-or:after { content:""; flex:1; height:1px; background:var(--line); }
+.pk-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-sm); background:var(--surface-2); }
+.pk-row b { display:block; font-size:14px; }
+.pk-row small { color:var(--muted); font-size:12px; }
+.pk-hero { display:grid; place-items:center; width:72px; height:72px; margin:4px auto 14px; border-radius:20px; background:var(--lime-soft); border:1px solid rgba(200,255,61,.4); color:var(--lime); }
+.pk-hero svg { width:38px; height:38px; }
+.pk-desc { color:var(--text-2); font-size:14px; line-height:1.6; text-align:center; margin-bottom:6px; }
 .btn-ghost:hover { color:var(--text); }
 .btn-danger { color:var(--rose); border-color:rgba(255,122,146,.35); }
 .icon-btn { width:40px; height:40px; display:inline-grid; place-items:center; border-radius:var(--r-sm); border:1px solid var(--line); background:var(--surface); }
@@ -511,6 +521,8 @@ table.rt tr:last-child td { border-bottom:0; }
     <span class="eyebrow">Player Login</span>
     <h1>오늘도 레벨업하러 오셨군요</h1>
     <p>데이터 러너즈 계정으로 로그인하세요. 퀘스트 기록은 계정 소유자만 볼 수 있도록 DB에 저장됩니다.</p>
+    <button type="button" class="btn btn-primary btn-face" id="btnFaceLogin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9v1"/><path d="M15 9v1"/><path d="M12 9v4h-1"/><path d="M9 15.5c1.6 1.3 4.4 1.3 6 0"/></svg><span id="faceLabel">Face ID로 로그인</span></button>
+    <div class="login-or" id="loginOr" hidden>또는 이메일로 로그인</div>
     <div class="field">
       <label for="loginEmail">이메일</label>
       <input type="email" id="loginEmail" autocomplete="username" required>
@@ -777,12 +789,25 @@ table.rt tr:last-child td { border-bottom:0; }
     <div class="field"><label for="pfMotto">한 줄 다짐</label><input type="text" id="pfMotto" maxlength="60" placeholder="예: 꾸준함이 재능을 이긴다"></div>
     <div class="field"><span class="label">아바타</span><div class="av-grid" id="pfAvGrid"></div></div>
     <div class="field"><span class="label">아바타 색</span><div class="color-row" id="pfColors"></div></div>
+    <div class="field" id="pfPasskeyField" hidden><span class="label">빠른 로그인</span><div class="pk-row"><div><b id="pfPkTitle">Face ID 로그인</b><small id="pfPkState">이 기기에 등록되지 않았어요</small></div><button type="button" class="btn btn-sm" id="btnPkRegister">등록하기</button></div></div>
     <div class="field"><label for="pfGoal">이번 달 목표 (선택)</label><input type="text" id="pfGoal" maxlength="60" placeholder="예: 크로스핏 20회, 골드 랭크"></div>
     <div class="sheet-actions">
       <button type="button" class="btn" data-close>취소</button>
       <button type="submit" class="btn btn-primary">저장</button>
     </div>
   </form>
+</div>
+
+<!-- Face ID 등록 시트 -->
+<div class="sheet" id="passkeySheet" role="dialog" aria-modal="true" aria-labelledby="passkeySheetTitle" hidden>
+  <div class="grab"></div>
+  <div class="pk-hero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9v1"/><path d="M15 9v1"/><path d="M12 9v4h-1"/><path d="M9 15.5c1.6 1.3 4.4 1.3 6 0"/></svg></div>
+  <h3 id="passkeySheetTitle" style="text-align:center">다음부터 <span class="pk-name">Face ID</span>로 로그인할까요?</h3>
+  <p class="pk-desc">비밀번호 없이 얼굴 인식 한 번으로 바로 게임을 시작합니다. 생체 정보는 폰 밖으로 나가지 않고, 서버에는 이 기기의 공개키만 저장됩니다.</p>
+  <div class="sheet-actions">
+    <button type="button" class="btn" id="btnPkLater">나중에</button>
+    <button type="button" class="btn btn-primary" id="btnPkYes">등록하기</button>
+  </div>
 </div>
 
 <!-- 앱 설치 안내 시트 -->
@@ -1865,7 +1890,7 @@ table.rt tr:last-child td { border-bottom:0; }
     $('pfClass').value = pfDraft.cls || ''; $('pfMotto').value = pfDraft.motto || ''; $('pfGoal').value = pfDraft.goal || '';
     $('pfAvGrid').innerHTML = AVATARS.map(function (a) { return '<button type="button" data-av="' + a + '"' + (a ? '' : ' class="def"') + ' aria-label="' + (a || '기본 캐릭터') + '">' + (a || '기본') + '</button>'; }).join('');
     $('pfColors').innerHTML = AV_COLORS.map(function (c) { return '<button type="button" data-c="' + c + '" style="--c:' + c + '" aria-label="색 ' + c + '"></button>'; }).join('');
-    pfRender(); openSheet($('profileSheet'));
+    pfRender(); pkRenderProfile(); openSheet($('profileSheet'));
   }
   $('btnProfile').addEventListener('click', openProfileSheet);
   $('avatar').addEventListener('click', openProfileSheet);
@@ -1939,6 +1964,7 @@ table.rt tr:last-child td { border-bottom:0; }
     $('viewLogin').hidden = v !== 'login'; $('viewLoading').hidden = v !== 'loading'; $('viewApp').hidden = v !== 'app';
     var app = v === 'app';
     $('tabbar').hidden = !app; $('topTabs').hidden = !app; $('btnLogout').hidden = !app; $('fab').hidden = !app || state.tab === 'routines' || state.tab === 'retro';
+    if (v === 'login') setupFaceLogin();
   }
   function sync(silent) {
     return api('load').then(function (d) {
@@ -1972,10 +1998,107 @@ table.rt tr:last-child td { border-bottom:0; }
     $('loginBtn').disabled = true; $('loginBtn').textContent = '확인 중…';
     post('login', { email: email, password: pw }).then(function (d) {
       $('loginBtn').disabled = false; $('loginBtn').textContent = '게임 시작';
-      if (d.ok && d.token) { state.token = d.token; state.name = d.name || email; store(TOKEN_KEY, d.token); store(NAME_KEY, state.name); $('loginPassword').value = ''; enter(); }
+      if (d.ok && d.token) { state.token = d.token; state.name = d.name || email; store(TOKEN_KEY, d.token); store(NAME_KEY, state.name); $('loginPassword').value = ''; enter(); maybeAskPasskey(); }
       else { $('loginError').textContent = d.error || '이메일 또는 비밀번호를 확인해 주세요.'; $('loginError').hidden = false; }
     });
   });
+
+  /* ---------- Face ID 로그인 (패스키 / WebAuthn) ---------- */
+  var PK_KEY = 'dl_quest_passkey', PK_ASK_KEY = 'dl_quest_passkey_ask';
+  var pkSupported = !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.create && window.isSecureContext);
+  var isApple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent || '');
+  var PK_NAME = /iPhone|iPad|iPod/.test(navigator.userAgent || '') ? 'Face ID' : (isApple ? 'Touch ID' : '생체 인증');
+  function pkRpId() { var h = location.hostname; return /(^|\.)data-learners\.com$/.test(h) ? 'data-learners.com' : h; }
+  function b64uToBuf(s) { s = String(s).replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var b = atob(s), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a.buffer; }
+  function bufToB64u(buf) { var a = new Uint8Array(buf), s = ''; for (var i = 0; i < a.length; i++) s += String.fromCharCode(a[i]); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function pkDevice() { var u = navigator.userAgent || ''; return (/iPhone/.test(u) ? 'iPhone' : /iPad/.test(u) ? 'iPad' : /Android/.test(u) ? 'Android' : /Macintosh/.test(u) ? 'Mac' : /Windows/.test(u) ? 'Windows' : 'Browser') + (isStandalone() ? ' 앱' : ' 브라우저'); }
+  function pkPost(action, payload, token) { return post('passkey', { action: action, token: token || null, payload: payload ? JSON.stringify(payload) : null }); }
+  function pkErr(e) {
+    var n = e && e.name;
+    if (n === 'NotAllowedError' || n === 'AbortError') return '인증이 취소되었어요.';
+    if (n === 'InvalidStateError') return '이 기기에는 이미 등록되어 있어요.';
+    return (e && e.message) || '인증에 실패했습니다.';
+  }
+  // iOS는 버튼을 누른 직후에만 Face ID 창을 띄워 주므로, 챌린지를 미리 받아 둡니다.
+  var pkPre = { login: null, reg: null };
+  function pkPrefetch(kind) {
+    var cur = pkPre[kind];
+    if (cur && Date.now() - cur.at < 4 * 60000) return cur.p;
+    var p = pkPost(kind === 'reg' ? 'reg_options' : 'login_options', null, kind === 'reg' ? state.token : null);
+    pkPre[kind] = { at: Date.now(), p: p };
+    p.then(function (d) { if (!d.ok) pkPre[kind] = null; });
+    return p;
+  }
+  function pkTake(kind) { var cur = pkPre[kind]; pkPre[kind] = null; return (cur && Date.now() - cur.at < 4 * 60000) ? cur.p : pkPrefetch(kind).then(function (d) { pkPre[kind] = null; return d; }); }
+  function registerPasskey() {
+    return pkTake('reg').then(function (o) {
+      if (!o.ok) throw new Error(o.error || '등록을 시작할 수 없습니다.');
+      return navigator.credentials.create({ publicKey: {
+        challenge: b64uToBuf(o.challenge), rp: { id: pkRpId(), name: 'Runner Quest' },
+        user: { id: b64uToBuf(o.user.id), name: o.user.name, displayName: o.user.displayName },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', residentKey: 'required', requireResidentKey: true, userVerification: 'required' },
+        attestation: 'none', timeout: 60000 } }).then(function (cred) {
+        var r = cred.response;
+        if (!r.getPublicKey || !r.getAuthenticatorData) throw new Error('이 브라우저는 ' + PK_NAME + ' 등록을 지원하지 않아요. iOS 16 이상 Safari에서 시도해 주세요.');
+        var pub = r.getPublicKey(); if (!pub) throw new Error('지원하지 않는 패스키 형식입니다.');
+        return pkPost('reg_finish', { challenge: o.challenge, credId: cred.id, clientDataJSON: bufToB64u(r.clientDataJSON),
+          authenticatorData: bufToB64u(r.getAuthenticatorData()), publicKey: bufToB64u(pub),
+          alg: r.getPublicKeyAlgorithm ? r.getPublicKeyAlgorithm() : -7, device: pkDevice() }, state.token);
+      });
+    }).then(function (d) { if (!d.ok) throw new Error(d.error || '등록에 실패했습니다.'); store(PK_KEY, '1'); store(PK_ASK_KEY, null); return d; });
+  }
+  function passkeyLogin() {
+    return pkTake('login').then(function (o) {
+      if (!o.ok) throw new Error(o.error || '로그인을 시작할 수 없습니다.');
+      return navigator.credentials.get({ publicKey: { challenge: b64uToBuf(o.challenge), rpId: pkRpId(), userVerification: 'required', timeout: 60000 } }).then(function (a) {
+        var r = a.response;
+        return pkPost('login_finish', { challenge: o.challenge, credId: a.id, clientDataJSON: bufToB64u(r.clientDataJSON), authenticatorData: bufToB64u(r.authenticatorData), signature: bufToB64u(r.signature) });
+      });
+    }).then(function (d) { if (!d.ok) throw new Error(d.error || '로그인에 실패했습니다.'); return d; });
+  }
+  function setupFaceLogin() {
+    var on = pkSupported;
+    $('btnFaceLogin').hidden = !on; $('loginOr').hidden = !on;
+    $('faceLabel').textContent = PK_NAME + '로 로그인';
+    $('loginBtn').classList.toggle('btn-primary', !on);
+    if (on) pkPrefetch('login');
+  }
+  $('btnFaceLogin').addEventListener('click', function () {
+    var b = $('btnFaceLogin'); $('loginError').hidden = true; b.disabled = true; $('faceLabel').textContent = '확인 중…';
+    passkeyLogin().then(function (d) {
+      b.disabled = false; $('faceLabel').textContent = PK_NAME + '로 로그인';
+      store(PK_KEY, '1'); state.token = d.token; state.name = d.name || state.name; store(TOKEN_KEY, d.token); store(NAME_KEY, state.name); enter();
+    }, function (e) {
+      b.disabled = false; $('faceLabel').textContent = PK_NAME + '로 로그인';
+      var msg = pkErr(e); if (!load(PK_KEY) && e && e.name === 'NotAllowedError') msg = '이 기기에 등록된 ' + PK_NAME + '가 없거나 취소되었어요. 처음이라면 이메일로 로그인한 뒤 등록해 주세요.';
+      $('loginError').textContent = msg; $('loginError').hidden = false; pkPrefetch('login');
+    });
+  });
+  function maybeAskPasskey() {
+    if (!pkSupported || load(PK_KEY) || load(PK_ASK_KEY) === 'no') return;
+    pkPrefetch('reg');
+    setTimeout(function () { if (state.token && !openSheetEl) openSheet($('passkeySheet')); }, 900);
+  }
+  document.querySelectorAll('.pk-name').forEach(function (el) { el.textContent = PK_NAME; });
+  $('btnPkLater').addEventListener('click', function () { store(PK_ASK_KEY, 'no'); closeSheet(); toast('프로필 설정에서 언제든 ' + PK_NAME + '를 등록할 수 있어요.'); });
+  function doRegister(btn) {
+    var label = btn.textContent; btn.disabled = true; btn.textContent = '등록 중…';
+    registerPasskey().then(function () {
+      btn.disabled = false; btn.textContent = label; if (openSheetEl === $('passkeySheet')) closeSheet(); pkRenderProfile();
+      toast(PK_NAME + ' 등록 완료! 다음부터 얼굴 인식으로 로그인해요.');
+    }, function (e) { btn.disabled = false; btn.textContent = label; toast(pkErr(e), true); pkPrefetch('reg'); });
+  }
+  $('btnPkYes').addEventListener('click', function () { doRegister($('btnPkYes')); });
+  $('btnPkRegister').addEventListener('click', function () { doRegister($('btnPkRegister')); });
+  function pkRenderProfile() {
+    $('pfPasskeyField').hidden = !pkSupported; if (!pkSupported) return;
+    var has = !!load(PK_KEY);
+    $('pfPkTitle').textContent = PK_NAME + ' 로그인';
+    $('pfPkState').textContent = has ? '이 기기에 등록됨 · 로그인 화면에서 바로 사용' : '이 기기에 등록되지 않았어요';
+    $('btnPkRegister').textContent = has ? '다시 등록' : '등록하기';
+    if (!has) pkPrefetch('reg');
+  }
 
   /* ---------- 앱 설치 (PWA) ---------- */
   var installEvt = null;

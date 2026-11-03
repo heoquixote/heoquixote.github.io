@@ -1,5 +1,5 @@
 /* Runner Quest 서비스 워커: 앱 껍데기만 캐시하고, 기록 API(n8n)는 항상 네트워크로 보냅니다. */
-var VERSION = 'rq-v1';
+var VERSION = 'rq-v2';
 var SHELL = [
   '/quest/',
   '/quest/manifest.webmanifest',
