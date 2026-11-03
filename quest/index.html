@@ -95,7 +95,7 @@ a { color:inherit; text-decoration:none; }
 
 /* Bottom tabbar (mobile) */
 .tabbar { position:fixed; left:0; right:0; bottom:0; z-index:40; background:rgba(11,13,14,.94); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom,0); }
-.tabbar-in { height:var(--tabbar-h); display:grid; grid-template-columns:repeat(4,1fr); }
+.tabbar-in { height:var(--tabbar-h); display:grid; grid-template-columns:repeat(5,1fr); }
 .tabbar button { border:0; background:none; color:var(--subtle); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; font-weight:600; }
 .tabbar button svg { width:22px; height:22px; }
 .tabbar button[aria-selected="true"] { color:var(--lime); }
@@ -333,6 +333,42 @@ table.rt tr:last-child td { border-bottom:0; }
 .spark { position:fixed; z-index:91; width:8px; height:8px; pointer-events:none; border-radius:2px; animation:spark .9s ease-out forwards; }
 @keyframes spark { to { transform:translate(var(--dx),var(--dy)) rotate(260deg); opacity:0; } }
 
+/* Retro */
+@media (max-width:899px) { body[data-tab="retro"] .hero { display:none; } }
+.retro-nudge { display:flex; align-items:center; gap:12px; margin-bottom:12px; padding:12px 14px; border:1px solid rgba(255,207,74,.45); border-radius:var(--r-md); background:linear-gradient(90deg,rgba(255,207,74,.12),transparent 70%),var(--surface); }
+.retro-nudge .e { font-size:24px; }
+.retro-nudge .t { flex:1; font-size:13px; color:var(--text-2); }
+.retro-nudge .t b { display:block; color:var(--text); font-size:14px; }
+.retro-months { display:grid; gap:10px; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
+.rm { text-align:left; border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface); padding:14px; display:grid; gap:6px; cursor:pointer; color:inherit; font:inherit; position:relative; }
+.rm:hover { border-color:var(--line-strong); }
+.rm[aria-current="true"] { border-color:var(--lime); box-shadow:0 0 0 1px var(--lime) inset; }
+.rm .m { font:700 18px/1 var(--font-en); }
+.rm .st { font-size:12px; color:var(--muted); }
+.rm .sc { position:absolute; right:12px; top:12px; font:800 22px/1 var(--font-en); }
+.rm.locked { opacity:.55; cursor:default; }
+.rm.open { border-color:rgba(255,207,74,.5); }
+.rm.open .st { color:var(--amber); }
+.retro-ed { margin-top:16px; display:grid; gap:14px; }
+.retro-sum { display:flex; flex-wrap:wrap; gap:8px; }
+.retro-q { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); padding:14px; display:grid; gap:8px; }
+.retro-q .qh { display:flex; justify-content:space-between; align-items:center; gap:8px; font-weight:700; font-size:14px; }
+.retro-q .qh small { font:600 12px/1 var(--font-en); color:var(--subtle); white-space:nowrap; }
+.retro-q .qh small.ok { color:var(--lime); }
+.retro-q textarea { min-height:92px; }
+.stars { display:flex; gap:6px; }
+.stars button { width:40px; height:40px; border-radius:10px; border:1px solid var(--line); background:var(--surface-2); font-size:20px; cursor:pointer; color:var(--subtle); }
+.stars button.on { color:var(--amber); border-color:rgba(255,207,74,.5); background:rgba(255,207,74,.1); }
+.score-box { position:sticky; bottom:calc(var(--tabbar-h) + 10px); z-index:5; display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; padding:12px 14px; border:1px solid var(--line-strong); border-radius:var(--r-md); background:rgba(11,13,14,.96); backdrop-filter:blur(10px); }
+@media (min-width:900px) { .score-box { bottom:16px; } }
+.score-box .g { font:800 30px/1 var(--font-en); width:44px; text-align:center; }
+.score-box .meta { font-size:12px; color:var(--muted); min-width:0; }
+.score-box .meta b { color:var(--text); font:700 16px/1.2 var(--font-en); }
+.score-box .bar { height:6px; border-radius:3px; background:var(--surface-3); overflow:hidden; margin-top:6px; }
+.score-box .bar span { display:block; height:100%; background:linear-gradient(90deg,var(--amber),var(--lime)); transition:width .3s var(--ease); }
+.retro-rule { font-size:12px; color:var(--muted); line-height:1.7; }
+.retro-read { white-space:pre-wrap; color:var(--text-2); font-size:14px; }
+
 /* Season / Boss / Shield */
 .chip.btnlike { cursor:pointer; font:inherit; font-size:12px; }
 .chip.btnlike:hover { border-color:var(--line-strong); }
@@ -441,6 +477,7 @@ table.rt tr:last-child td { border-bottom:0; }
       <button role="tab" data-tab="stats" aria-selected="false">통계</button>
       <button role="tab" data-tab="logs" aria-selected="false">기록</button>
       <button role="tab" data-tab="routines" aria-selected="false">루틴 설정</button>
+      <button role="tab" data-tab="retro" aria-selected="false">회고록</button>
     </nav>
     <div class="top-right">
       <a class="home-link" href="/">← 데이터 러너즈</a>
@@ -512,6 +549,7 @@ table.rt tr:last-child td { border-bottom:0; }
           <button class="icon-btn" id="dNext" aria-label="다음 날"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         </div>
       </div>
+      <div id="retroNudge"></div>
       <div class="quest-progress" id="questProgress"></div>
       <div class="quest-list" id="questList"></div>
       <div id="bossCard"></div>
@@ -571,7 +609,7 @@ table.rt tr:last-child td { border-bottom:0; }
           <div class="chart"><canvas id="chRadar"></canvas></div>
         </div>
       </div>
-      <p class="foot-note">XP 규칙: 루틴은 설정한 XP, 비정기 기록은 분당 0.4XP(최소 5) 기본값, 그날 예정된 루틴을 모두 끝내면 퍼펙트 데이 보너스 +20XP. 레벨 L→L+1 필요 XP = 100 + 50×(L−1). 주간 보스(월~일)를 격파하면 격파한 날 +150XP. 퍼펙트 데이 7일마다 스트릭 보호권 1장(최대 3장)을 받고, 루틴을 놓친 날 자동으로 1장 써서 연속 기록을 지킵니다. 시즌은 매월 1일 시작하며 시즌 XP로 랭크(브론즈~마스터)가 정해집니다. 캐릭터 레벨은 시즌이 바뀌어도 이어집니다.</p>
+      <p class="foot-note">XP 규칙: 루틴은 설정한 XP, 비정기 기록은 분당 0.4XP(최소 5) 기본값, 그날 예정된 루틴을 모두 끝내면 퍼펙트 데이 보너스 +20XP. 레벨 L→L+1 필요 XP = 100 + 50×(L−1). 주간 보스(월~일)를 격파하면 격파한 날 +150XP. 퍼펙트 데이 7일마다 스트릭 보호권 1장(최대 3장)을 받고, 루틴을 놓친 날 자동으로 1장 써서 연속 기록을 지킵니다. 시즌은 매월 1일 시작하며 시즌 XP로 랭크(브론즈~마스터)가 정해집니다. 캐릭터 레벨은 시즌이 바뀌어도 이어집니다. 월별 회고록을 제출하면 점수만큼(최대 250) 제출한 날 XP로 들어옵니다.</p>
     </section>
 
     <!-- 기록 -->
@@ -583,6 +621,16 @@ table.rt tr:last-child td { border-bottom:0; }
         </div>
       </div>
       <div id="logList"></div>
+    </section>
+
+    <!-- 회고록 -->
+    <section id="tab-retro" data-panel="retro" hidden>
+      <div class="sec-head">
+        <div><span class="eyebrow">Monthly Retro</span><h2>월별 회고록</h2></div>
+      </div>
+      <div class="retro-months" id="retroMonths"></div>
+      <div id="retroEditor"></div>
+      <p class="foot-note">회고록은 달이 끝난 다음 날(매월 1일)부터 쓸 수 있습니다. 점수: 작성 기본 50 + 질문 5개 각 최대 30(20자 이상 15, 80자 이상 30 · 다음 달 목표는 10자/40자) + 만족도 별점 10 + 다음 달 7일까지 처음 제출하면 기한 보너스 40 = 최대 250XP. XP는 처음 제출한 날에 들어가고, 이후 고쳐 쓰면 점수도 다시 계산됩니다.</p>
     </section>
 
     <!-- 루틴 -->
@@ -607,6 +655,7 @@ table.rt tr:last-child td { border-bottom:0; }
     <button role="tab" data-tab="stats" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>통계</button>
     <button role="tab" data-tab="logs" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>기록</button>
     <button role="tab" data-tab="routines" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>루틴</button>
+    <button role="tab" data-tab="retro" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h7M9 11h5"/></svg>회고</button>
   </div>
 </nav>
 
@@ -761,6 +810,13 @@ table.rt tr:last-child td { border-bottom:0; }
   var PERFECT_BONUS = 20;
   var BOSS_REWARD = 150, SHIELD_EVERY = 7, SHIELD_MAX = 3;
   var SEASON_KEY = 'dl_quest_season_seen_';
+  var RETRO_QS = [
+    { k: 'keep', t: '🏆 이번 달 가장 잘한 것은?', ph: '예: 크로스핏을 한 번도 빠지지 않았다. 아침 루틴이 자리 잡았다.' },
+    { k: 'problem', t: '🧱 아쉬웠던 점, 무너진 순간은?', ph: '예: 주말 수업이 끝난 일요일 밤마다 듀오링고를 놓쳤다.' },
+    { k: 'learn', t: '💡 새로 배우거나 깨달은 것은?', ph: '예: 피곤한 날에도 10분짜리 작은 루틴은 지킬 수 있다.' },
+    { k: 'try', t: '🧪 다음 달에 바꿔볼 한 가지는?', ph: '예: 듀오링고를 출근길로 옮긴다.' },
+    { k: 'next', t: '🎯 다음 달 목표는?', ph: '예: 크로스핏 20회, 시즌 골드 랭크', lo: 10, hi: 40 }
+  ];
   // 시즌 랭크: 시즌(월) 동안 얻은 XP 기준
   var RANKS = [
     { min: 0, en: 'Bronze', ko: '브론즈', color: '#d39a6a' },
@@ -795,7 +851,7 @@ table.rt tr:last-child td { border-bottom:0; }
 
   var TITLES = [[1,'Rookie Runner','견습 러너'],[5,'Steady Runner','꾸준한 러너'],[10,'Data Runner','데이터 러너'],[15,'Senior Runner','시니어 러너'],[20,'Elite Runner','엘리트 러너'],[30,'Master Runner','마스터 러너'],[45,'Legend Runner','레전드 러너']];
 
-  var state = { token: null, name: '', routines: [], logs: [], profile: {}, viewDate: todayStr(), tab: 'today', pending: {}, period: '' };
+  var state = { token: null, name: '', routines: [], logs: [], profile: {}, retros: {}, retroMonth: '', viewDate: todayStr(), tab: 'today', pending: {}, period: '' };
   var charts = {};
 
   /* ---------- utils ---------- */
@@ -960,6 +1016,14 @@ table.rt tr:last-child td { border-bottom:0; }
         bosses.push(b);
       }
     }
+
+    // 월별 회고 보상: 처음 제출한 날에 지급
+    Object.keys(state.retros || {}).forEach(function (m) {
+      var r = state.retros[m]; if (!r || !r.firstSaved) return;
+      var sc = retroScore(m, r), dx = dayMap[r.firstSaved];
+      if (!dx) return;
+      dx.retroXp = (dx.retroXp || 0) + sc.total; dx.xp += sc.total;
+    });
 
     var total = 0, catXp = {}, perfectCount = 0, mins = 0;
     days.forEach(function (x) {
@@ -1138,6 +1202,7 @@ table.rt tr:last-child td { border-bottom:0; }
       (info.shieldEarned ? '<div class="shield-note">🛡 이 날 퍼펙트로 스트릭 보호권 1장 획득</div>' : '') +
       (info.shielded ? '<div class="shield-note">🛡 보호권 1장을 써서 연속 기록을 지켰습니다.</div>' : (dayOf(all, addDays(date, -1)).shielded && date === today ? '<div class="shield-note">🛡 어제 빠진 날은 보호권 1장으로 연속 기록을 지켰어요. 남은 보호권 ' + all.shields + '장</div>' : '')) + '</div>';
     renderBoss(all, date);
+    renderRetroNudge();
 
     var byRoutine = {};
     logs.forEach(function (l) { if (l.kind === 'routine' || l.kind === 'skip') byRoutine[l.routine_id] = l; });
@@ -1303,7 +1368,7 @@ table.rt tr:last-child td { border-bottom:0; }
       (s.mvp ? '<div class="mvp"><span class="e">' + esc(s.mvp.r.emoji || '⭐') + '</span><span><div class="k">MVP 루틴</div><div class="v">' + esc(s.mvp.r.title) + ' <small>' + Math.round(s.mvp.rate * 100) + '% · ' + s.mvp.done + '회 · ' + fmtNum(s.mvp.xp) + 'XP</small></div></span></div>' : '') +
       (c ? '<div><div class="k">주력 능력치</div><div class="v" style="color:' + c.color + '">' + c.en + '<small>' + c.name + '</small></div></div>' : '') +
       '<div><div class="k">보호권 사용</div><div class="v">' + s.shieldsUsed + '<small>장</small></div></div>' +
-      '</div><div class="acts">' + (s.live ? '<button class="btn btn-primary" data-x>닫기</button>' : '<button class="btn btn-primary" data-x>' + nm + '월 시즌 시작!</button>') + '</div></div>';
+      '</div><div class="acts">' + (s.live ? '<button class="btn btn-primary" data-x>닫기</button>' : (!(state.retros[month] && state.retros[month].firstSaved) ? '<button class="btn" data-x data-goretro="' + month + '">📝 회고록 쓰기</button>' : '') + '<button class="btn btn-primary" data-x>' + nm + '월 시즌 시작!</button>') + '</div></div>';
     document.body.appendChild(el);
     if (!s.live) burst(window.innerWidth / 2, window.innerHeight / 3, 30);
     el.addEventListener('click', function (e) { if (e.target === el || e.target.closest('[data-x]')) el.remove(); });
@@ -1339,13 +1404,14 @@ table.rt tr:last-child td { border-bottom:0; }
     });
     ds.push({ label: '퍼펙트 보너스', data: days.map(function (x) { return x.perfect ? PERFECT_BONUS : 0; }), backgroundColor: 'rgba(200,255,61,.35)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
     ds.push({ label: '보스 보상', data: days.map(function (x) { return x.bossXp || 0; }), backgroundColor: 'rgba(255,122,146,.75)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
+    ds.push({ label: '회고 보상', data: days.map(function (x) { return x.retroXp || 0; }), backgroundColor: 'rgba(255,207,74,.8)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
     upsertChart('chDaily', {
       type: 'bar', data: { labels: labels, datasets: ds },
       options: { responsive: true, maintainAspectRatio: false, animation: { duration: 300 }, interaction: { mode: 'index', intersect: false },
         plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (it) { return fmtDate(days[it[0].dataIndex].date); }, footer: function (it) { var s = 0; it.forEach(function (i) { s += i.parsed.y; }); return '합계 ' + s + 'XP'; } } } },
         scales: { x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, autoSkipPadding: 6 } }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } }
     });
-    $('lgDaily').innerHTML = CAT_KEYS.map(function (k) { return '<span><i style="background:' + CATS[k].color + '"></i>' + CATS[k].en + ' ' + CATS[k].name + '</span>'; }).join('') + '<span><i style="background:rgba(200,255,61,.35)"></i>퍼펙트 보너스</span><span><i style="background:rgba(255,122,146,.75)"></i>보스 보상</span>';
+    $('lgDaily').innerHTML = CAT_KEYS.map(function (k) { return '<span><i style="background:' + CATS[k].color + '"></i>' + CATS[k].en + ' ' + CATS[k].name + '</span>'; }).join('') + '<span><i style="background:rgba(200,255,61,.35)"></i>퍼펙트 보너스</span><span><i style="background:rgba(255,122,146,.75)"></i>보스 보상</span><span><i style="background:rgba(255,207,74,.8)"></i>회고 보상</span>';
   }
   function renderCalendar(all, days) {
     var month = state.period === 'all' ? todayStr().slice(0, 7) : state.period;
@@ -1436,7 +1502,9 @@ table.rt tr:last-child td { border-bottom:0; }
       ['🥇', '데이터 러너', '레벨 10 달성', Math.min(1, lv / 10)],
       ['👑', '보스 슬레이어', '주간 보스 첫 격파', Math.min(1, all.bossWins)],
       ['⚔️', '보스 헌터', '주간 보스 4회 격파', Math.min(1, all.bossWins / 4)],
-      ['🛡', '수호자', '스트릭 보호권 첫 획득', Math.min(1, all.shieldsEarned)]
+      ['🛡', '수호자', '스트릭 보호권 첫 획득', Math.min(1, all.shieldsEarned)],
+      ['📝', '회고하는 러너', '월별 회고록 첫 제출', Math.min(1, Object.keys(state.retros).filter(function (m) { return state.retros[m] && state.retros[m].firstSaved; }).length)],
+      ['🏅', 'S급 회고', '회고록 S등급 받기', Object.keys(state.retros).some(function (m) { return retroScore(m, state.retros[m]).grade === 'S'; }) ? 1 : 0]
     ];
     var on = B.filter(function (b) { return b[3] >= 1; }).length;
     $('badgeCount').textContent = on + ' / ' + B.length;
@@ -1457,7 +1525,7 @@ table.rt tr:last-child td { border-bottom:0; }
       var logs = all.byDate[d].filter(function (l) { return !fv || (fv === '_adhoc' ? l.kind === 'adhoc' : l.category === fv); });
       if (!logs.length) return '';
       var info = dayOf(all, d);
-      return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + (info.shielded ? ' 🛡' : '') + (info.bossXp ? ' ⚔️ 보스 +' + info.bossXp : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
+      return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + (info.shielded ? ' 🛡' : '') + (info.bossXp ? ' ⚔️ 보스 +' + info.bossXp : '') + (info.retroXp ? ' 📝 회고 +' + info.retroXp : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
         var c = CATS[l.category] || CATS.life, r = routineById(l.routine_id);
         var e = l.kind === 'adhoc' ? c.emoji : (r && r.emoji) || c.emoji;
         var tag = l.kind === 'routine' ? '루틴' : l.kind === 'skip' ? '건너뜀' : '비정기';
@@ -1488,6 +1556,7 @@ table.rt tr:last-child td { border-bottom:0; }
     if (state.tab === 'stats') renderStats(all);
     if (state.tab === 'logs') renderLogs(all);
     if (state.tab === 'routines') renderRoutines();
+    if (state.tab === 'retro') renderRetro(all);
     checkSeasonEnd(all);
   }
 
@@ -1496,7 +1565,7 @@ table.rt tr:last-child td { border-bottom:0; }
     state.tab = tab; document.body.setAttribute('data-tab', tab);
     document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== tab; });
     document.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
-    $('fab').hidden = tab === 'routines';
+    $('fab').hidden = tab === 'routines' || tab === 'retro';
     try { history.replaceState(null, '', '#' + tab); } catch (e) {}
     renderAll();
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
@@ -1643,6 +1712,114 @@ table.rt tr:last-child td { border-bottom:0; }
     sync(true);
   });
 
+  /* ---------- monthly retro ---------- */
+  function nextMonth(m) { var d = new Date(+m.slice(0, 4), +m.slice(5, 7), 1); return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+  function retroScore(m, r) {
+    r = r || {}; var a = r.answers || {}, per = {}, q = 0, any = false;
+    RETRO_QS.forEach(function (x) { var n = String(a[x.k] || '').trim().length; if (n) any = true; per[x.k] = n >= (x.hi || 80) ? 30 : n >= (x.lo || 20) ? 15 : 0; q += per[x.k]; });
+    var base = any ? 50 : 0, star = r.rating ? 10 : 0;
+    var deadline = nextMonth(m) + '-07', first = r.firstSaved || todayStr();
+    var ontime = any && first <= deadline ? 40 : 0;
+    var total = base + q + star + ontime;
+    var grade = total >= 220 ? 'S' : total >= 170 ? 'A' : total >= 120 ? 'B' : total > 0 ? 'C' : '-';
+    return { total: total, base: base, q: q, per: per, star: star, ontime: ontime, deadline: deadline, grade: grade };
+  }
+  function gradeColor(g) { return g === 'S' ? 'var(--lime)' : g === 'A' ? 'var(--cyan)' : g === 'B' ? 'var(--amber)' : 'var(--muted)'; }
+  function pendingRetro() {
+    var cur = todayStr().slice(0, 7), m = SEASON_START.slice(0, 7), out = null;
+    while (m < cur) { if (!(state.retros[m] && state.retros[m].firstSaved)) out = m; m = nextMonth(m); }
+    return out;
+  }
+  function renderRetroNudge() {
+    var m = pendingRetro();
+    $('retroNudge').innerHTML = m ? '<div class="retro-nudge"><span class="e">📝</span><span class="t"><b>' + (+m.slice(5, 7)) + '월 회고록을 써 주세요</b>' +
+      (todayStr() <= nextMonth(m) + '-07' ? nextMonth(m).slice(5, 7).replace(/^0/, '') + '월 7일까지 쓰면 기한 보너스 포함 최대 +250XP' : '쓰면 최대 +210XP') + '</span><button class="btn btn-sm btn-primary" type="button" data-goretro="' + m + '">쓰기</button></div>' : '';
+  }
+  function renderRetro(all) {
+    var cur = todayStr().slice(0, 7), months = seasonMonths(all).reverse();
+    if (!state.retroMonth) state.retroMonth = pendingRetro() || months.filter(function (m) { return m < cur; })[0] || '';
+    $('retroMonths').innerHTML = months.map(function (m) {
+      var r = state.retros[m], done = r && r.firstSaved, locked = m >= cur, sc = retroScore(m, r);
+      var st = locked ? nextMonth(m).slice(5, 7).replace(/^0/, '') + '월 1일부터 작성 가능 · D-' + Math.round((parse(nextMonth(m) + '-01') - parse(todayStr())) / 864e5) :
+        done ? '작성 완료 · ' + md(r.firstSaved) + ' 제출 · +' + sc.total + 'XP' : '작성 가능 · 최대 +' + (todayStr() <= sc.deadline ? 250 : 210) + 'XP';
+      return '<button type="button" class="rm' + (locked ? ' locked' : done ? '' : ' open') + '" data-rmonth="' + m + '"' + (m === state.retroMonth ? ' aria-current="true"' : '') + (locked ? ' disabled' : '') + '>' +
+        '<span class="m">' + m.replace('-', '.') + '</span><span class="st">' + seasonLabel(m) + ' · ' + st + '</span>' +
+        (done ? '<span class="sc" style="color:' + gradeColor(sc.grade) + '">' + sc.grade + '</span>' : locked ? '<span class="sc" style="font-size:18px">🔒</span>' : '<span class="sc" style="font-size:18px">📝</span>') + '</button>';
+    }).join('');
+    renderRetroEditor(all);
+  }
+  var retroDraft = null, retroDraftMonth = null;
+  function renderRetroEditor(all) {
+    var m = state.retroMonth, el = $('retroEditor');
+    if (retroDraftMonth === m && document.activeElement && el.contains(document.activeElement) && document.activeElement.tagName === 'TEXTAREA') return; // 입력 중에는 다시 그리지 않음
+    if (!m || m >= todayStr().slice(0, 7)) { el.innerHTML = '<div class="empty" style="margin-top:16px">' + (m ? '' : '아직 지난 달이 없습니다. ') + '이번 달 시즌이 끝나면 여기서 회고록을 쓸 수 있어요.</div>'; return; }
+    if (retroDraftMonth !== m) { retroDraft = JSON.parse(JSON.stringify(state.retros[m] || { answers: {}, rating: 0 })); retroDraft.answers = retroDraft.answers || {}; retroDraftMonth = m; }
+    var s = seasonSummary(all, m), saved = state.retros[m] && state.retros[m].firstSaved;
+    el.innerHTML = '<div class="retro-ed">' +
+      '<div class="panel" style="padding:14px 16px"><h3>' + (+m.slice(0, 4)) + '년 ' + (+m.slice(5, 7)) + '월 회고록 <small>' + seasonLabel(m) + ' 기록 참고</small></h3><div class="retro-sum" style="margin-top:10px">' +
+        '<span class="chip" style="--rk:' + s.rank.r.color + '">🏅 <b style="color:' + s.rank.r.color + '">' + s.rank.r.ko + '</b></span>' +
+        '<span class="chip">⚡ <b>' + fmtNum(s.xp) + '</b> XP</span><span class="chip">🎯 달성률 <b>' + Math.round(s.rate * 100) + '%</b></span>' +
+        '<span class="chip">⭐ 퍼펙트 <b>' + s.perfect + '</b>일</span><span class="chip">⚔️ 보스 <b>' + s.bossWins + '</b>승</span>' +
+        (s.mvp ? '<span class="chip">' + esc(s.mvp.r.emoji || '⭐') + ' MVP <b>' + esc(s.mvp.r.title) + '</b></span>' : '') +
+        '<span class="chip">🧬 LV <b>' + s.lvStart + ' → ' + s.lvEnd + '</b></span></div></div>' +
+      RETRO_QS.map(function (q) {
+        return '<div class="retro-q"><div class="qh"><label for="rq-' + q.k + '">' + q.t + '</label><small id="rqs-' + q.k + '"></small></div>' +
+          '<textarea id="rq-' + q.k + '" data-rq="' + q.k + '" maxlength="2000" placeholder="' + esc(q.ph) + '">' + esc(retroDraft.answers[q.k] || '') + '</textarea>' +
+          (q.k === 'next' ? '<label class="chip" style="justify-self:start;cursor:pointer"><input type="checkbox" id="rqGoal" checked> 프로필의 이번 달 목표로도 저장</label>' : '') + '</div>';
+      }).join('') +
+      '<div class="retro-q"><div class="qh"><span>⭐ 이번 달 만족도</span><small id="rqs-star"></small></div><div class="stars" id="rqStars">' +
+        [1, 2, 3, 4, 5].map(function (i) { return '<button type="button" data-star="' + i + '" aria-label="' + i + '점">★</button>'; }).join('') + '</div></div>' +
+      '<div class="score-box"><span class="g" id="rsGrade">-</span><span class="meta"><b id="rsTotal">0</b> / 250 XP <span id="rsDetail"></span><div class="bar"><span id="rsBar"></span></div></span>' +
+        '<button class="btn btn-primary" type="button" id="btnRetroSave">' + (saved ? '수정 저장' : '제출하고 XP 받기') + '</button></div>' +
+      '</div>';
+    retroLive();
+  }
+  function retroLive() {
+    var m = retroDraftMonth, d = JSON.parse(JSON.stringify(retroDraft));
+    if (!d.firstSaved) d.firstSaved = todayStr();
+    var sc = retroScore(m, d);
+    RETRO_QS.forEach(function (q) {
+      var n = String(retroDraft.answers[q.k] || '').trim().length, e = $('rqs-' + q.k); if (!e) return;
+      var lo = q.lo || 20, hi = q.hi || 80;
+      e.textContent = n + '자 · +' + sc.per[q.k] + (sc.per[q.k] < 30 ? ' (' + (n < lo ? lo : hi) + '자부터 +' + (n < lo ? 15 : 30) + ')' : '');
+      e.className = sc.per[q.k] === 30 ? 'ok' : '';
+    });
+    if ($('rqs-star')) { $('rqs-star').textContent = retroDraft.rating ? retroDraft.rating + '/5 · +10' : '+10'; $('rqs-star').className = retroDraft.rating ? 'ok' : ''; }
+    document.querySelectorAll('#rqStars button').forEach(function (b) { b.classList.toggle('on', +b.getAttribute('data-star') <= (retroDraft.rating || 0)); });
+    $('rsGrade').textContent = sc.grade; $('rsGrade').style.color = gradeColor(sc.grade);
+    $('rsTotal').textContent = sc.total;
+    $('rsDetail').textContent = '· 기본 ' + sc.base + ' + 답변 ' + sc.q + ' + 별점 ' + sc.star + ' + 기한 ' + sc.ontime + (sc.ontime || !sc.base ? '' : ' (' + md(sc.deadline) + ' 지남)');
+    $('rsBar').style.width = (sc.total / 250 * 100) + '%';
+  }
+  function retroOverlay(m, sc) {
+    var el = document.createElement('div'); el.className = 'levelup';
+    el.innerHTML = '<div class="box" style="border-color:var(--amber);box-shadow:0 0 80px rgba(255,207,74,.22)"><span class="eyebrow" style="color:var(--amber)">Retro Complete</span><div style="font-size:48px;margin:8px 0">📝</div><div style="font-weight:800;font-size:19px">' + (+m.slice(5, 7)) + '월 회고록 제출!</div>' +
+      '<div class="big" style="font-size:52px;color:' + gradeColor(sc.grade) + '">' + sc.grade + '</div><p>+' + sc.total + ' XP 획득 (기본 ' + sc.base + ' · 답변 ' + sc.q + ' · 별점 ' + sc.star + ' · 기한 ' + sc.ontime + ')</p><button class="btn btn-primary" style="margin-top:14px;width:100%">좋아요</button></div>';
+    document.body.appendChild(el); burst(window.innerWidth / 2, window.innerHeight / 2, 30);
+    el.addEventListener('click', function () { el.remove(); });
+  }
+  $('retroMonths').addEventListener('click', function (e) { var b = e.target.closest('[data-rmonth]'); if (b && !b.disabled) { state.retroMonth = b.getAttribute('data-rmonth'); renderAll(); } });
+  $('retroEditor').addEventListener('input', function (e) { var t = e.target.closest('[data-rq]'); if (t) { retroDraft.answers[t.getAttribute('data-rq')] = t.value; retroLive(); } });
+  $('retroEditor').addEventListener('click', function (e) {
+    var st = e.target.closest('[data-star]');
+    if (st) { var v = +st.getAttribute('data-star'); retroDraft.rating = retroDraft.rating === v ? 0 : v; retroLive(); return; }
+    if (!e.target.closest('#btnRetroSave')) return;
+    var m = retroDraftMonth, a = retroDraft.answers;
+    if (!RETRO_QS.some(function (q) { return String(a[q.k] || '').trim(); })) { toast('질문 하나 이상에 답을 써 주세요.', true); return; }
+    var first = !(state.retros[m] && state.retros[m].firstSaved);
+    var rec = { answers: {}, rating: retroDraft.rating || 0, firstSaved: (state.retros[m] && state.retros[m].firstSaved) || todayStr(), updated: new Date().toISOString() };
+    RETRO_QS.forEach(function (q) { var v = String(a[q.k] || '').trim().slice(0, 2000); if (v) rec.answers[q.k] = v; });
+    state.retros[m] = rec; retroDraft = JSON.parse(JSON.stringify(rec)); retroDraft.answers = retroDraft.answers || {};
+    var sc = retroScore(m, rec);
+    var goalBox = $('rqGoal');
+    if (goalBox && goalBox.checked && rec.answers.next) { state.profile.me = state.profile.me || {}; state.profile.me.goal = rec.answers.next.split('\n')[0].slice(0, 60); api('config_save', { key: 'profile', value: state.profile }).catch(function () {}); }
+    saveCache(); renderAll();
+    api('config_save', { key: 'retros', value: state.retros }).then(function () {
+      if (first) retroOverlay(m, sc); else toast('회고록을 수정했습니다. 현재 점수 ' + sc.total + 'XP');
+    }, function (err) { toast(err.message || '회고록 저장 실패', true); });
+  });
+  document.addEventListener('click', function (e) { var b = e.target.closest('[data-goretro]'); if (b) { state.retroMonth = b.getAttribute('data-goretro'); retroDraftMonth = null; setTab('retro'); } });
+
   /* ---------- profile sheet ---------- */
   var pfDraft = null;
   function pfRender() {
@@ -1728,11 +1905,11 @@ table.rt tr:last-child td { border-bottom:0; }
     if (!CATS[l.category]) l.category = 'life';
     return l;
   }
-  function saveCache() { store(CACHE_KEY, JSON.stringify({ routines: state.routines, logs: state.logs, profile: state.profile })); }
+  function saveCache() { store(CACHE_KEY, JSON.stringify({ routines: state.routines, logs: state.logs, profile: state.profile, retros: state.retros })); }
   function showView(v) {
     $('viewLogin').hidden = v !== 'login'; $('viewLoading').hidden = v !== 'loading'; $('viewApp').hidden = v !== 'app';
     var app = v === 'app';
-    $('tabbar').hidden = !app; $('topTabs').hidden = !app; $('btnLogout').hidden = !app; $('fab').hidden = !app || state.tab === 'routines';
+    $('tabbar').hidden = !app; $('topTabs').hidden = !app; $('btnLogout').hidden = !app; $('fab').hidden = !app || state.tab === 'routines' || state.tab === 'retro';
   }
   function sync(silent) {
     return api('load').then(function (d) {
@@ -1741,6 +1918,7 @@ table.rt tr:last-child td { border-bottom:0; }
       var needSeed = !Array.isArray(cfg.routines);
       state.routines = needSeed ? JSON.parse(JSON.stringify(DEFAULT_ROUTINES)) : cfg.routines;
       state.profile = cfg.profile && typeof cfg.profile === 'object' && !Array.isArray(cfg.profile) ? cfg.profile : {};
+      state.retros = cfg.retros && typeof cfg.retros === 'object' && !Array.isArray(cfg.retros) ? cfg.retros : {};
       var pendingLogs = state.logs.filter(function (l) { return Object.keys(state.pending).length && !d.logs.some(function (x) { return x.log_id === l.log_id; }); });
       state.logs = (d.logs || []).map(normLog).concat(Object.keys(state.pending).length ? pendingLogs : []);
       saveCache(); showView('app'); renderAll();
@@ -1749,11 +1927,11 @@ table.rt tr:last-child td { border-bottom:0; }
   }
   function enter() {
     var cache = null; try { cache = JSON.parse(load(CACHE_KEY) || 'null'); } catch (e) {}
-    if (cache && cache.routines) { state.routines = cache.routines; state.profile = cache.profile || {}; state.logs = (cache.logs || []).map(normLog); showView('app'); renderAll(); sync(true); }
+    if (cache && cache.routines) { state.routines = cache.routines; state.profile = cache.profile || {}; state.retros = cache.retros || {}; state.logs = (cache.logs || []).map(normLog); showView('app'); renderAll(); sync(true); }
     else { showView('loading'); sync(false); }
   }
   function logout(msg) {
-    state.token = null; store(TOKEN_KEY, null); store(CACHE_KEY, null); state.logs = []; state.routines = []; state.profile = {}; lastLevel = null; lastShields = null; lastBossWins = null;
+    state.token = null; store(TOKEN_KEY, null); store(CACHE_KEY, null); state.logs = []; state.routines = []; state.profile = {}; state.retros = {}; lastLevel = null; lastShields = null; lastBossWins = null;
     showView('login'); if (msg) { $('loginError').textContent = msg; $('loginError').hidden = false; }
   }
   $('btnLogout').addEventListener('click', function () { if (confirm('로그아웃할까요?')) logout(); });
@@ -1773,7 +1951,7 @@ table.rt tr:last-child td { border-bottom:0; }
   /* ---------- boot ---------- */
   if (window.Chart) chartBase();
   var initialTab = (location.hash || '').slice(1);
-  if (['today', 'stats', 'logs', 'routines'].indexOf(initialTab) >= 0) state.tab = initialTab;
+  if (['today', 'stats', 'logs', 'routines', 'retro'].indexOf(initialTab) >= 0) state.tab = initialTab;
   document.body.setAttribute('data-tab', state.tab);
   document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== state.tab; });
   document.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === state.tab ? 'true' : 'false'); });
