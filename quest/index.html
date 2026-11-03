@@ -92,6 +92,19 @@ a { color:inherit; text-decoration:none; }
 .top-right { display:flex; align-items:center; gap:8px; }
 .home-link { color:var(--muted); font-size:13px; }
 .home-link:hover { color:var(--text); }
+.install-btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border-radius:999px; border:1px solid rgba(200,255,61,.45); background:var(--lime-soft); color:var(--lime); font-size:13px; font-weight:700; }
+.install-btn svg { width:16px; height:16px; }
+.install-btn:hover { background:rgba(200,255,61,.18); }
+@media (max-width:480px) { body:has(.install-btn:not([hidden])) .home-link { display:none; } }
+html.standalone .home-link, html.standalone .install-btn { display:none !important; }
+.install-steps { display:grid; gap:10px; margin:6px 0 4px; padding:0; counter-reset:st; }
+.install-steps li { list-style:none; display:grid; grid-template-columns:28px 1fr; gap:10px; align-items:start; padding:12px; border:1px solid var(--line); border-radius:var(--r-sm); background:var(--surface-2); font-size:14px; line-height:1.5; color:var(--text-2); }
+.install-steps li::before { counter-increment:st; content:counter(st); width:28px; height:28px; border-radius:50%; display:grid; place-items:center; background:var(--lime); color:var(--lime-ink); font-weight:800; font-size:13px; }
+.install-steps b { color:var(--text); }
+.install-hero { display:flex; gap:14px; align-items:center; margin-bottom:12px; }
+.install-hero img { width:64px; height:64px; border-radius:16px; border:1px solid var(--line-strong); }
+.install-hero p { color:var(--muted); font-size:13px; line-height:1.5; }
+.install-note { color:var(--subtle); font-size:12px; line-height:1.55; margin-top:10px; }
 
 /* Bottom tabbar (mobile) */
 .tabbar { position:fixed; left:0; right:0; bottom:0; z-index:40; background:rgba(11,13,14,.94); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom,0); }
@@ -481,6 +494,9 @@ table.rt tr:last-child td { border-bottom:0; }
     </nav>
     <div class="top-right">
       <a class="home-link" href="/">← 데이터 러너즈</a>
+      <button type="button" class="install-btn" id="btnInstall" title="앱으로 설치" aria-label="앱으로 설치" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg><span>앱 설치</span>
+      </button>
       <button class="icon-btn" id="btnLogout" title="로그아웃" aria-label="로그아웃" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
       </button>
@@ -767,6 +783,19 @@ table.rt tr:last-child td { border-bottom:0; }
       <button type="submit" class="btn btn-primary">저장</button>
     </div>
   </form>
+</div>
+
+<!-- 앱 설치 안내 시트 -->
+<div class="sheet" id="installSheet" role="dialog" aria-modal="true" aria-labelledby="installSheetTitle" hidden>
+  <div class="grab"></div>
+  <h3 id="installSheetTitle">Runner Quest 앱 설치</h3>
+  <div class="install-hero"><img src="/quest/icon-192.png" alt=""><p>홈 화면에 아이콘이 생기고, 주소창 없이 전체 화면 앱으로 열립니다. 로그인은 그대로 유지됩니다.</p></div>
+  <ol class="install-steps" id="installSteps"></ol>
+  <p class="install-note" id="installNote"></p>
+  <div class="sheet-actions">
+    <button type="button" class="btn" data-close>닫기</button>
+    <button type="button" class="btn btn-primary" id="btnInstallNow" hidden>지금 설치</button>
+  </div>
 </div>
 
 <!-- 보스 설정 시트 -->
@@ -1948,9 +1977,52 @@ table.rt tr:last-child td { border-bottom:0; }
     });
   });
 
+  /* ---------- 앱 설치 (PWA) ---------- */
+  var installEvt = null;
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isAndroid = /Android/i.test(ua);
+  var isStandalone = function () { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; };
+  if (isStandalone()) document.documentElement.classList.add('standalone');
+  function refreshInstallBtn() { $('btnInstall').hidden = isStandalone() || !(installEvt || isIOS || isAndroid); }
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvt = e; refreshInstallBtn(); });
+  window.addEventListener('appinstalled', function () { installEvt = null; closeSheet(); refreshInstallBtn(); toast('앱이 설치됐어요! 홈 화면의 Runner Quest 아이콘으로 열어 보세요.'); });
+  var SHARE_ICON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v13"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+  function openInstall() {
+    var steps, note = '';
+    if (isIOS) {
+      steps = ['<b>Safari</b>로 이 페이지를 엽니다. (카카오톡 등 앱 안의 브라우저에서는 설치가 안 돼요)',
+        '아래쪽 <b>공유 버튼</b> ' + SHARE_ICON + ' 을 누릅니다.',
+        '메뉴를 내려 <b>홈 화면에 추가</b>를 누르고, 오른쪽 위 <b>추가</b>를 누릅니다.'];
+      note = '아이폰은 앱스토어 없이 이 방법으로 설치합니다. 설치 후에는 홈 화면 아이콘으로 열어야 전체 화면으로 보입니다.';
+    } else if (installEvt) {
+      steps = ['아래 <b>지금 설치</b>를 누릅니다.', '확인 창에서 <b>설치</b>를 누르면 홈 화면에 아이콘이 생깁니다.'];
+    } else {
+      steps = ['<b>Chrome</b>(또는 삼성 인터넷)으로 이 페이지를 엽니다.',
+        '오른쪽 위 <b>⋮ 메뉴</b>(삼성 인터넷은 아래 ☰)를 누릅니다.',
+        '<b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 누릅니다.'];
+      note = '메뉴에 설치 항목이 없으면 페이지를 한 번 새로고침한 뒤 다시 시도해 주세요.';
+    }
+    $('installSteps').innerHTML = steps.map(function (t) { return '<li><span>' + t + '</span></li>'; }).join('');
+    $('installNote').textContent = note; $('installNote').hidden = !note;
+    $('btnInstallNow').hidden = !installEvt;
+    openSheet($('installSheet'));
+  }
+  $('btnInstall').addEventListener('click', openInstall);
+  $('btnInstallNow').addEventListener('click', function () {
+    if (!installEvt) return;
+    var ev = installEvt; ev.prompt();
+    ev.userChoice.then(function (r) { if (r && r.outcome === 'accepted') { installEvt = null; closeSheet(); } refreshInstallBtn(); }).catch(function () {});
+  });
+  refreshInstallBtn();
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('/quest/sw.js', { scope: '/quest/' }).catch(function () {}); });
+  }
+
   /* ---------- boot ---------- */
   if (window.Chart) chartBase();
   var initialTab = (location.hash || '').slice(1);
+  if (/[?&]source=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
   if (['today', 'stats', 'logs', 'routines', 'retro'].indexOf(initialTab) >= 0) state.tab = initialTab;
   document.body.setAttribute('data-tab', state.tab);
   document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== state.tab; });
@@ -1959,7 +2031,7 @@ table.rt tr:last-child td { border-bottom:0; }
   if (state.token) enter(); else showView('login');
 
   // 미리보기/테스트용 훅
-  window.__quest = { state: state, renderAll: renderAll, computeAll: computeAll, showSeasonCard: showSeasonCard, seasonSummary: seasonSummary, showView: showView, DEFAULT_ROUTINES: DEFAULT_ROUTINES };
+  window.__quest = { openInstall: openInstall, state: state, renderAll: renderAll, computeAll: computeAll, showSeasonCard: showSeasonCard, seasonSummary: seasonSummary, showView: showView, DEFAULT_ROUTINES: DEFAULT_ROUTINES };
 })();
 </script>
 </body>
