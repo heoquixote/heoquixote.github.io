@@ -1,0 +1,13 @@
+{
+  "name": "Runner Quest · 데이터 러너즈",
+  "short_name": "Runner Quest",
+  "start_url": "/quest/",
+  "scope": "/quest/",
+  "display": "standalone",
+  "background_color": "#050607",
+  "theme_color": "#050607",
+  "icons": [
+    { "src": "/quest/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/quest/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
