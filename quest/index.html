@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Runner Quest | 데이터 러너즈</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="매일의 루틴을 퀘스트로 체크하고 경험치와 레벨로 나를 육성하는 자기육성 대시보드">
+<meta name="theme-color" content="#050607">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Runner Quest">
+<link rel="manifest" href="/quest/manifest.webmanifest">
+<link rel="icon" type="image/png" href="/quest/icon-192.png">
+<link rel="apple-touch-icon" href="/quest/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* 데이터러너즈 브랜드 토큰 (다크 단일 테마) */
+:root {
+  --bg:#050607; --surface:#0b0d0e; --surface-2:#121516; --surface-3:#181c1d;
+  --text:#f5f7f2; --text-2:#c9cfcb; --muted:#a1aaa5; --subtle:#879089;
+  --line:rgba(255,255,255,.11); --line-strong:rgba(255,255,255,.22);
+  --lime:#c8ff3d; --lime-ink:#0d1006; --lime-soft:rgba(200,255,61,.1);
+  --cyan:#66dbff; --violet:#a896ff; --orange:#ff9a51; --rose:#ff7a92; --amber:#ffcf4a; --mint:#61db9c;
+  --font-en:"Space Grotesk","Pretendard Variable",sans-serif;
+  --font-ko:"Pretendard Variable","Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r-sm:6px; --r-md:12px; --r-lg:18px; --cut:16px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --tabbar-h:64px;
+  color-scheme:dark;
+}
+*,*:before,*:after { box-sizing:border-box; }
+html { -webkit-text-size-adjust:100%; }
+body {
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--font-ko); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased; word-break:keep-all; overflow-wrap:break-word; overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+body:before {
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(900px circle at 85% 0,rgba(200,255,61,.07),transparent 50%),
+    linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
+  background-size:auto,56px 56px,56px 56px; mask-image:linear-gradient(#000,transparent 70%);
+}
+[hidden] { display:none !important; }
+h1,h2,h3,p { margin:0; }
+button,input,select,textarea { font:inherit; color:inherit; }
+button { cursor:pointer; }
+a { color:inherit; text-decoration:none; }
+:focus-visible { outline:2px solid var(--lime); outline-offset:2px; border-radius:var(--r-sm); }
+::selection { background:var(--lime); color:var(--lime-ink); }
+.num { font-family:var(--font-en); font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
+.mono { font-family:var(--font-mono); }
+.shell { width:min(1180px, 100% - 32px); margin-inline:auto; }
+.eyebrow { display:inline-flex; align-items:center; gap:10px; color:var(--lime); font:600 11px/1 var(--font-en); letter-spacing:.16em; text-transform:uppercase; }
+.eyebrow:before { content:""; width:18px; height:7px; background:repeating-linear-gradient(90deg,var(--lime) 0 3px,transparent 3px 6px); transform:skewX(-18deg); }
+
+/* Buttons */
+.btn { min-height:44px; padding:0 18px; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid var(--line-strong); border-radius:var(--r-sm); background:transparent; font-weight:700; font-size:14px; white-space:nowrap; transition:transform .15s var(--ease),background .15s,border-color .15s; }
+.btn:hover { border-color:rgba(255,255,255,.4); background:rgba(255,255,255,.04); }
+.btn:active { transform:scale(.98); }
+.btn-primary { background:var(--lime); border-color:var(--lime); color:var(--lime-ink); }
+.btn-primary:hover { background:#d6ff6a; border-color:#d6ff6a; }
+.btn-sm { min-height:36px; padding:0 12px; font-size:13px; }
+.btn-ghost { border-color:transparent; color:var(--muted); }
+.btn-ghost:hover { color:var(--text); }
+.btn-danger { color:var(--rose); border-color:rgba(255,122,146,.35); }
+.icon-btn { width:40px; height:40px; display:inline-grid; place-items:center; border-radius:var(--r-sm); border:1px solid var(--line); background:var(--surface); }
+.icon-btn:hover { border-color:var(--line-strong); }
+.icon-btn svg { width:18px; height:18px; }
+
+/* Topbar */
+.topbar { position:sticky; top:0; z-index:30; background:rgba(5,6,7,.82); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line); padding-top:env(safe-area-inset-top,0); }
+.topbar-in { height:60px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.brand { display:flex; align-items:center; gap:10px; font:700 16px/1 var(--font-en); letter-spacing:-.02em; }
+.brand-mark { width:30px; height:30px; display:grid; place-items:center; background:var(--lime); color:var(--lime-ink); clip-path:polygon(0 0,100% 0,100% 70%,70% 100%,0 100%); font:700 15px/1 var(--font-en); }
+.brand small { display:block; color:var(--muted); font:500 11px/1 var(--font-ko); margin-top:4px; letter-spacing:0; }
+.top-tabs { display:none; gap:4px; }
+.top-tabs button { height:36px; padding:0 14px; border:0; border-radius:var(--r-sm); background:none; color:var(--muted); font-weight:600; }
+.top-tabs button[aria-selected="true"] { background:var(--surface-3); color:var(--text); }
+.top-right { display:flex; align-items:center; gap:8px; }
+.home-link { color:var(--muted); font-size:13px; }
+.home-link:hover { color:var(--text); }
+
+/* Bottom tabbar (mobile) */
+.tabbar { position:fixed; left:0; right:0; bottom:0; z-index:40; background:rgba(11,13,14,.94); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom,0); }
+.tabbar-in { height:var(--tabbar-h); display:grid; grid-template-columns:repeat(4,1fr); }
+.tabbar button { border:0; background:none; color:var(--subtle); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; font-weight:600; }
+.tabbar button svg { width:22px; height:22px; }
+.tabbar button[aria-selected="true"] { color:var(--lime); }
+main { padding:20px 0 calc(var(--tabbar-h) + 96px + env(safe-area-inset-bottom,0)); }
+
+@media (min-width:900px) {
+  .top-tabs { display:flex; }
+  .tabbar { display:none; }
+  main { padding-bottom:64px; }
+}
+
+/* Login */
+.login-wrap { min-height:calc(100svh - 61px); display:grid; place-items:center; padding:24px 16px; }
+.login-card { width:min(420px,100%); background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:28px 24px; display:grid; gap:16px; position:relative; overflow:hidden; }
+.login-card:before { content:""; position:absolute; inset:0 0 auto; height:3px; background:repeating-linear-gradient(90deg,var(--lime) 0 14px,transparent 14px 20px); }
+.login-card h1 { font-size:24px; letter-spacing:-.03em; }
+.login-card p { color:var(--muted); font-size:14px; }
+.field { display:grid; gap:6px; }
+.field label, .field .label { color:var(--text-2); font-size:13px; font-weight:600; }
+input[type=text],input[type=email],input[type=password],input[type=number],input[type=date],input[type=time],select,textarea {
+  width:100%; min-height:44px; padding:10px 12px; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-sm); font-size:16px; color:var(--text);
+}
+textarea { min-height:72px; resize:vertical; }
+input:focus,select:focus,textarea:focus { outline:none; border-color:var(--lime); }
+.error-msg { color:var(--rose); font-size:13px; }
+
+/* Character card */
+.hero { display:grid; gap:16px; grid-template-columns:1fr; margin-bottom:20px; }
+.char-card { position:relative; background:linear-gradient(135deg,rgba(200,255,61,.08),transparent 55%),var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:20px; display:grid; grid-template-columns:auto 1fr; gap:16px 18px; align-items:center; overflow:hidden; }
+.char-card:after { content:"PLAYER"; position:absolute; right:-6px; top:8px; font:700 64px/1 var(--font-en); color:rgba(255,255,255,.025); letter-spacing:-.04em; pointer-events:none; }
+.avatar { width:84px; height:84px; position:relative; }
+.avatar svg { width:100%; height:100%; display:block; }
+.avatar .lv { position:absolute; left:50%; bottom:-6px; transform:translateX(-50%); background:var(--lime); color:var(--lime-ink); font:700 12px/1 var(--font-en); padding:5px 8px; border-radius:4px; white-space:nowrap; }
+.char-meta { min-width:0; }
+.char-title { color:var(--lime); font:600 12px/1 var(--font-en); letter-spacing:.12em; text-transform:uppercase; }
+.char-name { font-size:22px; font-weight:750; letter-spacing:-.03em; margin-top:6px; }
+.xp-row { grid-column:1 / -1; display:grid; gap:8px; }
+.xp-head { display:flex; justify-content:space-between; align-items:baseline; font-size:12px; color:var(--muted); }
+.xp-head b { color:var(--text); font-size:14px; }
+.xp-bar { height:14px; background:var(--surface-3); border:1px solid var(--line); border-radius:3px; overflow:hidden; position:relative; }
+.xp-fill { height:100%; width:0; background:repeating-linear-gradient(90deg,var(--lime) 0 10px,#b3ec2a 10px 12px); transition:width .6s var(--ease); box-shadow:0 0 18px rgba(200,255,61,.35); }
+.char-chips { grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px; }
+.chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:var(--surface-2); font-size:12px; color:var(--text-2); }
+.chip b { color:var(--text); font-family:var(--font-en); }
+
+.stat-card { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:18px 20px; display:grid; gap:12px; }
+.stat-card h2 { font-size:14px; color:var(--text-2); font-weight:650; display:flex; justify-content:space-between; align-items:center; }
+.stat-list { display:grid; gap:10px; }
+.stat-item { display:grid; grid-template-columns:72px 1fr 64px; gap:10px; align-items:center; font-size:13px; }
+.stat-item .nm { display:flex; align-items:center; gap:6px; color:var(--text-2); font-weight:600; }
+.stat-item .nm i { width:8px; height:8px; border-radius:2px; display:inline-block; }
+.stat-item .bar { height:8px; border-radius:2px; background:var(--surface-3); overflow:hidden; }
+.stat-item .bar span { display:block; height:100%; border-radius:2px; transition:width .6s var(--ease); }
+.stat-item .val { text-align:right; color:var(--muted); font-size:12px; }
+.stat-item .val b { color:var(--text); font-family:var(--font-en); font-size:13px; }
+
+@media (min-width:900px) {
+  .hero { grid-template-columns:1.25fr 1fr; }
+  .char-card { grid-template-columns:auto 1fr; padding:24px; }
+  .avatar { width:96px; height:96px; }
+}
+
+/* Section heads */
+.sec-head { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin:8px 0 14px; flex-wrap:wrap; }
+.sec-head h2 { font-size:20px; letter-spacing:-.03em; margin-top:8px; }
+.date-nav { display:flex; align-items:center; gap:6px; }
+.date-nav .d { min-width:132px; text-align:center; font-weight:700; }
+.date-nav .d small { display:block; color:var(--muted); font-weight:500; font-size:11px; }
+
+/* Quest cards */
+.quest-progress { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); padding:12px 14px; margin-bottom:12px; }
+.ring { width:44px; height:44px; flex:0 0 44px; }
+.quest-progress .txt { flex:1; font-size:13px; color:var(--muted); }
+.quest-progress .txt b { color:var(--text); font-size:15px; display:block; }
+.quest-list { display:grid; gap:10px; }
+.quest { --c:var(--lime); position:relative; display:grid; grid-template-columns:48px 1fr auto; gap:12px; align-items:center; padding:14px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); transition:border-color .15s,background .15s,transform .12s; user-select:none; -webkit-user-select:none; }
+.quest:before { content:""; position:absolute; left:0; top:12px; bottom:12px; width:3px; border-radius:0 3px 3px 0; background:var(--c); opacity:.9; }
+.quest .ico { width:48px; height:48px; display:grid; place-items:center; font-size:24px; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; }
+.quest .body { min-width:0; }
+.quest .t { font-weight:700; font-size:15px; letter-spacing:-.02em; }
+.quest .s { color:var(--muted); font-size:12px; margin-top:2px; display:flex; gap:8px; flex-wrap:wrap; }
+.quest .s .xp { color:var(--c); font-family:var(--font-en); font-weight:600; }
+.check { width:44px; height:44px; border-radius:10px; border:2px solid var(--line-strong); background:transparent; display:grid; place-items:center; transition:all .15s var(--ease); }
+.check svg { width:22px; height:22px; opacity:0; transform:scale(.6); transition:all .2s var(--ease); color:var(--lime-ink); }
+.quest.done { border-color:color-mix(in srgb, var(--c) 45%, transparent); background:color-mix(in srgb, var(--c) 7%, var(--surface)); }
+.quest.done .check { background:var(--c); border-color:var(--c); }
+.quest.done .check svg { opacity:1; transform:scale(1); }
+.quest.done .t { color:var(--text-2); }
+.quest.skip { opacity:.55; }
+.quest.skip .t { text-decoration:line-through; }
+.quest .more { position:absolute; right:66px; top:8px; border:0; background:none; color:var(--subtle); font-size:11px; padding:4px 6px; }
+.quest .more:hover { color:var(--text); }
+.quest.pending { opacity:.7; }
+.quest.adhoc .check { display:none; }
+.quest.adhoc { grid-template-columns:48px 1fr auto; }
+.quest .del { border:0; background:none; color:var(--subtle); padding:6px; }
+.quest .del:hover { color:var(--rose); }
+.empty { padding:28px 16px; text-align:center; color:var(--muted); border:1px dashed var(--line); border-radius:var(--r-md); font-size:14px; }
+.sub-head { margin:22px 0 10px; font-size:13px; color:var(--muted); font-weight:650; display:flex; justify-content:space-between; align-items:center; }
+
+/* FAB + sheet */
+.fab { position:fixed; right:max(16px, env(safe-area-inset-right,0)); bottom:calc(var(--tabbar-h) + 16px + env(safe-area-inset-bottom,0)); z-index:45; height:56px; padding:0 20px 0 16px; border-radius:16px; border:0; background:var(--lime); color:var(--lime-ink); font-weight:800; font-size:15px; display:flex; align-items:center; gap:8px; box-shadow:0 12px 32px rgba(200,255,61,.25), 0 4px 12px rgba(0,0,0,.5); }
+.fab svg { width:22px; height:22px; }
+@media (min-width:900px) { .fab { bottom:28px; right:28px; } }
+.sheet-backdrop { position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.6); opacity:0; transition:opacity .2s; }
+.sheet-backdrop.open { opacity:1; }
+.sheet { position:fixed; left:0; right:0; bottom:0; z-index:61; max-height:92svh; overflow-y:auto; background:var(--surface); border-top:1px solid var(--line-strong); border-radius:20px 20px 0 0; padding:10px 16px calc(20px + env(safe-area-inset-bottom,0)); transform:translateY(100%); transition:transform .28s var(--ease); }
+.sheet.open { transform:none; }
+.sheet .grab { width:40px; height:4px; border-radius:2px; background:var(--line-strong); margin:4px auto 14px; }
+.sheet h3 { font-size:18px; letter-spacing:-.02em; margin-bottom:14px; }
+.sheet form { display:grid; gap:14px; }
+.sheet .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media (min-width:640px) { .sheet { left:50%; right:auto; width:520px; bottom:auto; top:50%; border-radius:var(--r-lg); border:1px solid var(--line-strong); transform:translate(-50%,-46%); opacity:0; pointer-events:none; transition:transform .22s var(--ease),opacity .2s; } .sheet.open { transform:translate(-50%,-50%); opacity:1; pointer-events:auto; } .sheet .grab { display:none; } }
+.chips { display:flex; flex-wrap:wrap; gap:8px; }
+.chips button, .chips label { min-height:36px; padding:0 12px; border:1px solid var(--line); border-radius:999px; background:var(--surface-2); color:var(--text-2); font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
+.chips button[aria-pressed="true"], .chips input:checked + span { color:var(--lime-ink); }
+.chips button[aria-pressed="true"] { background:var(--c, var(--lime)); border-color:var(--c, var(--lime)); }
+.chips label { position:relative; }
+.chips label input { position:absolute; opacity:0; pointer-events:none; }
+.chips label:has(input:checked) { background:var(--lime); border-color:var(--lime); color:var(--lime-ink); }
+.recent { display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+.recent::-webkit-scrollbar { display:none; }
+.recent button { flex:0 0 auto; min-height:32px; padding:0 10px; border:1px dashed var(--line-strong); border-radius:8px; background:none; color:var(--text-2); font-size:12px; }
+.sheet-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:4px; }
+.sheet-actions .btn { flex:1; }
+@media (min-width:640px) { .sheet-actions .btn { flex:0 0 auto; } }
+
+/* Stats */
+.toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.toolbar select { width:auto; min-height:38px; font-size:14px; padding:6px 10px; }
+.kpis { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:14px; }
+.kpi { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); padding:14px 16px; min-width:0; }
+.kpi .k { color:var(--muted); font-size:12px; font-weight:600; }
+.kpi .v { font:700 26px/1.15 var(--font-en); letter-spacing:-.03em; margin-top:6px; }
+.kpi .v small { font-size:13px; color:var(--muted); font-weight:500; margin-left:2px; }
+.kpi .d { color:var(--subtle); font-size:11px; margin-top:4px; }
+@media (min-width:720px) { .kpis { grid-template-columns:repeat(3,1fr); } }
+@media (min-width:1100px) { .kpis { grid-template-columns:repeat(6,1fr); } }
+.grid2 { display:grid; gap:14px; grid-template-columns:1fr; }
+@media (min-width:1000px) { .grid2 { grid-template-columns:1.4fr 1fr; } }
+.panel { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:18px; min-width:0; }
+.panel h3 { font-size:15px; letter-spacing:-.02em; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.panel h3 small { color:var(--muted); font-weight:500; font-size:12px; }
+.panel .chart { position:relative; height:260px; margin-top:12px; }
+.panel .chart.tall { height:300px; }
+.legend { display:flex; flex-wrap:wrap; gap:12px; margin-top:10px; font-size:12px; color:var(--text-2); }
+.legend span { display:inline-flex; align-items:center; gap:6px; }
+.legend i { width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+/* Calendar heatmap */
+.cal { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-top:12px; }
+.cal .wd { text-align:center; font-size:11px; color:var(--subtle); padding-bottom:2px; }
+.cal .day { aspect-ratio:1; border-radius:6px; background:var(--surface-2); border:1px solid var(--line); position:relative; font:600 11px/1 var(--font-en); color:var(--muted); display:flex; align-items:flex-start; justify-content:flex-start; padding:5px; cursor:pointer; }
+.cal .day.blank { background:none; border-color:transparent; cursor:default; }
+.cal .day.future { opacity:.35; cursor:default; }
+.cal .day.today { outline:2px solid var(--text); outline-offset:1px; }
+.cal .day .p { position:absolute; right:4px; bottom:3px; font-size:10px; }
+.cal .day.perfect:after { content:"★"; position:absolute; right:5px; top:4px; font-size:10px; color:var(--lime-ink); }
+.cal-legend { display:flex; align-items:center; gap:4px; justify-content:flex-end; font-size:11px; color:var(--subtle); margin-top:10px; }
+.cal-legend i { width:12px; height:12px; border-radius:3px; display:inline-block; border:1px solid var(--line); }
+
+table.rt { width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; }
+table.rt th { text-align:left; color:var(--subtle); font-weight:600; font-size:11px; padding:8px 6px; border-bottom:1px solid var(--line); white-space:nowrap; }
+table.rt td { padding:10px 6px; border-bottom:1px solid var(--line); vertical-align:middle; }
+table.rt td.n { text-align:right; font-family:var(--font-en); font-variant-numeric:tabular-nums; }
+table.rt tr:last-child td { border-bottom:0; }
+.rate { display:flex; align-items:center; gap:8px; min-width:120px; }
+.rate .bar { flex:1; height:6px; background:var(--surface-3); border-radius:3px; overflow:hidden; }
+.rate .bar span { display:block; height:100%; }
+.rate b { font-family:var(--font-en); min-width:38px; text-align:right; font-size:12px; }
+
+/* Badges */
+.badges { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:12px; }
+.badge { border:1px solid var(--line); border-radius:var(--r-md); padding:12px; background:var(--surface-2); display:grid; gap:4px; position:relative; }
+.badge .e { font-size:22px; filter:grayscale(1); opacity:.4; }
+.badge .n { font-weight:700; font-size:13px; color:var(--muted); }
+.badge .h { font-size:11px; color:var(--subtle); }
+.badge .pg { height:4px; border-radius:2px; background:var(--surface-3); overflow:hidden; margin-top:4px; }
+.badge .pg span { display:block; height:100%; background:var(--subtle); }
+.badge.on { border-color:rgba(200,255,61,.4); background:linear-gradient(135deg,rgba(200,255,61,.1),transparent 60%),var(--surface-2); }
+.badge.on .e { filter:none; opacity:1; }
+.badge.on .n { color:var(--text); }
+.badge.on .pg span { background:var(--lime); }
+
+/* Logs */
+.log-day { margin-bottom:18px; }
+.log-day h4 { margin:0 0 8px; font-size:13px; color:var(--muted); display:flex; justify-content:space-between; font-weight:650; }
+.log-day h4 b { color:var(--lime); font-family:var(--font-en); }
+.log-item { display:grid; grid-template-columns:32px 1fr auto auto; gap:10px; align-items:center; padding:10px 12px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm); margin-bottom:6px; font-size:14px; }
+.log-item .e { font-size:18px; text-align:center; }
+.log-item .m { min-width:0; }
+.log-item .m small { display:block; color:var(--muted); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.log-item .x { font-family:var(--font-en); font-weight:600; font-size:13px; }
+.tag { font-size:11px; padding:2px 6px; border-radius:4px; border:1px solid var(--line); color:var(--muted); margin-left:6px; vertical-align:1px; }
+
+/* Routines */
+.routine-row { display:grid; grid-template-columns:44px 1fr auto; gap:12px; align-items:center; padding:12px 14px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-md); margin-bottom:8px; }
+.routine-row .ico { width:44px; height:44px; display:grid; place-items:center; font-size:22px; background:var(--surface-2); border-radius:10px; border:1px solid var(--line); }
+.routine-row .t { font-weight:700; }
+.routine-row .s { color:var(--muted); font-size:12px; margin-top:2px; }
+.routine-row.off { opacity:.45; }
+.days-mini { display:inline-flex; gap:2px; margin-right:6px; }
+.days-mini i { font-style:normal; width:16px; height:16px; display:inline-grid; place-items:center; font-size:10px; border-radius:3px; background:var(--surface-3); color:var(--subtle); }
+.days-mini i.on { background:var(--lime-soft); color:var(--lime); }
+
+/* Toast + floating XP */
+.toast { position:fixed; left:50%; top:calc(72px + env(safe-area-inset-top,0)); transform:translate(-50%,-20px); z-index:80; background:var(--surface-3); border:1px solid var(--line-strong); padding:10px 16px; border-radius:10px; font-size:14px; font-weight:600; opacity:0; transition:all .25s var(--ease); pointer-events:none; max-width:calc(100% - 32px); text-align:center; }
+.toast.show { opacity:1; transform:translate(-50%,0); }
+.toast.err { border-color:rgba(255,122,146,.5); color:var(--rose); }
+.float-xp { position:fixed; z-index:90; pointer-events:none; font:800 18px/1 var(--font-en); color:var(--lime); text-shadow:0 0 12px rgba(200,255,61,.6); animation:floatUp 1s var(--ease) forwards; }
+@keyframes floatUp { from { opacity:0; transform:translate(-50%,0) scale(.8); } 20% { opacity:1; transform:translate(-50%,-10px) scale(1.1); } to { opacity:0; transform:translate(-50%,-60px) scale(1); } }
+.levelup { position:fixed; inset:0; z-index:95; display:grid; place-items:center; background:rgba(0,0,0,.72); animation:fadeIn .2s; }
+.levelup .box { text-align:center; padding:32px 28px; border:1px solid var(--lime); border-radius:var(--r-lg); background:var(--surface); box-shadow:0 0 80px rgba(200,255,61,.25); animation:pop .5s var(--ease); width:min(340px, calc(100% - 32px)); }
+.levelup .box .big { font:700 64px/1 var(--font-en); color:var(--lime); letter-spacing:-.04em; margin:10px 0; }
+.levelup .box p { color:var(--text-2); }
+@keyframes fadeIn { from { opacity:0; } }
+@keyframes pop { from { transform:scale(.7); opacity:0; } 60% { transform:scale(1.05); } }
+.spark { position:fixed; z-index:91; width:8px; height:8px; pointer-events:none; border-radius:2px; animation:spark .9s ease-out forwards; }
+@keyframes spark { to { transform:translate(var(--dx),var(--dy)) rotate(260deg); opacity:0; } }
+@media (prefers-reduced-motion:reduce) { *,*:before,*:after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+
+
+/* 모바일: 퀘스트를 첫 화면에 — 캐릭터 카드 압축, 능력치는 통계 탭에서 */
+@media (max-width:899px) {
+  .char-card { grid-template-columns:auto 1fr; padding:14px 16px; gap:10px 14px; }
+  .char-card:after { font-size:44px; }
+  .avatar { width:58px; height:58px; }
+  .avatar .lv { font-size:10px; padding:4px 6px; bottom:-5px; }
+  .char-name { font-size:18px; margin-top:4px; }
+  .char-title { font-size:10px; }
+  .char-chips { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+  .char-chips::-webkit-scrollbar { display:none; }
+  .chip { flex:0 0 auto; padding:5px 9px; }
+  .xp-bar { height:10px; }
+  body:not([data-tab="stats"]) .stat-card { display:none; }
+  .hero { margin-bottom:14px; }
+}
+.stat-item { grid-template-columns:100px 1fr 52px; }
+@media (min-width:900px) {
+  .quest-list { grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); }
+  body[data-tab="stats"] .fab, body[data-tab="logs"] .fab { display:none; }
+}
+.routine-row .days-mini { display:flex; margin:4px 0; }
+.loading { padding:60px 0; text-align:center; color:var(--muted); }
+.foot-note { color:var(--subtle); font-size:12px; margin-top:18px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="shell topbar-in">
+    <a class="brand" href="/quest/" aria-label="Runner Quest">
+      <span class="brand-mark">R</span>
+      <span>Runner Quest<small>데이터 러너즈 · 자기육성</small></span>
+    </a>
+    <nav class="top-tabs" id="topTabs" role="tablist" hidden>
+      <button role="tab" data-tab="today" aria-selected="true">오늘의 퀘스트</button>
+      <button role="tab" data-tab="stats" aria-selected="false">통계</button>
+      <button role="tab" data-tab="logs" aria-selected="false">기록</button>
+      <button role="tab" data-tab="routines" aria-selected="false">루틴 설정</button>
+    </nav>
+    <div class="top-right">
+      <a class="home-link" href="/">← 데이터 러너즈</a>
+      <button class="icon-btn" id="btnLogout" title="로그아웃" aria-label="로그아웃" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- 로그인 -->
+<section class="login-wrap" id="viewLogin" hidden>
+  <form class="login-card" id="loginForm" novalidate>
+    <span class="eyebrow">Player Login</span>
+    <h1>오늘도 레벨업하러 오셨군요</h1>
+    <p>데이터 러너즈 계정으로 로그인하세요. 퀘스트 기록은 계정 소유자만 볼 수 있도록 DB에 저장됩니다.</p>
+    <div class="field">
+      <label for="loginEmail">이메일</label>
+      <input type="email" id="loginEmail" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="loginPassword">비밀번호</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" required>
+    </div>
+    <div class="error-msg" id="loginError" hidden></div>
+    <button class="btn btn-primary" type="submit" id="loginBtn">게임 시작</button>
+  </form>
+</section>
+
+<div class="loading" id="viewLoading" hidden>세이브 파일을 불러오는 중…</div>
+
+<main id="viewApp" hidden>
+  <div class="shell">
+    <!-- 캐릭터 -->
+    <section class="hero">
+      <div class="char-card">
+        <div class="avatar" id="avatar"></div>
+        <div class="char-meta">
+          <div class="char-title" id="charTitle">Rookie Runner</div>
+          <div class="char-name" id="charName">러너</div>
+        </div>
+        <div class="xp-row">
+          <div class="xp-head"><span>LV <b class="num" id="lvNow">1</b> → <span class="num" id="lvNext">2</span></span><span class="num"><b id="xpIn">0</b> / <span id="xpNeed">100</span> XP</span></div>
+          <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+        </div>
+        <div class="char-chips">
+          <span class="chip">🔥 퍼펙트 연속 <b id="chipStreak">0</b>일</span>
+          <span class="chip">⚡ 오늘 <b id="chipToday">0</b> XP</span>
+          <span class="chip">🏆 누적 <b id="chipTotal">0</b> XP</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <h2>능력치 <span class="mono" style="font-size:11px;color:var(--subtle)">STAT</span></h2>
+        <div class="stat-list" id="statList"></div>
+      </div>
+    </section>
+
+    <!-- 오늘 -->
+    <section id="tab-today" data-panel="today">
+      <div class="sec-head">
+        <div><span class="eyebrow">Daily Quest</span><h2 id="todayTitle">오늘의 퀘스트</h2></div>
+        <div class="date-nav">
+          <button class="icon-btn" id="dPrev" aria-label="이전 날"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <div class="d" id="dLabel"></div>
+          <button class="icon-btn" id="dNext" aria-label="다음 날"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="quest-progress" id="questProgress"></div>
+      <div class="quest-list" id="questList"></div>
+      <div class="sub-head"><span>추가 기록 (비정기 퀘스트)</span><button class="btn btn-sm btn-ghost" id="btnAddInline">+ 기록 추가</button></div>
+      <div class="quest-list" id="adhocList"></div>
+    </section>
+
+    <!-- 통계 -->
+    <section id="tab-stats" data-panel="stats" hidden>
+      <div class="sec-head">
+        <div><span class="eyebrow">Analytics</span><h2>성장 리포트</h2></div>
+        <div class="toolbar">
+          <select id="periodSel" aria-label="기간"></select>
+          <button class="btn btn-sm" id="btnCsv">CSV 내보내기</button>
+        </div>
+      </div>
+      <div class="kpis" id="kpis"></div>
+      <div class="grid2">
+        <div class="panel">
+          <h3>일별 획득 XP <small>카테고리 누적</small></h3>
+          <div class="chart tall"><canvas id="chDaily"></canvas></div>
+          <div class="legend" id="lgDaily"></div>
+        </div>
+        <div class="panel">
+          <h3>퀘스트 캘린더 <small id="calMonthLabel"></small></h3>
+          <div class="cal" id="cal"></div>
+          <div class="cal-legend">달성률 0% <i style="background:var(--surface-2)"></i><i style="background:rgba(200,255,61,.25)"></i><i style="background:rgba(200,255,61,.5)"></i><i style="background:rgba(200,255,61,.75)"></i><i style="background:var(--lime)"></i> 100% · ★ 퍼펙트</div>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:14px">
+        <div class="panel">
+          <h3>루틴별 달성률 <small>예정일 대비 완료 (건너뛰기 제외)</small></h3>
+          <div style="overflow-x:auto"><table class="rt" id="routineTable"></table></div>
+        </div>
+        <div class="panel">
+          <h3>요일별 달성률</h3>
+          <div class="chart"><canvas id="chWeekday"></canvas></div>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:14px">
+        <div class="panel">
+          <h3>업적 <small id="badgeCount"></small></h3>
+          <div class="badges" id="badges"></div>
+        </div>
+        <div class="panel">
+          <h3>능력치 밸런스 <small>기간 내 카테고리별 XP</small></h3>
+          <div class="chart"><canvas id="chRadar"></canvas></div>
+        </div>
+      </div>
+      <p class="foot-note">XP 규칙: 루틴은 설정한 XP, 비정기 기록은 분당 0.4XP(최소 5) 기본값, 그날 예정된 루틴을 모두 끝내면 퍼펙트 데이 보너스 +20XP. 레벨 L→L+1 필요 XP = 100 + 50×(L−1).</p>
+    </section>
+
+    <!-- 기록 -->
+    <section id="tab-logs" data-panel="logs" hidden>
+      <div class="sec-head">
+        <div><span class="eyebrow">Quest Log</span><h2>전체 기록</h2></div>
+        <div class="toolbar">
+          <select id="logFilter" aria-label="카테고리 필터"></select>
+        </div>
+      </div>
+      <div id="logList"></div>
+    </section>
+
+    <!-- 루틴 -->
+    <section id="tab-routines" data-panel="routines" hidden>
+      <div class="sec-head">
+        <div><span class="eyebrow">Routine Setup</span><h2>정기 루틴</h2></div>
+        <button class="btn btn-sm btn-primary" id="btnNewRoutine">+ 루틴 추가</button>
+      </div>
+      <div id="routineList"></div>
+      <p class="foot-note">요일과 기간(시작·종료일)에 맞는 날에만 오늘의 퀘스트로 나타납니다. 끄거나 종료일을 지정해도 지난 기록과 통계는 그대로 남습니다.</p>
+    </section>
+  </div>
+</main>
+
+<button class="fab" id="fab" hidden aria-label="기록 추가">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>기록
+</button>
+
+<nav class="tabbar" id="tabbar" hidden role="tablist">
+  <div class="tabbar-in">
+    <button role="tab" data-tab="today" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>퀘스트</button>
+    <button role="tab" data-tab="stats" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>통계</button>
+    <button role="tab" data-tab="logs" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>기록</button>
+    <button role="tab" data-tab="routines" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>루틴</button>
+  </div>
+</nav>
+
+<!-- 기록 추가 시트 -->
+<div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+<div class="sheet" id="logSheet" role="dialog" aria-modal="true" aria-labelledby="logSheetTitle" hidden>
+  <div class="grab"></div>
+  <h3 id="logSheetTitle">퀘스트 기록 추가</h3>
+  <form id="logForm" novalidate>
+    <div class="recent" id="recentTitles"></div>
+    <div class="field">
+      <label for="lfTitle">무엇을 했나요?</label>
+      <input type="text" id="lfTitle" maxlength="80" placeholder="예: 독서, 블로그 글 작성, 러닝 5km" autocomplete="off" required>
+    </div>
+    <div class="field">
+      <span class="label">능력치</span>
+      <div class="chips" id="lfCats"></div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="lfMin">시간(분)</label>
+        <input type="number" id="lfMin" inputmode="numeric" min="0" max="1440" value="30">
+      </div>
+      <div class="field">
+        <label for="lfXp">XP</label>
+        <input type="number" id="lfXp" inputmode="numeric" min="0" max="1000" value="12">
+      </div>
+    </div>
+    <div class="chips" id="lfMinChips"></div>
+    <div class="row2">
+      <div class="field">
+        <label for="lfDate">날짜</label>
+        <input type="date" id="lfDate">
+      </div>
+      <div class="field">
+        <label for="lfNote">메모</label>
+        <input type="text" id="lfNote" maxlength="500" placeholder="선택">
+      </div>
+    </div>
+    <div class="error-msg" id="lfError" hidden></div>
+    <div class="sheet-actions">
+      <button type="button" class="btn" data-close>취소</button>
+      <button type="submit" class="btn btn-primary" id="lfSubmit">기록하고 XP 받기</button>
+    </div>
+  </form>
+</div>
+
+<!-- 루틴 편집 시트 -->
+<div class="sheet" id="routineSheet" role="dialog" aria-modal="true" aria-labelledby="routineSheetTitle" hidden>
+  <div class="grab"></div>
+  <h3 id="routineSheetTitle">루틴 편집</h3>
+  <form id="routineForm" novalidate>
+    <div class="row2" style="grid-template-columns:80px 1fr">
+      <div class="field">
+        <label for="rfEmoji">아이콘</label>
+        <input type="text" id="rfEmoji" maxlength="4" value="⭐" style="text-align:center;font-size:20px">
+      </div>
+      <div class="field">
+        <label for="rfTitle">루틴 이름</label>
+        <input type="text" id="rfTitle" maxlength="40" required>
+      </div>
+    </div>
+    <div class="field">
+      <span class="label">능력치</span>
+      <div class="chips" id="rfCats"></div>
+    </div>
+    <div class="field">
+      <span class="label">요일</span>
+      <div class="chips" id="rfDays"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="rfStart">시작 시각</label><input type="time" id="rfStart"></div>
+      <div class="field"><label for="rfEnd">종료 시각</label><input type="time" id="rfEnd"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="rfFrom">시작일</label><input type="date" id="rfFrom"></div>
+      <div class="field"><label for="rfUntil">종료일 (선택)</label><input type="date" id="rfUntil"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="rfXp">완료 XP</label><input type="number" id="rfXp" inputmode="numeric" min="0" max="1000" value="20"></div>
+      <div class="field"><label for="rfMin">기본 시간(분)</label><input type="number" id="rfMin" inputmode="numeric" min="0" max="1440" value="30"></div>
+    </div>
+    <label class="chip" style="justify-self:start;cursor:pointer"><input type="checkbox" id="rfActive" checked> 활성화</label>
+    <div class="error-msg" id="rfError" hidden></div>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn-danger" id="rfDelete">삭제</button>
+      <button type="button" class="btn" data-close>취소</button>
+      <button type="submit" class="btn btn-primary">저장</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+  var API = 'https://hote.app.n8n.cloud/webhook/dl/';
+  var TOKEN_KEY = 'dl_quest_token', NAME_KEY = 'dl_quest_name', CACHE_KEY = 'dl_quest_cache';
+  var SEASON_START = '2026-11-01';
+  var PERFECT_BONUS = 20;
+  var DOW = ['일', '월', '화', '수', '목', '금', '토'];
+
+  var CATS = {
+    study:  { name: '지력', en: 'INT', color: '#66dbff', emoji: '📘' },
+    health: { name: '체력', en: 'STR', color: '#ff9a51', emoji: '💪' },
+    work:   { name: '커리어', en: 'CAR', color: '#a896ff', emoji: '💼' },
+    teach:  { name: '영향력', en: 'CHA', color: '#ffcf4a', emoji: '🎓' },
+    life:   { name: '생활', en: 'VIT', color: '#61db9c', emoji: '🌿' }
+  };
+  var CAT_KEYS = Object.keys(CATS);
+
+  var DEFAULT_ROUTINES = [
+    { id: 'duolingo', title: '듀오링고', emoji: '🦉', category: 'study', days: [0,1,2,3,4,5,6], start: '', end: '', from: '2026-11-01', until: '', xp: 10, minutes: 15, active: true },
+    { id: 'swim', title: '수영', emoji: '🏊', category: 'health', days: [1,3,5], start: '07:00', end: '08:00', from: '2026-11-01', until: '', xp: 25, minutes: 60, active: true },
+    { id: 'teamsparta', title: '팀스파르타 근무', emoji: '💼', category: 'work', days: [1,2,3,4,5], start: '09:00', end: '18:00', from: '2026-11-01', until: '', xp: 30, minutes: 480, active: true },
+    { id: 'crossfit', title: '크로스핏', emoji: '🏋️', category: 'health', days: [1,2,3,4,5], start: '19:00', end: '20:00', from: '2026-11-01', until: '', xp: 25, minutes: 60, active: true },
+    { id: 'vt-class', title: '직업훈련교사 수업', emoji: '🎓', category: 'teach', days: [0,6], start: '09:00', end: '18:00', from: '2026-11-01', until: '2026-11-30', xp: 40, minutes: 480, active: true }
+  ];
+
+  var TITLES = [[1,'Rookie Runner','견습 러너'],[5,'Steady Runner','꾸준한 러너'],[10,'Data Runner','데이터 러너'],[15,'Senior Runner','시니어 러너'],[20,'Elite Runner','엘리트 러너'],[30,'Master Runner','마스터 러너'],[45,'Legend Runner','레전드 러너']];
+
+  var state = { token: null, name: '', routines: [], logs: [], viewDate: todayStr(), tab: 'today', pending: {}, period: '' };
+  var charts = {};
+
+  /* ---------- utils ---------- */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function todayStr() { return ymd(new Date()); }
+  function parse(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function addDays(s, n) { var d = parse(s); d.setDate(d.getDate() + n); return ymd(d); }
+  function dow(s) { return parse(s).getDay(); }
+  function fmtDate(s) { var d = parse(s); return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 (' + DOW[d.getDay()] + ')'; }
+  function uid() { return 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function fmtNum(n) { return Math.round(n).toLocaleString('ko-KR'); }
+  function hm(min) { min = Math.round(min); if (min < 60) return min + '분'; var h = Math.floor(min / 60), m = min % 60; return h + '시간' + (m ? ' ' + m + '분' : ''); }
+
+  var toastTimer;
+  function toast(msg, err) {
+    var t = $('toast'); t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.className = 'toast'; }, 2200);
+  }
+
+  function post(path, fields) {
+    var fd = new FormData();
+    Object.keys(fields).forEach(function (k) { if (fields[k] != null) fd.append(k, fields[k]); });
+    return fetch(API + path, { method: 'POST', body: fd }).then(function (res) {
+      return res.text().then(function (txt) {
+        var data = {};
+        try { data = txt ? JSON.parse(txt) : {}; } catch (e) { data = { ok: false, error: '서버 응답을 읽을 수 없습니다.' }; }
+        if (!res.ok && data.ok !== false) data = { ok: false, error: '요청이 실패했습니다 (' + res.status + ').' };
+        data._status = res.status;
+        return data;
+      });
+    }, function () { return { ok: false, error: '네트워크에 연결할 수 없습니다.', _status: 0 }; });
+  }
+  function api(action, payload) {
+    return post('quest', { token: state.token, action: action, payload: payload ? JSON.stringify(payload) : null }).then(function (d) {
+      if (d._status === 401) { logout('로그인이 만료되었습니다. 다시 로그인해 주세요.'); throw new Error(d.error); }
+      if (!d.ok) throw new Error(d.error || '요청이 실패했습니다.');
+      return d;
+    });
+  }
+
+  /* ---------- game math ---------- */
+  function levelFromXp(xp) {
+    xp = Math.max(0, Number(xp) || 0);
+    var L = 1, cum = 0;
+    while (true) { var need = 100 + 50 * (L - 1); if (cum + need > xp) return { level: L, into: xp - cum, need: need }; cum += need; L++; }
+  }
+  function titleFor(L) { var t = TITLES[0]; TITLES.forEach(function (x) { if (L >= x[0]) t = x; }); return t; }
+
+  function routineById(id) { for (var i = 0; i < state.routines.length; i++) if (state.routines[i].id === id) return state.routines[i]; return null; }
+  function scheduledOn(date) {
+    var d = dow(date);
+    return state.routines.filter(function (r) {
+      if (!r.active) return false;
+      var from = r.from || SEASON_START;
+      if (date < from) return false;
+      if (r.until && date > r.until) return false;
+      return r.days.indexOf(d) >= 0;
+    });
+  }
+  // 과거 통계용: 비활성 루틴도 기간 안이면 집계 (비활성은 오늘 이후 숨김 의미)
+  function scheduledForStats(date) {
+    var d = dow(date);
+    return state.routines.filter(function (r) {
+      var from = r.from || SEASON_START;
+      if (date < from) return false;
+      if (r.until && date > r.until) return false;
+      if (!r.active && !r.inactiveSince) return false;
+      if (!r.active && r.inactiveSince && date >= r.inactiveSince) return false;
+      return r.days.indexOf(d) >= 0;
+    });
+  }
+
+  function indexLogs() {
+    var byDate = {};
+    state.logs.forEach(function (l) { (byDate[l.log_date] = byDate[l.log_date] || []).push(l); });
+    return byDate;
+  }
+
+  function dayInfo(date, byDate) {
+    var logs = byDate[date] || [];
+    var sched = scheduledForStats(date);
+    var doneIds = {}, skipIds = {};
+    logs.forEach(function (l) { if (l.kind === 'routine') doneIds[l.routine_id] = true; else if (l.kind === 'skip') skipIds[l.routine_id] = true; });
+    var denom = 0, done = 0;
+    sched.forEach(function (r) { if (skipIds[r.id] && !doneIds[r.id]) return; denom++; if (doneIds[r.id]) done++; });
+    var xp = 0, mins = 0, catXp = {};
+    logs.forEach(function (l) { if (l.kind === 'skip') return; xp += l.xp; mins += l.minutes; catXp[l.category] = (catXp[l.category] || 0) + l.xp; });
+    var perfect = denom > 0 && done === denom;
+    if (perfect) xp += PERFECT_BONUS;
+    return { date: date, denom: denom, done: done, rate: denom ? done / denom : null, perfect: perfect, xp: xp, mins: mins, catXp: catXp, logs: logs };
+  }
+
+  function computeAll() {
+    var byDate = indexLogs();
+    var today = todayStr();
+    var first = SEASON_START;
+    state.logs.forEach(function (l) { if (l.log_date < first) first = l.log_date; });
+    var days = [], total = 0, catXp = {}, perfectCount = 0, mins = 0;
+    for (var d = first; d <= today; d = addDays(d, 1)) {
+      var info = dayInfo(d, byDate); days.push(info);
+      total += info.xp; mins += info.mins; if (info.perfect) perfectCount++;
+      Object.keys(info.catXp).forEach(function (k) { catXp[k] = (catXp[k] || 0) + info.catXp[k]; });
+    }
+    // future-dated logs (shouldn't happen) still count XP
+    Object.keys(byDate).forEach(function (d) { if (d > today) { var info = dayInfo(d, byDate); total += info.xp; } });
+    // streak: consecutive perfect days ending today, or yesterday if today not perfect yet
+    var streak = 0, i = days.length - 1;
+    if (i >= 0 && !days[i].perfect) i--;
+    for (; i >= 0; i--) { if (days[i].perfect) streak++; else if (days[i].denom === 0) continue; else break; }
+    var best = 0, run = 0;
+    days.forEach(function (x) { if (x.perfect) { run++; if (run > best) best = run; } else if (x.denom > 0) run = 0; });
+    return { byDate: byDate, days: days, total: total, catXp: catXp, perfectCount: perfectCount, streak: streak, bestStreak: best, mins: mins, today: dayInfo(today, byDate) };
+  }
+
+  /* ---------- avatar ---------- */
+  function avatarSvg(level) {
+    var tier = level >= 30 ? 4 : level >= 20 ? 3 : level >= 10 ? 2 : level >= 5 ? 1 : 0;
+    var rings = '';
+    for (var i = 0; i <= tier; i++) {
+      var r = 44 - i * 5;
+      rings += '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="' + (i === 0 ? '#c8ff3d' : 'rgba(200,255,61,' + (0.5 - i * 0.08) + ')') + '" stroke-width="' + (i === 0 ? 2.5 : 1.5) + '" stroke-dasharray="' + (i % 2 ? '3 4' : 'none') + '"/>';
+    }
+    var crown = tier >= 2 ? '<path d="M36 22l6 7 8-10 8 10 6-7-3 13H39z" fill="#ffcf4a"/>' : '';
+    return '<svg viewBox="0 0 100 100" aria-hidden="true">' + rings +
+      '<circle cx="50" cy="50" r="' + (30 - tier) + '" fill="#121516"/>' +
+      '<circle cx="50" cy="44" r="9" fill="#c8ff3d"/>' +
+      '<path d="M33 70c2-10 9-15 17-15s15 5 17 15" fill="#c8ff3d"/>' +
+      '<path d="M58 40l8-6" stroke="#0d1006" stroke-width="0"/>' + crown + '</svg>';
+  }
+
+  /* ---------- render: header ---------- */
+  var lastLevel = null;
+  function renderHeader(all) {
+    var lv = levelFromXp(all.total);
+    var t = titleFor(lv.level);
+    $('avatar').innerHTML = avatarSvg(lv.level) + '<span class="lv">LV ' + lv.level + '</span>';
+    $('charTitle').textContent = t[1] + ' · ' + t[2];
+    $('charName').textContent = state.name || '러너';
+    $('lvNow').textContent = lv.level; $('lvNext').textContent = lv.level + 1;
+    $('xpIn').textContent = fmtNum(lv.into); $('xpNeed').textContent = fmtNum(lv.need);
+    $('xpFill').style.width = Math.min(100, lv.into / lv.need * 100) + '%';
+    $('chipStreak').textContent = all.streak;
+    $('chipToday').textContent = fmtNum(all.today.xp);
+    $('chipTotal').textContent = fmtNum(all.total);
+    var max = 0; CAT_KEYS.forEach(function (k) { max = Math.max(max, all.catXp[k] || 0); });
+    $('statList').innerHTML = CAT_KEYS.map(function (k) {
+      var c = CATS[k], xp = all.catXp[k] || 0, slv = Math.floor(Math.sqrt(xp / 25)) + 1;
+      return '<div class="stat-item"><span class="nm"><i style="background:' + c.color + '"></i>' + c.en + ' ' + c.name + '</span>' +
+        '<span class="bar"><span style="width:' + (max ? xp / max * 100 : 0) + '%;background:' + c.color + '"></span></span>' +
+        '<span class="val">Lv <b>' + slv + '</b></span></div>';
+    }).join('');
+    if (lastLevel !== null && lv.level > lastLevel) levelUp(lv.level, t);
+    lastLevel = lv.level;
+  }
+
+  function levelUp(level, t) {
+    var prevT = titleFor(level - 1), next = null;
+    TITLES.forEach(function (x) { if (!next && x[0] > level) next = x; });
+    var msg = prevT[0] !== t[0] ? '새 칭호 획득: <b style="color:var(--lime)">' + esc(t[2]) + '</b>' : (next ? '다음 칭호 「' + esc(next[2]) + '」까지 Lv ' + next[0] : '최고 칭호에 도달했습니다.');
+    var el = document.createElement('div'); el.className = 'levelup';
+    el.innerHTML = '<div class="box"><span class="eyebrow">Level Up</span><div class="big">LV ' + level + '</div><p>' + msg + '</p><button class="btn btn-primary" style="margin-top:18px;width:100%">계속하기</button></div>';
+    document.body.appendChild(el);
+    burst(window.innerWidth / 2, window.innerHeight / 2, 28);
+    el.addEventListener('click', function () { el.remove(); });
+  }
+  function burst(x, y, n) {
+    var colors = ['#c8ff3d', '#66dbff', '#ffcf4a', '#ff9a51', '#a896ff', '#61db9c'];
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('span'); s.className = 'spark';
+      var a = Math.random() * Math.PI * 2, dist = 40 + Math.random() * 90;
+      s.style.left = x + 'px'; s.style.top = y + 'px'; s.style.background = colors[i % colors.length];
+      s.style.setProperty('--dx', Math.cos(a) * dist + 'px'); s.style.setProperty('--dy', Math.sin(a) * dist + 'px');
+      document.body.appendChild(s); setTimeout(function (el) { el.remove(); }.bind(null, s), 950);
+    }
+  }
+  function floatXp(el, text) {
+    var r = el.getBoundingClientRect();
+    var f = document.createElement('div'); f.className = 'float-xp'; f.textContent = text;
+    f.style.left = (r.left + r.width / 2) + 'px'; f.style.top = (r.top) + 'px';
+    document.body.appendChild(f); setTimeout(function () { f.remove(); }, 1000);
+  }
+
+  /* ---------- render: today ---------- */
+  function renderToday(all) {
+    var date = state.viewDate, today = todayStr();
+    $('dLabel').innerHTML = fmtDate(date) + '<small>' + (date === today ? '오늘' : date < today ? Math.round((parse(today) - parse(date)) / 864e5) + '일 전' : '') + '</small>';
+    $('dNext').disabled = date >= today;
+    $('todayTitle').textContent = date === today ? '오늘의 퀘스트' : fmtDate(date) + ' 퀘스트';
+    var logs = all.byDate[date] || [];
+    var sched = scheduledOn(date);
+    // 비활성 루틴이라도 그날 기록이 있으면 보여주기
+    logs.forEach(function (l) { if ((l.kind === 'routine' || l.kind === 'skip') && !sched.some(function (r) { return r.id === l.routine_id; })) { var r = routineById(l.routine_id); if (r) sched.push(r); } });
+    sched.sort(function (a, b) { return (a.start || '99') < (b.start || '99') ? -1 : 1; });
+    var info = dayInfo(date, all.byDate);
+    var pct = info.denom ? Math.round(info.done / info.denom * 100) : 0;
+    var C = 2 * Math.PI * 18;
+    $('questProgress').innerHTML = '<svg class="ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#181c1d" stroke-width="5"/><circle cx="22" cy="22" r="18" fill="none" stroke="#c8ff3d" stroke-width="5" stroke-linecap="round" stroke-dasharray="' + (C * pct / 100) + ' ' + C + '" transform="rotate(-90 22 22)"/><text x="22" y="26" text-anchor="middle" font-family="Space Grotesk" font-size="11" font-weight="700" fill="#f5f7f2">' + pct + '%</text></svg>' +
+      '<div class="txt"><b>' + info.done + ' / ' + info.denom + ' 루틴 완료' + (info.perfect ? ' · 퍼펙트 데이 ★' : '') + '</b>' +
+      (info.perfect ? '보너스 +' + PERFECT_BONUS + 'XP 획득! 이 날 총 ' + info.xp + 'XP' : info.denom ? '모두 끝내면 퍼펙트 데이 보너스 +' + PERFECT_BONUS + 'XP' : '이 날은 예정된 정기 루틴이 없어요. 비정기 기록으로 XP를 모아 보세요.') + '</div>';
+
+    var byRoutine = {};
+    logs.forEach(function (l) { if (l.kind === 'routine' || l.kind === 'skip') byRoutine[l.routine_id] = l; });
+    $('questList').innerHTML = sched.length ? sched.map(function (r) {
+      var l = byRoutine[r.id], c = CATS[r.category] || CATS.life;
+      var cls = 'quest' + (l && l.kind === 'routine' ? ' done' : '') + (l && l.kind === 'skip' ? ' skip' : '') + (state.pending[r.id + date] ? ' pending' : '');
+      var time = r.start ? r.start + (r.end ? '–' + r.end : '') : '언제든';
+      return '<div class="' + cls + '" style="--c:' + c.color + '" data-rid="' + esc(r.id) + '" role="button" tabindex="0" aria-pressed="' + (l && l.kind === 'routine') + '">' +
+        '<div class="ico">' + esc(r.emoji || c.emoji) + '</div>' +
+        '<div class="body"><div class="t">' + esc(r.title) + '</div><div class="s"><span>' + esc(time) + '</span><span>' + c.en + ' ' + c.name + '</span><span class="xp">+' + r.xp + ' XP</span></div></div>' +
+        '<button class="more" data-skip="' + esc(r.id) + '" type="button">' + (l && l.kind === 'skip' ? '건너뛰기 취소' : (l ? '' : '건너뛰기')) + '</button>' +
+        '<span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></div>';
+    }).join('') : '<div class="empty">예정된 정기 루틴이 없습니다.</div>';
+
+    var adhoc = logs.filter(function (l) { return l.kind === 'adhoc'; });
+    $('adhocList').innerHTML = adhoc.length ? adhoc.map(function (l) {
+      var c = CATS[l.category] || CATS.life;
+      return '<div class="quest adhoc done" style="--c:' + c.color + '"><div class="ico">' + c.emoji + '</div>' +
+        '<div class="body"><div class="t">' + esc(l.title) + '</div><div class="s"><span>' + c.en + ' ' + c.name + '</span>' + (l.minutes ? '<span>' + hm(l.minutes) + '</span>' : '') + '<span class="xp">+' + l.xp + ' XP</span>' + (l.note ? '<span>' + esc(l.note) + '</span>' : '') + '</div></div>' +
+        '<button class="del" data-del="' + esc(l.log_id) + '" aria-label="삭제" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
+    }).join('') : '<div class="empty">독서, 공부, 운동, 사이드 프로젝트처럼 루틴 밖에서 한 일도 기록하면 경험치가 됩니다.</div>';
+  }
+
+  function toggleRoutine(rid, el) {
+    var date = state.viewDate, key = rid + date;
+    if (state.pending[key]) return;
+    if (date > todayStr()) return;
+    var r = routineById(rid); if (!r) return;
+    var existing = state.logs.filter(function (l) { return l.log_date === date && l.routine_id === rid && (l.kind === 'routine' || l.kind === 'skip'); })[0];
+    if (existing) {
+      if (existing.kind === 'skip') return;
+      removeLog(existing, key);
+    } else {
+      var log = { log_id: uid(), log_date: date, routine_id: r.id, title: r.title, category: r.category, kind: 'routine', xp: r.xp, minutes: r.minutes || 0, note: '', created_at: new Date().toISOString() };
+      var before = computeAll();
+      addLog(log, key).then(function (ok) {
+        if (!ok) return;
+        var after = computeAll();
+        if (after.byDate[date] && dayInfo(date, after.byDate).perfect && !dayInfo(date, before.byDate).perfect) {
+          toast('퍼펙트 데이! 보너스 +' + PERFECT_BONUS + 'XP ★');
+          var rr = el.getBoundingClientRect(); burst(rr.left + rr.width / 2, rr.top, 22);
+        }
+      });
+      if (el) { floatXp(el.querySelector('.check') || el, '+' + r.xp + ' XP'); if (navigator.vibrate) navigator.vibrate(12); }
+    }
+  }
+  function skipRoutine(rid) {
+    var date = state.viewDate, key = rid + date;
+    if (state.pending[key]) return;
+    var r = routineById(rid); if (!r) return;
+    var existing = state.logs.filter(function (l) { return l.log_date === date && l.routine_id === rid && (l.kind === 'routine' || l.kind === 'skip'); })[0];
+    if (existing && existing.kind === 'skip') { removeLog(existing, key); return; }
+    if (existing) return;
+    addLog({ log_id: uid(), log_date: date, routine_id: r.id, title: r.title, category: r.category, kind: 'skip', xp: 0, minutes: 0, note: '건너뜀', created_at: new Date().toISOString() }, key);
+  }
+
+  function addLog(log, key) {
+    state.logs.push(log); if (key) state.pending[key] = true; saveCache(); renderAll();
+    return api('log_add', log).then(function () { if (key) delete state.pending[key]; renderAll(); return true; }, function (e) {
+      state.logs = state.logs.filter(function (l) { return l.log_id !== log.log_id; });
+      if (key) delete state.pending[key]; saveCache(); renderAll(); toast(e.message || '저장 실패', true); return false;
+    });
+  }
+  function removeLog(log, key) {
+    state.logs = state.logs.filter(function (l) { return l.log_id !== log.log_id; });
+    if (key) state.pending[key] = true; saveCache(); renderAll();
+    return api('log_delete', { log_id: log.log_id }).then(function () { if (key) delete state.pending[key]; renderAll(); }, function (e) {
+      state.logs.push(log); if (key) delete state.pending[key]; saveCache(); renderAll(); toast(e.message || '삭제 실패', true);
+    });
+  }
+
+  /* ---------- render: stats ---------- */
+  function periodOptions() {
+    var opts = [], today = todayStr(), d = parse(SEASON_START);
+    var end = parse(today);
+    while (d <= end) { opts.push({ v: d.getFullYear() + '-' + pad(d.getMonth() + 1), t: d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월' }); d = new Date(d.getFullYear(), d.getMonth() + 1, 1); }
+    opts.reverse(); opts.push({ v: 'all', t: '전체 기간' });
+    return opts;
+  }
+  function renderStats(all) {
+    var sel = $('periodSel'), opts = periodOptions();
+    if (!state.period) state.period = opts[0].v;
+    sel.innerHTML = opts.map(function (o) { return '<option value="' + o.v + '"' + (o.v === state.period ? ' selected' : '') + '>' + o.t + '</option>'; }).join('');
+    var days = all.days.filter(function (x) { return state.period === 'all' || x.date.slice(0, 7) === state.period; });
+    var xp = 0, mins = 0, denom = 0, done = 0, perfect = 0, active = 0, catXp = {}, logCount = 0;
+    days.forEach(function (x) {
+      xp += x.xp; mins += x.mins; denom += x.denom; done += x.done; if (x.perfect) perfect++;
+      if (x.logs.some(function (l) { return l.kind !== 'skip'; })) active++;
+      x.logs.forEach(function (l) { if (l.kind !== 'skip') logCount++; });
+      Object.keys(x.catXp).forEach(function (k) { catXp[k] = (catXp[k] || 0) + x.catXp[k]; });
+    });
+    var rate = denom ? done / denom : 0;
+    var kp = [
+      ['획득 XP', fmtNum(xp), 'XP', '일평균 ' + fmtNum(days.length ? xp / days.length : 0) + 'XP'],
+      ['루틴 달성률', Math.round(rate * 100), '%', done + ' / ' + denom + '회'],
+      ['퍼펙트 데이', perfect, '일', '최장 연속 ' + all.bestStreak + '일'],
+      ['활동 시간', fmtNum(mins / 60), '시간', hm(mins)],
+      ['활동한 날', active, '일', '기간 ' + days.length + '일 중'],
+      ['총 기록', logCount, '건', '비정기 ' + days.reduce(function (a, x) { return a + x.logs.filter(function (l) { return l.kind === 'adhoc'; }).length; }, 0) + '건']
+    ];
+    $('kpis').innerHTML = kp.map(function (k) { return '<div class="kpi"><div class="k">' + k[0] + '</div><div class="v">' + k[1] + '<small>' + k[2] + '</small></div><div class="d">' + k[3] + '</div></div>'; }).join('');
+
+    renderDailyChart(days);
+    renderCalendar(all, days);
+    renderRoutineTable(days);
+    renderWeekday(days);
+    renderRadar(catXp);
+    renderBadges(all);
+  }
+
+  function chartBase() {
+    Chart.defaults.color = '#a1aaa5';
+    Chart.defaults.font.family = '"Pretendard Variable", system-ui, sans-serif';
+    Chart.defaults.borderColor = 'rgba(255,255,255,.08)';
+  }
+  function upsertChart(id, cfg) {
+    if (!window.Chart) return;
+    if (charts[id]) { charts[id].data = cfg.data; charts[id].options = cfg.options; charts[id].update(); return; }
+    charts[id] = new Chart($(id), cfg);
+  }
+  function renderDailyChart(days) {
+    if (state.period !== 'all' && days.length) {
+      var lastD = days[days.length - 1].date, monthEnd = ymd(new Date(+state.period.slice(0, 4), +state.period.slice(5, 7), 0));
+      days = days.slice();
+      for (var d = addDays(lastD, 1); d <= monthEnd; d = addDays(d, 1)) days.push({ date: d, catXp: {}, perfect: false, future: true });
+    }
+    var labels = days.map(function (x) { var d = parse(x.date); return state.period === 'all' ? (d.getMonth() + 1) + '/' + d.getDate() : d.getDate() + ''; });
+    var ds = CAT_KEYS.map(function (k) {
+      return { label: CATS[k].name, data: days.map(function (x) { return x.catXp[k] || 0; }), backgroundColor: CATS[k].color, borderRadius: 2, stack: 's', maxBarThickness: 22 };
+    });
+    ds.push({ label: '퍼펙트 보너스', data: days.map(function (x) { return x.perfect ? PERFECT_BONUS : 0; }), backgroundColor: 'rgba(200,255,61,.35)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
+    upsertChart('chDaily', {
+      type: 'bar', data: { labels: labels, datasets: ds },
+      options: { responsive: true, maintainAspectRatio: false, animation: { duration: 300 }, interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (it) { return fmtDate(days[it[0].dataIndex].date); }, footer: function (it) { var s = 0; it.forEach(function (i) { s += i.parsed.y; }); return '합계 ' + s + 'XP'; } } } },
+        scales: { x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, autoSkipPadding: 6 } }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+    $('lgDaily').innerHTML = CAT_KEYS.map(function (k) { return '<span><i style="background:' + CATS[k].color + '"></i>' + CATS[k].en + ' ' + CATS[k].name + '</span>'; }).join('') + '<span><i style="background:rgba(200,255,61,.35)"></i>퍼펙트 보너스</span>';
+  }
+  function renderCalendar(all, days) {
+    var month = state.period === 'all' ? todayStr().slice(0, 7) : state.period;
+    var y = +month.slice(0, 4), m = +month.slice(5, 7);
+    $('calMonthLabel').textContent = y + '년 ' + m + '월';
+    var first = new Date(y, m - 1, 1), last = new Date(y, m, 0).getDate(), today = todayStr();
+    var html = DOW.map(function (d) { return '<div class="wd">' + d + '</div>'; }).join('');
+    for (var i = 0; i < first.getDay(); i++) html += '<div class="day blank"></div>';
+    for (var dd = 1; dd <= last; dd++) {
+      var ds = y + '-' + pad(m) + '-' + pad(dd);
+      var info = dayInfo(ds, all.byDate);
+      var cls = 'day', style = '';
+      if (ds > today) cls += ' future';
+      else if (info.rate != null || info.xp > 0) {
+        var r = info.rate == null ? 0.25 : info.rate;
+        var a = r >= 1 ? 1 : r >= .75 ? .75 : r >= .5 ? .5 : r > 0 ? .25 : 0;
+        if (a === 1) style = 'background:var(--lime);color:var(--lime-ink);border-color:var(--lime)';
+        else if (a > 0) style = 'background:rgba(200,255,61,' + a + ');color:var(--text)';
+      }
+      if (info.perfect) cls += ' perfect';
+      if (ds === today) cls += ' today';
+      html += '<div class="' + cls + '" style="' + style + '" data-date="' + ds + '" title="' + fmtDate(ds) + ' · ' + info.done + '/' + info.denom + ' · ' + info.xp + 'XP">' + dd + (info.xp && ds <= today ? '<span class="p">' + info.xp + '</span>' : '') + '</div>';
+    }
+    $('cal').innerHTML = html;
+  }
+  function renderRoutineTable(days) {
+    var rows = state.routines.map(function (r) {
+      var denom = 0, done = 0, skip = 0, mins = 0;
+      days.forEach(function (x) {
+        var sched = scheduledForStats(x.date).some(function (s) { return s.id === r.id; });
+        var lg = x.logs.filter(function (l) { return l.routine_id === r.id; });
+        var isDone = lg.some(function (l) { return l.kind === 'routine'; }), isSkip = lg.some(function (l) { return l.kind === 'skip'; });
+        if (isDone) { done++; mins += lg.filter(function (l) { return l.kind === 'routine'; })[0].minutes; }
+        if (sched) { if (isSkip && !isDone) skip++; else denom++; }
+      });
+      return { r: r, denom: denom, done: done, skip: skip, mins: mins, rate: denom ? Math.min(1, done / denom) : null };
+    }).filter(function (x) { return x.denom || x.done || x.skip; });
+    $('routineTable').innerHTML = '<thead><tr><th>루틴</th><th>달성률</th><th style="text-align:right">완료</th><th style="text-align:right">건너뜀</th><th style="text-align:right">시간</th></tr></thead><tbody>' +
+      (rows.length ? rows.map(function (x) {
+        var c = (CATS[x.r.category] || CATS.life).color, p = x.rate == null ? 0 : Math.round(x.rate * 100);
+        return '<tr><td>' + esc(x.r.emoji) + ' ' + esc(x.r.title) + '</td><td><div class="rate"><span class="bar"><span style="width:' + p + '%;background:' + c + '"></span></span><b>' + (x.rate == null ? '–' : p + '%') + '</b></div></td><td class="n">' + x.done + '/' + x.denom + '</td><td class="n">' + x.skip + '</td><td class="n">' + hm(x.mins) + '</td></tr>';
+      }).join('') : '<tr><td colspan="5" style="color:var(--muted)">아직 이 기간의 기록이 없습니다.</td></tr>') + '</tbody>';
+  }
+  function renderWeekday(days) {
+    var den = [0,0,0,0,0,0,0], dn = [0,0,0,0,0,0,0];
+    days.forEach(function (x) { var w = dow(x.date); den[w] += x.denom; dn[w] += x.done; });
+    var order = [1,2,3,4,5,6,0];
+    upsertChart('chWeekday', {
+      type: 'bar',
+      data: { labels: order.map(function (i) { return DOW[i]; }), datasets: [{ data: order.map(function (i) { return den[i] ? Math.round(dn[i] / den[i] * 100) : 0; }), backgroundColor: order.map(function (i) { return den[i] && dn[i] === den[i] ? '#c8ff3d' : 'rgba(200,255,61,.45)'; }), borderRadius: 4, maxBarThickness: 36 }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: { duration: 300 }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (it) { var i = order[it.dataIndex]; return it.parsed.y + '% (' + dn[i] + '/' + den[i] + ')'; } } } },
+        scales: { y: { min: 0, max: 100, ticks: { callback: function (v) { return v + '%'; }, stepSize: 25 } }, x: { grid: { display: false } } } }
+    });
+  }
+  function renderRadar(catXp) {
+    upsertChart('chRadar', {
+      type: 'radar',
+      data: { labels: CAT_KEYS.map(function (k) { return CATS[k].en + ' ' + CATS[k].name; }), datasets: [{ data: CAT_KEYS.map(function (k) { return catXp[k] || 0; }), backgroundColor: 'rgba(200,255,61,.18)', borderColor: '#c8ff3d', pointBackgroundColor: CAT_KEYS.map(function (k) { return CATS[k].color; }), pointRadius: 4, borderWidth: 2 }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: { duration: 300 }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (it) { return it.parsed.r + ' XP'; } } } },
+        scales: { r: { beginAtZero: true, angleLines: { color: 'rgba(255,255,255,.08)' }, grid: { color: 'rgba(255,255,255,.08)' }, pointLabels: { color: '#c9cfcb', font: { size: 12, weight: '600' } }, ticks: { display: false } } } }
+    });
+  }
+
+  function countRoutine(id) { return state.logs.filter(function (l) { return l.routine_id === id && l.kind === 'routine'; }).length; }
+  function maxRoutineStreak(id) {
+    var dates = {}; state.logs.forEach(function (l) { if (l.routine_id === id && l.kind === 'routine') dates[l.log_date] = 1; });
+    var best = 0, run = 0, today = todayStr();
+    for (var d = SEASON_START; d <= today; d = addDays(d, 1)) { if (dates[d]) { run++; best = Math.max(best, run); } else if (d !== today) run = 0; }
+    return best;
+  }
+  function renderBadges(all) {
+    var lv = levelFromXp(all.total).level;
+    var adhoc = state.logs.filter(function (l) { return l.kind === 'adhoc'; }).length;
+    var teachDays = countRoutine('vt-class');
+    var B = [
+      ['🚩', '첫 발걸음', '첫 퀘스트 완료', Math.min(1, state.logs.filter(function (l) { return l.kind !== 'skip'; }).length)],
+      ['⭐', '퍼펙트 데이', '퍼펙트 데이 1회', Math.min(1, all.perfectCount)],
+      ['🔥', '불타는 일주일', '퍼펙트 7일 연속', Math.min(1, all.bestStreak / 7)],
+      ['🦉', '부엉이의 친구', '듀오링고 30일 연속', Math.min(1, maxRoutineStreak('duolingo') / 30)],
+      ['🏊', '물개', '수영 12회', Math.min(1, countRoutine('swim') / 12)],
+      ['🏋️', 'WOD 정복자', '크로스핏 20회', Math.min(1, countRoutine('crossfit') / 20)],
+      ['🎓', '11월의 교단', '11월 주말 수업 9회 완주', Math.min(1, teachDays / 9)],
+      ['💼', '프로 직장인', '근무 20일', Math.min(1, countRoutine('teamsparta') / 20)],
+      ['🧭', '모험가', '비정기 기록 10건', Math.min(1, adhoc / 10)],
+      ['⏳', '100시간의 법칙', '누적 활동 100시간', Math.min(1, all.mins / 6000)],
+      ['🥉', '레벨 5', '레벨 5 달성', Math.min(1, lv / 5)],
+      ['🥇', '데이터 러너', '레벨 10 달성', Math.min(1, lv / 10)]
+    ];
+    var on = B.filter(function (b) { return b[3] >= 1; }).length;
+    $('badgeCount').textContent = on + ' / ' + B.length;
+    $('badges').innerHTML = B.map(function (b) {
+      return '<div class="badge' + (b[3] >= 1 ? ' on' : '') + '"><span class="e">' + b[0] + '</span><span class="n">' + b[1] + '</span><span class="h">' + b[2] + '</span><span class="pg"><span style="width:' + Math.round(b[3] * 100) + '%"></span></span></div>';
+    }).join('');
+  }
+
+  /* ---------- render: logs ---------- */
+  function renderLogs(all) {
+    var f = $('logFilter');
+    if (!f.options.length) {
+      f.innerHTML = '<option value="">전체 카테고리</option>' + CAT_KEYS.map(function (k) { return '<option value="' + k + '">' + CATS[k].en + ' ' + CATS[k].name + '</option>'; }).join('') + '<option value="_adhoc">비정기 기록만</option>';
+    }
+    var fv = f.value;
+    var dates = Object.keys(all.byDate).sort().reverse();
+    var html = dates.map(function (d) {
+      var logs = all.byDate[d].filter(function (l) { return !fv || (fv === '_adhoc' ? l.kind === 'adhoc' : l.category === fv); });
+      if (!logs.length) return '';
+      var info = dayInfo(d, all.byDate);
+      return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
+        var c = CATS[l.category] || CATS.life, r = routineById(l.routine_id);
+        var e = l.kind === 'adhoc' ? c.emoji : (r && r.emoji) || c.emoji;
+        var tag = l.kind === 'routine' ? '루틴' : l.kind === 'skip' ? '건너뜀' : '비정기';
+        return '<div class="log-item"><span class="e">' + esc(e) + '</span><div class="m">' + esc(l.title) + '<span class="tag">' + tag + '</span><small>' + c.en + ' ' + c.name + (l.minutes ? ' · ' + hm(l.minutes) : '') + (l.note && l.kind !== 'skip' ? ' · ' + esc(l.note) : '') + '</small></div>' +
+          '<span class="x" style="color:' + c.color + '">' + (l.kind === 'skip' ? '–' : '+' + l.xp) + '</span>' +
+          '<button class="del btn-ghost" style="border:0;background:none;color:var(--subtle);padding:6px" data-del="' + esc(l.log_id) + '" aria-label="삭제"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
+      }).join('') + '</div>';
+    }).join('');
+    $('logList').innerHTML = html || '<div class="empty">아직 기록이 없습니다. 오늘의 퀘스트를 체크해 보세요.</div>';
+  }
+
+  /* ---------- render: routines ---------- */
+  function renderRoutines() {
+    $('routineList').innerHTML = state.routines.map(function (r) {
+      var c = CATS[r.category] || CATS.life;
+      var dm = '<span class="days-mini">' + [1,2,3,4,5,6,0].map(function (i) { return '<i class="' + (r.days.indexOf(i) >= 0 ? 'on' : '') + '">' + DOW[i] + '</i>'; }).join('') + '</span>';
+      var period = (r.from || SEASON_START) + (r.until ? ' ~ ' + r.until : ' ~');
+      return '<div class="routine-row' + (r.active ? '' : ' off') + '"><div class="ico">' + esc(r.emoji) + '</div><div><div class="t">' + esc(r.title) + ' <span class="tag" style="color:' + c.color + '">' + c.en + '</span></div>' +
+        '<div class="s">' + dm + (r.start ? r.start + '–' + (r.end || '') + ' · ' : '') + r.xp + 'XP · ' + period + (r.active ? '' : ' · 꺼짐') + '</div></div>' +
+        '<button class="btn btn-sm" data-edit="' + esc(r.id) + '">편집</button></div>';
+    }).join('') || '<div class="empty">루틴이 없습니다.</div>';
+  }
+
+  function renderAll() {
+    var all = computeAll();
+    renderHeader(all);
+    if (state.tab === 'today') renderToday(all);
+    if (state.tab === 'stats') renderStats(all);
+    if (state.tab === 'logs') renderLogs(all);
+    if (state.tab === 'routines') renderRoutines();
+  }
+
+  /* ---------- tabs ---------- */
+  function setTab(tab) {
+    state.tab = tab; document.body.setAttribute('data-tab', tab);
+    document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== tab; });
+    document.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
+    $('fab').hidden = tab === 'routines';
+    try { history.replaceState(null, '', '#' + tab); } catch (e) {}
+    renderAll();
+    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  }
+  document.querySelectorAll('[data-tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.getAttribute('data-tab')); }); });
+
+  /* ---------- sheets ---------- */
+  var openSheetEl = null;
+  function openSheet(el) {
+    openSheetEl = el; $('sheetBackdrop').hidden = false; el.hidden = false;
+    requestAnimationFrame(function () { $('sheetBackdrop').classList.add('open'); el.classList.add('open'); });
+  }
+  function closeSheet() {
+    if (!openSheetEl) return; var el = openSheetEl; openSheetEl = null;
+    $('sheetBackdrop').classList.remove('open'); el.classList.remove('open');
+    setTimeout(function () { el.hidden = true; $('sheetBackdrop').hidden = true; }, 260);
+  }
+  $('sheetBackdrop').addEventListener('click', closeSheet);
+  document.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', closeSheet); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(); });
+
+  // log sheet
+  var lfCat = 'study', lfXpTouched = false;
+  function catChips(container, current, onPick) {
+    container.innerHTML = CAT_KEYS.map(function (k) { return '<button type="button" style="--c:' + CATS[k].color + '" data-cat="' + k + '" aria-pressed="' + (k === current) + '">' + CATS[k].emoji + ' ' + CATS[k].name + '</button>'; }).join('');
+    container.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () {
+      container.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); b.setAttribute('aria-pressed', 'true'); onPick(b.getAttribute('data-cat'));
+    }); });
+  }
+  function autoXp() { if (!lfXpTouched) $('lfXp').value = Math.max(5, Math.round((+$('lfMin').value || 0) * 0.4)); }
+  function openLogSheet() {
+    lfXpTouched = false; $('lfTitle').value = ''; $('lfNote').value = ''; $('lfMin').value = 30; autoXp();
+    $('lfDate').value = state.viewDate; $('lfDate').max = todayStr(); $('lfError').hidden = true;
+    catChips($('lfCats'), lfCat, function (k) { lfCat = k; });
+    $('lfMinChips').innerHTML = [15, 30, 60, 90, 120].map(function (m) { return '<button type="button" data-min="' + m + '">' + hm(m) + '</button>'; }).join('');
+    $('lfMinChips').querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { $('lfMin').value = b.getAttribute('data-min'); autoXp(); }); });
+    var seen = {}, recent = [];
+    state.logs.slice().reverse().forEach(function (l) { if (l.kind === 'adhoc' && !seen[l.title] && recent.length < 8) { seen[l.title] = 1; recent.push(l); } });
+    $('recentTitles').innerHTML = recent.map(function (l, i) { return '<button type="button" data-i="' + i + '">↺ ' + esc(l.title) + '</button>'; }).join('');
+    $('recentTitles').querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () {
+      var l = recent[+b.getAttribute('data-i')]; $('lfTitle').value = l.title; $('lfMin').value = l.minutes || 30; lfXpTouched = false; autoXp(); lfCat = l.category;
+      catChips($('lfCats'), lfCat, function (k) { lfCat = k; });
+    }); });
+    openSheet($('logSheet'));
+    setTimeout(function () { if (window.innerWidth >= 640) $('lfTitle').focus(); }, 250);
+  }
+  $('lfMin').addEventListener('input', autoXp);
+  $('lfXp').addEventListener('input', function () { lfXpTouched = true; });
+  $('fab').addEventListener('click', openLogSheet);
+  $('btnAddInline').addEventListener('click', openLogSheet);
+  $('logForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var title = $('lfTitle').value.trim(), date = $('lfDate').value || state.viewDate;
+    if (!title) { $('lfError').textContent = '무엇을 했는지 적어 주세요.'; $('lfError').hidden = false; return; }
+    if (date > todayStr()) { $('lfError').textContent = '미래 날짜에는 기록할 수 없어요.'; $('lfError').hidden = false; return; }
+    var log = { log_id: uid(), log_date: date, routine_id: '', title: title, category: lfCat, kind: 'adhoc', xp: Math.max(0, Math.min(1000, +$('lfXp').value || 0)), minutes: Math.max(0, Math.min(1440, +$('lfMin').value || 0)), note: $('lfNote').value.trim(), created_at: new Date().toISOString() };
+    closeSheet();
+    floatXp($('fab'), '+' + log.xp + ' XP');
+    addLog(log).then(function (ok) { if (ok) toast('기록 완료! +' + log.xp + 'XP'); });
+  });
+
+  // routine sheet
+  var editingId = null, rfCat = 'study';
+  function openRoutineSheet(id) {
+    editingId = id; var r = id ? routineById(id) : { title: '', emoji: '⭐', category: 'study', days: [1,2,3,4,5], start: '', end: '', from: todayStr() < SEASON_START ? SEASON_START : todayStr(), until: '', xp: 20, minutes: 30, active: true };
+    $('routineSheetTitle').textContent = id ? '루틴 편집' : '새 루틴';
+    $('rfTitle').value = r.title; $('rfEmoji').value = r.emoji; $('rfStart').value = r.start || ''; $('rfEnd').value = r.end || '';
+    $('rfFrom').value = r.from || SEASON_START; $('rfUntil').value = r.until || ''; $('rfXp').value = r.xp; $('rfMin').value = r.minutes || 0; $('rfActive').checked = r.active !== false;
+    rfCat = r.category; catChips($('rfCats'), rfCat, function (k) { rfCat = k; });
+    $('rfDays').innerHTML = [1,2,3,4,5,6,0].map(function (i) { return '<label><input type="checkbox" value="' + i + '"' + (r.days.indexOf(i) >= 0 ? ' checked' : '') + '><span>' + DOW[i] + '</span></label>'; }).join('');
+    $('rfDelete').hidden = !id; $('rfError').hidden = true;
+    openSheet($('routineSheet'));
+  }
+  function saveRoutines(msg) {
+    saveCache(); renderAll();
+    return api('config_save', { key: 'routines', value: state.routines }).then(function () { if (msg) toast(msg); }, function (e) { toast(e.message || '루틴 저장 실패', true); });
+  }
+  $('btnNewRoutine').addEventListener('click', function () { openRoutineSheet(null); });
+  $('routineList').addEventListener('click', function (e) { var b = e.target.closest('[data-edit]'); if (b) openRoutineSheet(b.getAttribute('data-edit')); });
+  $('rfStart').addEventListener('change', function () {
+    if ($('rfStart').value && $('rfEnd').value) { var a = $('rfStart').value.split(':'), b = $('rfEnd').value.split(':'); var m = (+b[0] * 60 + +b[1]) - (+a[0] * 60 + +a[1]); if (m > 0) $('rfMin').value = m; }
+  });
+  $('rfEnd').addEventListener('change', function () { $('rfStart').dispatchEvent(new Event('change')); });
+  $('routineForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var title = $('rfTitle').value.trim();
+    var days = Array.prototype.map.call($('rfDays').querySelectorAll('input:checked'), function (i) { return +i.value; });
+    if (!title) { $('rfError').textContent = '루틴 이름을 입력해 주세요.'; $('rfError').hidden = false; return; }
+    if (!days.length) { $('rfError').textContent = '요일을 하나 이상 선택해 주세요.'; $('rfError').hidden = false; return; }
+    var data = { title: title, emoji: $('rfEmoji').value.trim() || '⭐', category: rfCat, days: days.sort(), start: $('rfStart').value, end: $('rfEnd').value, from: $('rfFrom').value || SEASON_START, until: $('rfUntil').value, xp: Math.max(0, Math.min(1000, +$('rfXp').value || 0)), minutes: Math.max(0, Math.min(1440, +$('rfMin').value || 0)), active: $('rfActive').checked };
+    if (editingId) {
+      var r = routineById(editingId);
+      if (r.active && !data.active) data.inactiveSince = todayStr();
+      if (data.active) data.inactiveSince = '';
+      Object.assign(r, data);
+    } else {
+      data.id = 'r' + Date.now().toString(36); state.routines.push(data);
+    }
+    closeSheet(); saveRoutines('루틴을 저장했습니다.');
+  });
+  $('rfDelete').addEventListener('click', function () {
+    if (!editingId) return;
+    var r = routineById(editingId);
+    if (!confirm('"' + r.title + '" 루틴을 삭제할까요? 지난 체크 기록은 남지만 루틴별 통계에서는 빠집니다. 잠시 쉬려면 삭제 대신 "활성화"를 끄세요.')) return;
+    state.routines = state.routines.filter(function (x) { return x.id !== editingId; });
+    closeSheet(); saveRoutines('루틴을 삭제했습니다.');
+  });
+
+  /* ---------- events ---------- */
+  $('questList').addEventListener('click', function (e) {
+    var sk = e.target.closest('[data-skip]');
+    if (sk) { e.stopPropagation(); if (sk.textContent) skipRoutine(sk.getAttribute('data-skip')); return; }
+    var q = e.target.closest('.quest[data-rid]'); if (q) toggleRoutine(q.getAttribute('data-rid'), q);
+  });
+  $('questList').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return; var q = e.target.closest('.quest[data-rid]'); if (q) { e.preventDefault(); toggleRoutine(q.getAttribute('data-rid'), q); }
+  });
+  function onDelete(e) {
+    var b = e.target.closest('[data-del]'); if (!b) return;
+    var id = b.getAttribute('data-del'), log = state.logs.filter(function (l) { return l.log_id === id; })[0];
+    if (log && confirm('"' + log.title + '" 기록을 삭제할까요?')) removeLog(log);
+  }
+  $('adhocList').addEventListener('click', onDelete);
+  $('logList').addEventListener('click', onDelete);
+  $('logFilter').addEventListener('change', renderAll);
+  $('periodSel').addEventListener('change', function () { state.period = $('periodSel').value; renderAll(); });
+  $('cal').addEventListener('click', function (e) { var d = e.target.closest('.day[data-date]'); if (d && !d.classList.contains('future')) { state.viewDate = d.getAttribute('data-date'); setTab('today'); } });
+  $('dPrev').addEventListener('click', function () { state.viewDate = addDays(state.viewDate, -1); renderAll(); });
+  $('dNext').addEventListener('click', function () { if (state.viewDate < todayStr()) { state.viewDate = addDays(state.viewDate, 1); renderAll(); } });
+  $('btnCsv').addEventListener('click', function () {
+    var cols = ['log_date', 'weekday', 'kind', 'routine_id', 'title', 'category', 'stat', 'xp', 'minutes', 'note', 'created_at'];
+    var rows = state.logs.slice().sort(function (a, b) { return a.log_date < b.log_date ? -1 : 1; }).map(function (l) {
+      return [l.log_date, DOW[dow(l.log_date)], l.kind, l.routine_id, l.title, l.category, (CATS[l.category] || {}).en || '', l.xp, l.minutes, l.note, l.created_at];
+    });
+    var csv = '﻿' + [cols].concat(rows).map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = 'runner-quest-' + todayStr() + '.csv'; a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  });
+  // 자정 넘김·앱 복귀 시 날짜 갱신 + 최신 데이터 동기화
+  var lastToday = todayStr();
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible' || !state.token) return;
+    var t = todayStr(); if (t !== lastToday) { if (state.viewDate === lastToday) state.viewDate = t; lastToday = t; }
+    sync(true);
+  });
+
+  /* ---------- auth & sync ---------- */
+  function normLog(l) {
+    l.xp = Number(l.xp) || 0; l.minutes = Number(l.minutes) || 0;
+    l.kind = l.kind === 'routine' || l.kind === 'skip' ? l.kind : 'adhoc';
+    if (!CATS[l.category]) l.category = 'life';
+    return l;
+  }
+  function saveCache() { store(CACHE_KEY, JSON.stringify({ routines: state.routines, logs: state.logs })); }
+  function showView(v) {
+    $('viewLogin').hidden = v !== 'login'; $('viewLoading').hidden = v !== 'loading'; $('viewApp').hidden = v !== 'app';
+    var app = v === 'app';
+    $('tabbar').hidden = !app; $('topTabs').hidden = !app; $('btnLogout').hidden = !app; $('fab').hidden = !app || state.tab === 'routines';
+  }
+  function sync(silent) {
+    return api('load').then(function (d) {
+      state.name = d.name || state.name; store(NAME_KEY, state.name);
+      var cfg = d.config || {};
+      var needSeed = !Array.isArray(cfg.routines);
+      state.routines = needSeed ? JSON.parse(JSON.stringify(DEFAULT_ROUTINES)) : cfg.routines;
+      var pendingLogs = state.logs.filter(function (l) { return Object.keys(state.pending).length && !d.logs.some(function (x) { return x.log_id === l.log_id; }); });
+      state.logs = (d.logs || []).map(normLog).concat(Object.keys(state.pending).length ? pendingLogs : []);
+      saveCache(); showView('app'); renderAll();
+      if (needSeed) api('config_save', { key: 'routines', value: state.routines }).catch(function () {});
+    }, function (e) { if (!silent && state.token) { showView('app'); renderAll(); toast(e.message || '동기화 실패 · 저장된 데이터로 표시합니다.', true); } });
+  }
+  function enter() {
+    var cache = null; try { cache = JSON.parse(load(CACHE_KEY) || 'null'); } catch (e) {}
+    if (cache && cache.routines) { state.routines = cache.routines; state.logs = (cache.logs || []).map(normLog); showView('app'); renderAll(); sync(true); }
+    else { showView('loading'); sync(false); }
+  }
+  function logout(msg) {
+    state.token = null; store(TOKEN_KEY, null); store(CACHE_KEY, null); state.logs = []; state.routines = []; lastLevel = null;
+    showView('login'); if (msg) { $('loginError').textContent = msg; $('loginError').hidden = false; }
+  }
+  $('btnLogout').addEventListener('click', function () { if (confirm('로그아웃할까요?')) logout(); });
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = $('loginEmail').value.trim(), pw = $('loginPassword').value;
+    $('loginError').hidden = true;
+    if (!email || !pw) { $('loginError').textContent = '이메일과 비밀번호를 입력해 주세요.'; $('loginError').hidden = false; return; }
+    $('loginBtn').disabled = true; $('loginBtn').textContent = '확인 중…';
+    post('login', { email: email, password: pw }).then(function (d) {
+      $('loginBtn').disabled = false; $('loginBtn').textContent = '게임 시작';
+      if (d.ok && d.token) { state.token = d.token; state.name = d.name || email; store(TOKEN_KEY, d.token); store(NAME_KEY, state.name); $('loginPassword').value = ''; enter(); }
+      else { $('loginError').textContent = d.error || '이메일 또는 비밀번호를 확인해 주세요.'; $('loginError').hidden = false; }
+    });
+  });
+
+  /* ---------- boot ---------- */
+  if (window.Chart) chartBase();
+  var initialTab = (location.hash || '').slice(1);
+  if (['today', 'stats', 'logs', 'routines'].indexOf(initialTab) >= 0) state.tab = initialTab;
+  document.body.setAttribute('data-tab', state.tab);
+  document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== state.tab; });
+  document.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === state.tab ? 'true' : 'false'); });
+  state.token = load(TOKEN_KEY); state.name = load(NAME_KEY) || '';
+  if (state.token) enter(); else showView('login');
+
+  // 미리보기/테스트용 훅
+  window.__quest = { state: state, renderAll: renderAll, computeAll: computeAll, showView: showView, DEFAULT_ROUTINES: DEFAULT_ROUTINES };
+})();
+</script>
+</body>
+</html>
