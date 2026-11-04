@@ -419,7 +419,11 @@ table.rt tr:last-child td { border-bottom:0; }
 .hp-head { display:flex; justify-content:space-between; font:600 12px/1 var(--font-en); color:var(--muted); margin-bottom:6px; }
 .hp-head b { color:var(--rose); }
 .hp-bar { height:12px; border-radius:3px; background:var(--surface-3); border:1px solid var(--line); overflow:hidden; position:relative; }
-.hp-fill { height:100%; background:linear-gradient(90deg,#ff4d6d,var(--rose)); transition:width .5s var(--ease); }
+.hp-fill { height:100%; background:linear-gradient(90deg,#ff4d6d,var(--rose)); transition:width .5s var(--ease); position:relative; z-index:1; }
+.hp-lost { position:absolute; top:0; bottom:0; right:0; background:repeating-linear-gradient(135deg,rgba(255,122,146,.22) 0 4px,rgba(255,122,146,.06) 4px 8px); }
+.hp-note { margin-top:8px; font-size:12.5px; color:var(--text-2); }
+.hp-note b { color:var(--rose); }
+.hp-note .hit { color:var(--lime); font-weight:700; }
 .hp-bar:after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent 0 calc(var(--seg) - 2px),rgba(5,6,7,.9) calc(var(--seg) - 2px) var(--seg)); }
 .boss-foot { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:12px; font-size:13px; color:var(--muted); }
 .boss-foot .rw { color:var(--amber); font-weight:700; font-family:var(--font-en); }
@@ -1429,6 +1433,13 @@ table.rt tr:last-child td { border-bottom:0; }
     }).join('') : '<div class="empty">독서, 공부, 운동, 사이드 프로젝트처럼 루틴 밖에서 한 일도 기록하면 경험치가 됩니다.</div>';
   }
 
+  function bossNote(b, left) {
+    var hit = Math.min(b.progress, b.target);
+    var what = b.type === 'routine' ? esc((routineById(b.rid) || {}).title || '루틴') + ' ' + fmtNum(b.progress) + '회' : b.type === 'perfect' ? '퍼펙트 데이 ' + fmtNum(b.progress) + '일' : '주간 XP ' + fmtNum(b.progress);
+    if (b.defeated) return '⚔️ ' + what + '로 격파했어요!';
+    if (!hit) return '아직 공격 전 · ' + (b.type === 'routine' ? '루틴을 체크할 때마다' : b.type === 'perfect' ? '퍼펙트 데이마다' : 'XP를 얻을 때마다') + ' HP가 깎여요';
+    return '⚔️ ' + what + ' → <span class="hit">HP -' + fmtNum(hit) + '</span> · ' + (b.over ? '남은 HP <b>' + fmtNum(left) + '</b>' : '<b>' + fmtNum(left) + b.unit + '</b> 더 하면 격파');
+  }
   function renderBoss(all, date) {
     var ws = weekStart(date), today = todayStr();
     var b = null; all.bosses.forEach(function (x) { if (x.ws === ws) b = x; });
@@ -1442,7 +1453,8 @@ table.rt tr:last-child td { border-bottom:0; }
       '<div class="boss-top"><span class="eyebrow">Weekly Boss</span><small>' + md(b.ws) + '–' + md(b.end) + ' · ' + when + '</small></div>' +
       (b.defeated ? '<span class="stamp">CLEAR</span>' : '') +
       '<div class="boss-main"><div class="boss-ico">' + b.emoji + '</div><div><div class="boss-name">' + esc(b.name) + '</div><div class="boss-goal">' + esc(b.goal) + (b.custom ? '' : ' <span class="tag">자동</span>') + '</div>' +
-      '<div class="hp"><div class="hp-head"><span>남은 HP</span><span><b>' + fmtNum(left) + '</b> / ' + fmtNum(b.target) + '</span></div><div class="hp-bar" style="--seg:' + (100 / seg) + '%"><div class="hp-fill" style="width:' + (left / b.target * 100) + '%"></div></div></div></div></div>' +
+      '<div class="hp"><div class="hp-head"><span>보스 HP</span><span><b>' + fmtNum(left) + '</b> / ' + fmtNum(b.target) + ' 남음</span></div><div class="hp-bar" style="--seg:' + (100 / seg) + '%"><div class="hp-fill" style="width:' + (left / b.target * 100) + '%"></div><div class="hp-lost" style="width:' + (100 - left / b.target * 100) + '%"></div></div>' +
+      '<div class="hp-note">' + bossNote(b, left) + '</div></div></div></div>' +
       '<div class="boss-foot"><span>' + (b.defeated ? '보상 획득 <span class="rw">+' + b.reward + ' XP</span>' : b.over ? '이번 주는 놓쳤어요. 다음 보스에 도전하세요.' : '격파 보상 <span class="rw">+' + b.reward + ' XP</span> · ' + fmtNum(b.progress) + b.unit + ' 진행') + '</span>' +
       (cur && !b.defeated ? '<button class="btn btn-sm btn-ghost" type="button" id="btnBossEdit">보스 변경</button>' : '') + '</div></div>';
     var be = $('btnBossEdit'); if (be) be.addEventListener('click', function () { openBossSheet(b); });
