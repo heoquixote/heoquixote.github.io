@@ -172,6 +172,12 @@ input:focus,select:focus,textarea:focus { outline:none; border-color:var(--lime)
 .color-row button[aria-pressed="true"] { border-color:var(--text); box-shadow:0 0 0 3px rgba(255,255,255,.12); }
 .pf-preview { display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface-2); }
 .pf-preview .avatar { width:56px; height:56px; cursor:default; }
+.photo-row { display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-sm); background:var(--surface-2); }
+.photo-row .ph { width:52px; height:52px; border-radius:50%; flex:none; background:#121516 center/cover no-repeat; border:2px solid var(--line); display:grid; place-items:center; color:var(--muted); font-size:22px; }
+.photo-row .txt { flex:1; min-width:0; }
+.photo-row .txt b { display:block; font-size:14px; }
+.photo-row .txt small { color:var(--muted); font-size:12px; }
+.photo-row .acts { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
 .xp-row { grid-column:1 / -1; display:grid; gap:8px; }
 .xp-head { display:flex; justify-content:space-between; align-items:baseline; font-size:12px; color:var(--muted); }
 .xp-head b { color:var(--text); font-size:14px; }
@@ -902,7 +908,8 @@ table.rt tr:last-child td { border-bottom:0; }
       <div class="field"><label for="pfClass">클래스</label><input type="text" id="pfClass" maxlength="16" list="pfClassList" placeholder="예: 데이터 강사"><datalist id="pfClassList"><option value="데이터 러너"><option value="데이터 강사"><option value="AI 엔지니어"><option value="크로스피터"><option value="얼리버드"><option value="갓생러"></datalist></div>
     </div>
     <div class="field"><label for="pfMotto">한 줄 다짐</label><input type="text" id="pfMotto" maxlength="60" placeholder="예: 꾸준함이 재능을 이긴다"></div>
-    <div class="field"><span class="label">아바타</span><div class="av-grid" id="pfAvGrid"></div></div>
+    <div class="field"><span class="label">프로필 사진</span><div class="photo-row"><div class="ph" id="pfPhotoThumb">📷</div><div class="txt"><b id="pfPhotoTitle">사진 없음</b><small id="pfPhotoHint">사진을 올리면 아바타 대신 표시되고 친구 랭킹에도 보여요</small></div><div class="acts"><button type="button" class="btn btn-sm" id="btnPhotoPick">사진 선택</button><button type="button" class="btn btn-sm" id="btnPhotoRemove" hidden>삭제</button></div></div><input type="file" id="pfPhotoInput" accept="image/*" hidden></div>
+    <div class="field"><span class="label">아바타 (사진이 없을 때)</span><div class="av-grid" id="pfAvGrid"></div></div>
     <div class="field"><span class="label">아바타 색</span><div class="color-row" id="pfColors"></div></div>
     <div class="field" id="pfPasskeyField" hidden><span class="label">빠른 로그인</span><div class="pk-row"><div><b id="pfPkTitle">Face ID 로그인</b><small id="pfPkState">이 기기에 등록되지 않았어요</small></div><button type="button" class="btn btn-sm" id="btnPkRegister">등록하기</button></div></div>
     <div class="field"><label for="pfGoal">이번 달 목표 (선택)</label><input type="text" id="pfGoal" maxlength="60" placeholder="예: 크로스핏 20회, 골드 랭크"></div>
@@ -1042,7 +1049,8 @@ table.rt tr:last-child td { border-bottom:0; }
   }
   var TITLES = [[1,'Rookie Runner','견습 러너'],[5,'Steady Runner','꾸준한 러너'],[10,'Data Runner','데이터 러너'],[15,'Senior Runner','시니어 러너'],[20,'Elite Runner','엘리트 러너'],[30,'Master Runner','마스터 러너'],[45,'Legend Runner','레전드 러너']];
 
-  var state = { token: null, name: '', routines: [], logs: [], profile: {}, retros: {}, retroMonth: '', viewDate: todayStr(), tab: 'today', pending: {}, period: '' };
+  var state = { token: null, name: '', routines: [], logs: [], profile: {}, retros: {}, retroMonth: '', viewDate: todayStr(), tab: 'today', pending: {}, period: '', photo: '' };
+  try { var _ph = localStorage.getItem('dl_quest_photo'); if (_ph && /^data:image\//.test(_ph)) state.photo = _ph; } catch (e) {}
   var charts = {};
 
   /* ---------- utils ---------- */
@@ -1281,8 +1289,11 @@ table.rt tr:last-child td { border-bottom:0; }
   var AV_COLORS = ['#c8ff3d', '#66dbff', '#a896ff', '#ff9a51', '#ffcf4a', '#ff7a92'];
   function me() { return state.profile.me || {}; }
   function displayName() { return me().nick || state.name || '러너'; }
+  var avSeq = 0, PHOTO_KEY = 'dl_quest_photo';
+  function okPhoto(u) { return typeof u === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(u) && u.length < 60000; }
   function avatarSvg(level, pf) {
-    pf = pf || me();
+    var mine = !pf; pf = pf || me();
+    var photo = pf.photo !== undefined ? pf.photo : (mine ? state.photo : '');
     var col = AV_COLORS.indexOf(pf.color) >= 0 ? pf.color : '#c8ff3d';
     var tier = level >= 30 ? 4 : level >= 20 ? 3 : level >= 10 ? 2 : level >= 5 ? 1 : 0;
     var rings = '';
@@ -1293,7 +1304,8 @@ table.rt tr:last-child td { border-bottom:0; }
     var crown = tier >= 2 ? '<path d="M36 22l6 7 8-10 8 10 6-7-3 13H39z" fill="#ffcf4a"/>' : '';
     return '<svg viewBox="0 0 100 100" aria-hidden="true">' + rings +
       '<circle cx="50" cy="50" r="' + (30 - tier) + '" fill="#121516"/>' +
-      (pf.avatar ? '<text x="50" y="52" text-anchor="middle" dominant-baseline="middle" font-size="' + (34 - tier * 2) + '">' + esc(pf.avatar) + '</text>' :
+      (okPhoto(photo) ? (function () { var id = 'avc' + (++avSeq), rr = 30 - tier; return '<clipPath id="' + id + '"><circle cx="50" cy="50" r="' + rr + '"/></clipPath><image href="' + photo + '" x="' + (50 - rr) + '" y="' + (50 - rr) + '" width="' + rr * 2 + '" height="' + rr * 2 + '" preserveAspectRatio="xMidYMid slice" clip-path="url(#' + id + ')"/>'; })() :
+      pf.avatar ? '<text x="50" y="52" text-anchor="middle" dominant-baseline="middle" font-size="' + (34 - tier * 2) + '">' + esc(pf.avatar) + '</text>' :
       '<circle cx="50" cy="44" r="9" fill="' + col + '"/>' +
       '<path d="M33 70c2-10 9-15 17-15s15 5 17 15" fill="' + col + '"/>') +
       '<path d="M58 40l8-6" stroke="#0d1006" stroke-width="0"/>' + crown + '</svg>';
@@ -2020,11 +2032,15 @@ table.rt tr:last-child td { border-bottom:0; }
     $('pfAvatar').innerHTML = avatarSvg(lv, pfDraft);
     $('pfTitle').textContent = (pfDraft.cls || titleFor(lv)[2]);
     $('pfName').textContent = pfDraft.nick || state.name || '러너';
+    var ph = pfDraft.photo || '';
+    $('pfPhotoThumb').style.backgroundImage = ph ? 'url(' + ph + ')' : ''; $('pfPhotoThumb').textContent = ph ? '' : '📷';
+    $('pfPhotoTitle').textContent = ph ? (ph === (state.photo || '') ? '사진 사용 중' : '새 사진 · 저장하면 적용') : (state.photo ? '사진 삭제 · 저장하면 적용' : '사진 없음');
+    $('btnPhotoPick').textContent = ph ? '변경' : '사진 선택'; $('btnPhotoRemove').hidden = !ph;
     $('pfAvGrid').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-av') === (pfDraft.avatar || '') ? 'true' : 'false'); });
     $('pfColors').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-c') === (pfDraft.color || AV_COLORS[0]) ? 'true' : 'false'); });
   }
   function openProfileSheet() {
-    pfDraft = JSON.parse(JSON.stringify(me()));
+    pfDraft = JSON.parse(JSON.stringify(me())); pfDraft.photo = state.photo || '';
     $('pfNick').value = pfDraft.nick || ''; $('pfNick').placeholder = state.name || '로그인 이름 사용';
     $('pfClass').value = pfDraft.cls || ''; $('pfMotto').value = pfDraft.motto || ''; $('pfGoal').value = pfDraft.goal || '';
     $('pfAvGrid').innerHTML = AVATARS.map(function (a) { return '<button type="button" data-av="' + a + '"' + (a ? '' : ' class="def"') + ' aria-label="' + (a || '기본 캐릭터') + '">' + (a || '기본') + '</button>'; }).join('');
@@ -2042,7 +2058,46 @@ table.rt tr:last-child td { border-bottom:0; }
       goal: $('pfGoal').value.trim().slice(0, 60), avatar: AVATARS.indexOf(pfDraft.avatar) >= 0 ? pfDraft.avatar : '', color: AV_COLORS.indexOf(pfDraft.color) >= 0 ? pfDraft.color : AV_COLORS[0] };
     Object.keys(o).forEach(function (k) { if (!o[k]) delete o[k]; });
     state.profile.me = o;
-    closeSheet(); saveProfile('프로필을 저장했습니다.');
+    var newPhoto = pfDraft.photo || '';
+    closeSheet();
+    if (newPhoto !== (state.photo || '')) {
+      var prevPhoto = state.photo || '';
+      state.photo = newPhoto; store(PHOTO_KEY, newPhoto || null); photoBusy = true;
+      social('photo_set', { photo: newPhoto }).then(function (d) {
+        photoBusy = false;
+        if (!d.ok) { state.photo = prevPhoto; store(PHOTO_KEY, prevPhoto || null); renderAll(); toast(d.error || '사진 저장에 실패했어요.', true); }
+        else if (state.league) state.league.at = 0;
+      });
+    }
+    saveProfile('프로필을 저장했습니다.');
+  });
+
+  var photoBusy = false;
+  function resizePhoto(file) {
+    return new Promise(function (resolve, reject) {
+      if (!file || !/^image\//.test(file.type || 'image/')) { reject(new Error('이미지 파일을 골라 주세요.')); return; }
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        var S = 192, side = Math.min(img.naturalWidth, img.naturalHeight);
+        if (!side) { URL.revokeObjectURL(url); reject(new Error('사진을 읽을 수 없어요.')); return; }
+        var c = document.createElement('canvas'); c.width = S; c.height = S;
+        var g = c.getContext('2d'); g.fillStyle = '#121516'; g.fillRect(0, 0, S, S);
+        g.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, S, S);
+        URL.revokeObjectURL(url);
+        var q = 0.85, out = c.toDataURL('image/jpeg', q);
+        while (out.length > 40000 && q > 0.4) { q -= 0.1; out = c.toDataURL('image/jpeg', q); }
+        resolve(out);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('이 형식의 사진은 열 수 없어요. JPG나 PNG로 시도해 주세요.')); };
+      img.src = url;
+    });
+  }
+  $('btnPhotoPick').addEventListener('click', function () { $('pfPhotoInput').value = ''; $('pfPhotoInput').click(); });
+  $('btnPhotoRemove').addEventListener('click', function () { pfDraft.photo = ''; pfRender(); });
+  $('pfPhotoInput').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    $('pfPhotoTitle').textContent = '사진 처리 중…';
+    resizePhoto(f).then(function (u) { pfDraft.photo = u; pfRender(); }, function (e) { toast(e.message, true); pfRender(); });
   });
 
   /* ---------- boss sheet ---------- */
@@ -2128,7 +2183,7 @@ table.rt tr:last-child td { border-bottom:0; }
   }
   function logout(msg) {
     state.token = null; store(TOKEN_KEY, null); store(CACHE_KEY, null); state.logs = []; state.routines = []; state.profile = {}; state.retros = {}; lastLevel = null; lastShields = null; lastBossWins = null;
-    state.league = null; lastPushed = ''; clearTimeout(pushTimer); setFriendBadge(0);
+    state.league = null; state.photo = ''; store(PHOTO_KEY, null); lastPushed = ''; clearTimeout(pushTimer); setFriendBadge(0);
     showView('login'); if (msg) { $('loginError').textContent = msg; $('loginError').hidden = false; }
   }
   $('btnLogout').addEventListener('click', function () { if (confirm('로그아웃할까요?')) logout(); });
@@ -2191,6 +2246,8 @@ table.rt tr:last-child td { border-bottom:0; }
       if (!d.ok) { if (!silent) toast(d.error || '랭킹을 불러오지 못했어요.', true); return; }
       var firstLoad = !state.league;
       state.league = { at: Date.now(), myCode: d.myCode, players: d.players || [], cheers: d.cheers || [], unread: d.unread || 0 };
+      var meP = state.league.players.filter(function (x) { return x.me; })[0];
+      if (meP && !photoBusy) { var sp = okPhoto(meP.photo) ? meP.photo : ''; if (sp !== (state.photo || '')) { state.photo = sp; store(PHOTO_KEY, sp || null); renderAll(); } }
       setFriendBadge(state.tab === 'friends' ? 0 : state.league.unread);
       if (firstLoad && state.league.unread && state.tab !== 'friends') {
         var c = state.league.cheers.filter(function (x) { return !x.seen; })[0];
@@ -2225,7 +2282,7 @@ table.rt tr:last-child td { border-bottom:0; }
     var L = state.league;
     if (!L) { $('lgBoard').innerHTML = '<div class="empty">친구 리그를 불러오는 중…</div>'; $('lgHero').innerHTML = ''; loadLeague(); return; }
     if (Date.now() - L.at > 60000) loadLeague(true);
-    var players = L.players.map(function (p) { return { pid: p.pid, name: p.name, me: p.me, st: p.me ? (state.mySnap || buildSnapshot(all)) : p.stats }; });
+    var players = L.players.map(function (p) { return { pid: p.pid, name: p.name, me: p.me, photo: p.photo || '', st: p.me ? (state.mySnap || buildSnapshot(all)) : p.stats }; });
     // 지난주 챔피언
     var champ = null;
     players.forEach(function (p) { var x = lastWeekXp(p.st); if (x > 0 && (!champ || x > champ.xp)) champ = { pid: p.pid, name: (p.st && p.st.nick) || p.name, xp: x }; });
@@ -2239,7 +2296,7 @@ table.rt tr:last-child td { border-bottom:0; }
       var crown = champ && champ.pid === r.p.pid ? ' 👑' : '';
       return '<div class="lb-row' + (r.p.me ? ' me' : '') + '">' +
         '<div class="lb-rank r' + rank + '">' + rank + '</div>' +
-        '<div class="lb-av">' + avatarSvg(lvl, { avatar: st.avatar || '', color: st.color || '' }) + '</div>' +
+        '<div class="lb-av">' + avatarSvg(lvl, { avatar: st.avatar || '', color: st.color || '', photo: r.p.me ? state.photo : (r.p.photo || '') }) + '</div>' +
         '<div class="lb-name"><b>' + esc(nm) + crown + (r.p.me ? ' <span style="color:var(--lime);font-size:12px">나</span>' : '') + '</b>' +
           '<small>LV ' + lvl + (st.cls ? ' · ' + esc(st.cls) : '') + ' · ' + esc(r.val.sub) + '</small>' +
           '<div class="lb-bar"><i style="width:' + Math.round(Math.max(0, r.val.v) / max * 100) + '%"></i></div></div>' +
@@ -2422,12 +2479,12 @@ table.rt tr:last-child td { border-bottom:0; }
     setTimeout(function () { if (state.token && !openSheetEl) openSheet($('passkeySheet')); }, 900);
   }
   document.querySelectorAll('.pk-name').forEach(function (el) { el.textContent = PK_NAME; });
-  $('btnPkLater').addEventListener('click', function () { store(PK_ASK_KEY, 'no'); closeSheet(); toast('프로필 설정에서 언제든 ' + PK_NAME + '를 등록할 수 있어요.'); });
+  $('btnPkLater').addEventListener('click', function () { store(PK_ASK_KEY, 'no'); closeSheet(); toast('프로필 설정에서 언제든 ' + PK_NAME + (PK_NAME === '생체 인증' ? '을' : '를') + ' 등록할 수 있어요.'); });
   function doRegister(btn) {
     var label = btn.textContent; btn.disabled = true; btn.textContent = '등록 중…';
     registerPasskey().then(function () {
       btn.disabled = false; btn.textContent = label; if (openSheetEl === $('passkeySheet')) closeSheet(); pkRenderProfile();
-      toast(PK_NAME + ' 등록 완료! 다음부터 얼굴 인식으로 로그인해요.');
+      toast(PK_NAME + ' 등록 완료! 다음부터 ' + (PK_NAME === 'Face ID' ? '얼굴 인식으로' : PK_NAME === 'Touch ID' ? 'Touch ID로' : '생체 인증으로') + ' 로그인해요.');
     }, function (e) { btn.disabled = false; btn.textContent = label; toast(pkErr(e), true); pkPrefetch('reg'); });
   }
   $('btnPkYes').addEventListener('click', function () { doRegister($('btnPkYes')); });
