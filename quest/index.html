@@ -368,6 +368,9 @@ table.rt tr:last-child td { border-bottom:0; }
 .retro-nudge .e { font-size:24px; }
 .retro-nudge .t { flex:1; font-size:13px; color:var(--text-2); }
 .retro-nudge .t b { display:block; color:var(--text); font-size:14px; }
+.push-nudge { border-color:rgba(200,255,61,.45); background:linear-gradient(90deg,rgba(200,255,61,.10),transparent 70%),var(--surface); }
+.push-nudge .x { border:0; background:none; color:var(--subtle); font-size:18px; line-height:1; padding:6px; }
+.push-acts { display:flex; gap:6px; flex-shrink:0; }
 .retro-months { display:grid; gap:10px; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
 .rm { text-align:left; border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface); padding:14px; display:grid; gap:6px; cursor:pointer; color:inherit; font:inherit; position:relative; }
 .rm:hover { border-color:var(--line-strong); }
@@ -673,6 +676,7 @@ table.rt tr:last-child td { border-bottom:0; }
         </div>
       </div>
       <div id="retroNudge"></div>
+      <div id="pushNudge"></div>
       <div class="quest-progress" id="questProgress"></div>
       <div class="quest-list" id="questList"></div>
       <div id="bossCard"></div>
@@ -916,6 +920,7 @@ table.rt tr:last-child td { border-bottom:0; }
     <div class="field"><span class="label">아바타 (사진이 없을 때)</span><div class="av-grid" id="pfAvGrid"></div></div>
     <div class="field"><span class="label">아바타 색</span><div class="color-row" id="pfColors"></div></div>
     <div class="field" id="pfPasskeyField" hidden><span class="label">빠른 로그인</span><div class="pk-row"><div><b id="pfPkTitle">Face ID 로그인</b><small id="pfPkState">이 기기에 등록되지 않았어요</small></div><button type="button" class="btn btn-sm" id="btnPkRegister">등록하기</button></div></div>
+    <div class="field" id="pfPushField" hidden><span class="label">저녁 9시 알림</span><div class="pk-row"><div><b id="pfPushTitle">남은 퀘스트 알림</b><small id="pfPushState">꺼져 있어요</small></div><div class="push-acts"><button type="button" class="btn btn-sm" id="btnPushTest" hidden>테스트</button><button type="button" class="btn btn-sm" id="btnPushToggle">켜기</button></div></div></div>
     <div class="field"><label for="pfGoal">이번 달 목표 (선택)</label><input type="text" id="pfGoal" maxlength="60" placeholder="예: 크로스핏 20회, 골드 랭크"></div>
     <div class="sheet-actions">
       <button type="button" class="btn" data-close>취소</button>
@@ -2057,7 +2062,7 @@ table.rt tr:last-child td { border-bottom:0; }
     $('pfClass').value = pfDraft.cls || ''; $('pfMotto').value = pfDraft.motto || ''; $('pfGoal').value = pfDraft.goal || '';
     $('pfAvGrid').innerHTML = AVATARS.map(function (a) { return '<button type="button" data-av="' + a + '"' + (a ? '' : ' class="def"') + ' aria-label="' + (a || '기본 캐릭터') + '">' + (a || '기본') + '</button>'; }).join('');
     $('pfColors').innerHTML = AV_COLORS.map(function (c) { return '<button type="button" data-c="' + c + '" style="--c:' + c + '" aria-label="색 ' + c + '"></button>'; }).join('');
-    pfRender(); pkRenderProfile(); openSheet($('profileSheet'));
+    pfRender(); pkRenderProfile(); pushRenderProfile(); openSheet($('profileSheet'));
   }
   $('btnProfile').addEventListener('click', openProfileSheet);
   $('avatar').addEventListener('click', openProfileSheet);
@@ -2185,7 +2190,7 @@ table.rt tr:last-child td { border-bottom:0; }
       state.logs = (d.logs || []).map(normLog).concat(Object.keys(state.pending).length ? pendingLogs : []);
       saveCache(); showView('app'); renderAll();
       if (needSeed) api('config_save', { key: 'routines', value: state.routines }).catch(function () {});
-      loadLeague(true);
+      loadLeague(true); pushAfterSync();
     }, function (e) { if (!silent && state.token) { showView('app'); renderAll(); toast(e.message || '동기화 실패 · 저장된 데이터로 표시합니다.', true); } });
   }
   function enter() {
@@ -2194,6 +2199,7 @@ table.rt tr:last-child td { border-bottom:0; }
     else { showView('loading'); sync(false); }
   }
   function logout(msg) {
+    pushOnLogout(state.token);
     state.token = null; store(TOKEN_KEY, null); store(CACHE_KEY, null); state.logs = []; state.routines = []; state.profile = {}; state.retros = {}; lastLevel = null; lastShields = null; lastBossWins = null;
     state.league = null; state.photo = ''; store(PHOTO_KEY, null); lastPushed = ''; clearTimeout(pushTimer); setFriendBadge(0);
     showView('login'); if (msg) { $('loginError').textContent = msg; $('loginError').hidden = false; }
@@ -2550,6 +2556,137 @@ table.rt tr:last-child td { border-bottom:0; }
   refreshInstallBtn();
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('/quest/sw.js', { scope: '/quest/' }).catch(function () {}); });
+  }
+
+  /* ---------- 저녁 9시 알림 (Web Push) ---------- */
+  // 공개키만 프론트에 둡니다. 개인키는 n8n 「Web Push 발송 (공용)」 워크플로우에만 있습니다.
+  var VAPID_PUBLIC = 'BGDlBpQTrcDeL7HTnf5BSEFxZmSkbrgJBcpG3RAufjNlbp_zKDqZ6_hUV1KLYOB7ipZvs9JKR4rR1g8_XTtvlj4';
+  var PUSH_KEY = 'dl_quest_push', PUSH_ASK_KEY = 'dl_quest_push_ask', PUSH_SYNC_KEY = 'dl_quest_push_sync';
+  var pushSupported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && (location.protocol === 'https:' || location.hostname === 'localhost');
+  var pushBusy = false;
+  function pushApi(action, payload, token) {
+    return post('quest-push', { action: action, token: token || state.token, payload: payload ? JSON.stringify(payload) : null }).then(function (d) {
+      if (!d.ok) throw new Error(d.error || '알림 요청이 실패했습니다.');
+      return d;
+    });
+  }
+  function keyBytes(b64) {
+    var s = b64.replace(/-/g, '+').replace(/_/g, '/'); s += '==='.slice((s.length + 3) % 4);
+    var raw = atob(s), out = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    return out;
+  }
+  function deviceName() {
+    var os = isIOS ? 'iPhone' : isAndroid ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : '기타';
+    var br = /SamsungBrowser/.test(ua) ? '삼성 인터넷' : /Edg\//.test(ua) ? 'Edge' : /Firefox|FxiOS/.test(ua) ? 'Firefox' : /Chrome|CriOS/.test(ua) ? 'Chrome' : /Safari/.test(ua) ? 'Safari' : '브라우저';
+    return os + ' · ' + br + (isStandalone() ? ' (앱)' : '');
+  }
+  // iOS는 16.4 이상 + 홈 화면에 추가한 앱에서만 웹 푸시가 됩니다.
+  function pushStatus() {
+    if (isIOS && !isStandalone()) return 'install';
+    if (!pushSupported) return 'unsupported';
+    if (Notification.permission === 'denied') return 'denied';
+    return load(PUSH_KEY) === 'on' && Notification.permission === 'granted' ? 'on' : 'off';
+  }
+  function swReady() {
+    return navigator.serviceWorker.register('/quest/sw.js', { scope: '/quest/' }).then(function () { return navigator.serviceWorker.ready; });
+  }
+  function saveSubscription(sub) {
+    return pushApi('subscribe', { subscription: sub.toJSON(), device: deviceName(), daily: true }).then(function () {
+      store(PUSH_KEY, 'on'); store(PUSH_SYNC_KEY, todayStr());
+    });
+  }
+  function enablePush() {
+    if (pushBusy) return Promise.resolve();
+    var st = pushStatus();
+    if (st === 'install') { openPushInstall(); return Promise.resolve(); }
+    if (st === 'unsupported') { toast('이 브라우저는 알림을 지원하지 않아요. Chrome이나 삼성 인터넷으로 열어 주세요.', true); return Promise.resolve(); }
+    if (st === 'denied') { toast('알림이 차단돼 있어요. 휴대폰 설정 → 알림에서 Runner Quest(또는 브라우저)를 허용해 주세요.', true); return Promise.resolve(); }
+    pushBusy = true; pushRenderAll();
+    // 권한 요청은 반드시 버튼 탭(사용자 동작) 직후에 호출해야 iOS에서 동작합니다.
+    return Promise.resolve(Notification.requestPermission()).then(function (perm) {
+      if (perm !== 'granted') throw new Error(perm === 'denied' ? '알림이 차단됐어요. 설정에서 허용하면 다시 켤 수 있어요.' : '알림 권한을 허용해야 받을 수 있어요.');
+      return swReady();
+    }).then(function (reg) {
+      return reg.pushManager.getSubscription().then(function (old) {
+        return old || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC) });
+      });
+    }).then(saveSubscription).then(function () {
+      pushBusy = false; store(PUSH_ASK_KEY, null); pushRenderAll();
+      toast('알림을 켰어요! 매일 저녁 9시에 남은 퀘스트를 알려 드릴게요.');
+    }, function (e) { pushBusy = false; pushRenderAll(); toast(e && e.message ? e.message : '알림을 켜지 못했어요.', true); });
+  }
+  function disablePush() {
+    if (pushBusy) return;
+    pushBusy = true; pushRenderAll();
+    swReady().then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (sub) {
+      if (!sub) return;
+      return pushApi('unsubscribe', { endpoint: sub.endpoint }).catch(function () {}).then(function () { return sub.unsubscribe(); });
+    }).then(function () {
+      pushBusy = false; store(PUSH_KEY, 'off'); pushRenderAll(); toast('저녁 9시 알림을 껐어요.');
+    }, function () { pushBusy = false; store(PUSH_KEY, 'off'); pushRenderAll(); });
+  }
+  function testPush() {
+    var btn = $('btnPushTest'); btn.disabled = true; btn.textContent = '보내는 중…';
+    swReady().then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (sub) {
+      if (!sub) throw new Error('이 기기의 알림 구독이 없어요. 알림을 다시 켜 주세요.');
+      return saveSubscription(sub).then(function () { return pushApi('test', { endpoint: sub.endpoint }); });
+    }).then(function () { toast('테스트 알림을 보냈어요. 몇 초 안에 도착합니다.'); }, function (e) { toast(e.message || '테스트 알림을 보내지 못했어요.', true); })
+      .then(function () { btn.disabled = false; btn.textContent = '테스트'; });
+  }
+  function pushOnLogout(token) {
+    if (!token || !pushSupported || load(PUSH_KEY) !== 'on') return;
+    store(PUSH_KEY, null); store(PUSH_SYNC_KEY, null);
+    navigator.serviceWorker.getRegistration('/quest/').then(function (reg) { return reg && reg.pushManager.getSubscription(); }).then(function (sub) {
+      if (!sub) return;
+      pushApi('unsubscribe', { endpoint: sub.endpoint }, token).catch(function () {}).then(function () { sub.unsubscribe(); });
+    }).catch(function () {});
+  }
+  // 로그인 상태로 앱을 열 때 하루 한 번 구독을 서버와 다시 맞춥니다 (구독 갱신·만료 대비).
+  function pushAfterSync() {
+    pushRenderAll();
+    if (pushStatus() !== 'on' || load(PUSH_SYNC_KEY) === todayStr()) return;
+    swReady().then(function (reg) {
+      return reg.pushManager.getSubscription().then(function (sub) {
+        return sub || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC) });
+      });
+    }).then(saveSubscription).catch(function () {});
+  }
+  function openPushInstall() {
+    openInstall();
+    $('installNote').textContent = '아이폰은 iOS 16.4 이상에서, 홈 화면에 추가한 Runner Quest 앱으로 열어야 알림을 받을 수 있어요. 설치 후 앱에서 「알림 켜기」를 눌러 주세요.';
+    $('installNote').hidden = false;
+  }
+  function pushRenderProfile() {
+    var st = pushStatus();
+    $('pfPushField').hidden = st === 'unsupported';
+    if (st === 'unsupported') return;
+    var txt = { on: '켜짐 · 매일 21:00, 남은 퀘스트가 있을 때만', off: '꺼져 있어요', denied: '차단됨 · 휴대폰 설정 → 알림에서 허용해 주세요', install: '홈 화면에 앱을 추가하면 켤 수 있어요 (iOS 16.4+)' }[st];
+    $('pfPushState').textContent = pushBusy ? '설정 중…' : txt;
+    $('btnPushToggle').textContent = st === 'on' ? '끄기' : st === 'install' ? '설치 방법' : '켜기';
+    $('btnPushToggle').disabled = pushBusy || st === 'denied';
+    $('btnPushTest').hidden = st !== 'on';
+  }
+  function renderPushNudge() {
+    var st = pushStatus(), el = $('pushNudge');
+    if (!state.token || (st !== 'off' && st !== 'install') || load(PUSH_ASK_KEY) === 'no') { el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="retro-nudge push-nudge"><span class="e">🔔</span><span class="t"><b>저녁 9시, 남은 퀘스트 알림 받기</b>' +
+      (st === 'install' ? '홈 화면에 앱을 추가하면 아이폰에서도 알림을 받을 수 있어요.' : '달성 못 한 루틴이 있을 때만 핸드폰으로 알려 드려요.') + '</span>' +
+      '<button type="button" class="btn btn-sm btn-primary" id="btnPushNudge"' + (pushBusy ? ' disabled' : '') + '>' + (st === 'install' ? '설치 방법' : '알림 켜기') + '</button>' +
+      '<button type="button" class="x" id="btnPushNudgeX" aria-label="다시 보지 않기">×</button></div>';
+    $('btnPushNudge').addEventListener('click', enablePush);
+    $('btnPushNudgeX').addEventListener('click', function () { store(PUSH_ASK_KEY, 'no'); renderPushNudge(); toast('프로필 설정에서 언제든 알림을 켤 수 있어요.'); });
+  }
+  function pushRenderAll() { renderPushNudge(); if (!$('profileSheet').hidden) pushRenderProfile(); }
+  $('btnPushToggle').addEventListener('click', function () { var st = pushStatus(); if (st === 'on') disablePush(); else enablePush(); });
+  $('btnPushTest').addEventListener('click', testPush);
+  // 알림을 눌러 이미 열린 앱으로 돌아오면 오늘 화면으로 이동해 최신 기록을 다시 불러옵니다.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      if (!e.data || e.data.type !== 'rq-open') return;
+      var tab = String(e.data.url || '').split('#')[1] || 'today';
+      if (state.token) { state.viewDate = todayStr(); setTab(['today', 'stats', 'logs', 'routines', 'retro', 'friends'].indexOf(tab) >= 0 ? tab : 'today'); sync(true); }
+    });
   }
 
   /* ---------- boot ---------- */
