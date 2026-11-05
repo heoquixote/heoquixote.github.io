@@ -17,7 +17,6 @@
 | `index.html` | 메인 랜딩 페이지 (약 250KB 단일 파일, HTML·CSS·JS 인라인) | 공개 | 없음 |
 | `analytics.js`, `hero3d.js` | 메인 페이지용 분석 스크립트, 히어로 3D 효과 | 공개 | 없음 |
 | `interview-log/` | 튜터용 면담 로그 앱 | 튜터 전용 | n8n `Data Learners 면담 로그 앱` |
-| `invest/` | 투자 대시보드 **빌드 결과물** | 소유자 전용 | n8n `[Data Learners] 투자 대시보드 API` |
 | `quest/` | Runner Quest 자기육성 루틴 (PWA, `sw.js`, `manifest.webmanifest`) | 소유자·친구 | n8n `[Data Learners] 자기육성 퀘스트 API` (`dl/quest`), data table `quest_logs`, `quest_config` |
 | `kti/` | 한반도 긴장도 지수 대시보드 | 공개 | GitHub Actions 수집 |
 | `privacy/` | 개인정보처리방침 | 공개 | 없음 |
@@ -28,10 +27,6 @@ n8n API 기본 주소: `https://hote.app.n8n.cloud/webhook/dl/` (각 앱 HTML �
 
 ## 영역별 주의사항
 
-### invest/
-- 직접 수정하지 않는다. 원본은 `heoquixote/invest-dashboard` 저장소다.
-- 갱신 절차: invest-dashboard에서 `npm run build:site` → 생성된 `dist/` 내용으로 이 저장소의 `invest/`를 통째로 교체.
-
 ### kti/
 - `kti/data/kti.json`은 `.github/workflows/kti-collect.yml`이 매일 07:17 KST에 `kti/collector/collect.py`로 갱신해 커밋한다. 손으로 수정하지 않는다.
 - 사람이 편집하는 파일은 `kti/data/events.csv`, `kti/data/schedule.csv`뿐이다. 이 두 파일이나 `kti/collector/**`가 main에 반영되면 수집 워크플로우가 자동 실행된다.
@@ -41,7 +36,7 @@ n8n API 기본 주소: `https://hote.app.n8n.cloud/webhook/dl/` (각 앱 HTML �
 - 로그인(패스키), 푸시 알림, 친구 기능은 n8n API와 짝을 이룬다. 요청·응답 형식을 바꿀 때는 PR 본문에 n8n 워크플로우 쪽 수정이 필요한지 명시한다.
 
 ### 개인 데이터
-- 소유자 전용 앱의 실제 데이터(투자 내역, 면담 기록, 루틴 기록)는 n8n data table에만 있다. 저장소에 데이터, 토큰, 테스트용 실데이터를 커밋하지 않는다.
+- 소유자 전용 앱의 실제 데이터(면담 기록, 루틴 기록)는 n8n data table에만 있다. 저장소에 데이터, 토큰, 테스트용 실데이터를 커밋하지 않는다.
 
 ## 새 페이지를 추가할 때
 
@@ -52,5 +47,4 @@ n8n API 기본 주소: `https://hote.app.n8n.cloud/webhook/dl/` (각 앱 HTML �
 
 ## 관련 저장소
 
-- `heoquixote/invest-dashboard`: `invest/` 원본
 - `heoquixote/runners-buildup`, `heoquixote/kdt-monitoring`: 같은 도메인 하위 경로로 서빙되는 별도 프로젝트 사이트 (이 저장소에서 수정하지 않음)

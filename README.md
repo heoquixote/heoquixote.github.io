@@ -13,7 +13,6 @@ SQL, Python, Tableau, 통계, AI 자동화를 실무 프로젝트로 배우는 �
 | KDT 모니터링 | https://www.data-learners.com/kdt-monitoring/ | `heoquixote/kdt-monitoring` 저장소의 Pages |
 | 기업소개서 | `/assets/data-learners-brochure.pdf` | 이 저장소 |
 | 면담 로그 | https://www.data-learners.com/interview-log/ | 이 저장소의 `interview-log/` (튜터 전용, API는 n8n 워크플로우 `Data Learners 면담 로그 앱`) |
-| 투자 대시보드 | https://www.data-learners.com/invest/ | 이 저장소의 `invest/` (소유자 전용, `heoquixote/invest-dashboard`에서 `npm run build:site`로 빌드한 결과물, API는 n8n 워크플로우 `[Data Learners] 투자 대시보드 API`) |
 | Runner Quest (자기육성 루틴) | https://www.data-learners.com/quest/ | 이 저장소의 `quest/` (소유자 전용, 루틴 체크·XP/레벨·통계. API는 n8n 워크플로우 `[Data Learners] 자기육성 퀘스트 API` (`dl/quest`), 데이터는 n8n data table `quest_logs`(기록 1건=1행), `quest_config`(루틴 정의)) |
 | 한반도 긴장도 지수 | https://www.data-learners.com/kti/ | 이 저장소의 `kti/` (공개, 데이터는 `.github/workflows/kti-collect.yml`이 매일 07:17 KST에 `kti/collector/collect.py`로 수집해 `kti/data/kti.json`에 커밋. 북한 군사 이벤트는 `kti/data/events.csv`를 직접 편집) |
 
