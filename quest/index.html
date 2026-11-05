@@ -548,6 +548,66 @@ table.rt tr:last-child td { border-bottom:0; }
 .signup-hero .e { font-size:26px; }
 .login-alt { text-align:center; font-size:13px; color:var(--muted); }
 .login-alt button { border:0; background:none; color:var(--lime); font-weight:700; padding:4px; }
+/* 파티퀘스트 */
+.party-card { border:1px solid rgba(102,219,255,.4); background:linear-gradient(135deg,rgba(102,219,255,.12),rgba(168,150,255,.06) 60%,transparent); border-radius:var(--r-lg); padding:16px; margin-bottom:16px; display:grid; gap:12px; }
+.party-card.cleared { border-color:rgba(200,255,61,.6); background:linear-gradient(135deg,rgba(200,255,61,.16),rgba(102,219,255,.06) 60%,transparent); }
+.pc-head { display:flex; gap:12px; align-items:flex-start; }
+.pc-head .pe { font-size:34px; line-height:1; width:48px; height:48px; display:grid; place-items:center; border-radius:14px; background:var(--surface-2); flex:0 0 auto; }
+.pc-head .k { display:block; color:var(--cyan); font:600 11px/1 var(--font-en); letter-spacing:.16em; text-transform:uppercase; margin-bottom:4px; }
+.pc-head b { display:block; font-size:19px; letter-spacing:-.03em; }
+.pc-head small { display:block; color:var(--text-2); font-size:13px; margin-top:3px; }
+.pc-head .grow { flex:1; min-width:0; }
+.pc-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.pc-chips span { font-size:12px; padding:3px 8px; border-radius:999px; background:var(--surface-2); color:var(--text-2); border:1px solid var(--line); }
+.pc-chips span.hot { color:var(--amber); border-color:rgba(255,207,74,.45); }
+.pc-goal { display:grid; gap:6px; }
+.pc-goal .row { display:flex; justify-content:space-between; font-size:14px; }
+.pc-goal .row b { font-family:var(--font-en); }
+.pc-bar { height:10px; border-radius:6px; background:var(--surface-3); overflow:hidden; display:flex; gap:2px; }
+.pc-bar i { flex:1; background:var(--surface-3); }
+.pc-bar i.on { background:var(--cyan); }
+.party-card.cleared .pc-bar i.on { background:var(--lime); }
+.pc-goal .s { color:var(--text-2); font-size:13px; }
+.pm-list { display:grid; gap:8px; }
+.pm { display:grid; grid-template-columns:40px 1fr auto; gap:10px; align-items:center; padding:8px 10px; border-radius:var(--r-md); background:var(--surface); border:1px solid var(--line); }
+.pm.ok { border-color:rgba(200,255,61,.45); }
+.pm .av svg { width:40px; height:40px; display:block; }
+.pm .nm { min-width:0; }
+.pm .nm b { display:block; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pm .nm small { display:block; color:var(--muted); font-size:12px; }
+.pm .wk { display:flex; gap:3px; margin-top:5px; }
+.pm .wk i { width:14px; height:6px; border-radius:2px; background:var(--surface-3); }
+.pm .wk i.on { background:var(--lime); }
+.pm .wk i.fut { background:transparent; border:1px dashed var(--line); }
+.pm .st { font-size:13px; font-weight:700; text-align:right; display:flex; gap:6px; align-items:center; }
+.pm .st .done { color:var(--lime); }
+.pc-pending { display:flex; flex-wrap:wrap; gap:6px; font-size:13px; color:var(--muted); align-items:center; }
+.pc-pending span { padding:4px 4px 4px 10px; border-radius:999px; border:1px dashed var(--line); display:inline-flex; gap:4px; align-items:center; }
+.pc-pending button { border:0; background:none; color:var(--muted); padding:2px 6px; font-size:13px; }
+.pc-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.pc-actions .btn { flex:1; }
+.pc-clears { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
+.pc-clears::-webkit-scrollbar { display:none; }
+.pc-clears span { flex:0 0 auto; font-size:12px; padding:5px 9px; border-radius:var(--r-sm); background:var(--lime-soft); color:var(--text-2); border:1px solid rgba(200,255,61,.25); }
+.pc-clears span b { color:var(--lime); font-family:var(--font-en); }
+.pc-inv { display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:10px 12px; border-radius:var(--r-md); background:var(--surface); border:1px solid rgba(102,219,255,.4); }
+.pc-inv .e { font-size:26px; }
+.pc-inv .t { flex:1 1 180px; min-width:0; font-size:14px; }
+.pc-inv .btn { flex:1 0 auto; }
+.pc-inv .t small { display:block; color:var(--muted); font-size:12px; }
+.party-strip { display:flex; gap:10px; align-items:center; width:100%; text-align:left; padding:12px 14px; margin:12px 0; border-radius:var(--r-md); border:1px solid rgba(102,219,255,.4); background:linear-gradient(90deg,rgba(102,219,255,.1),var(--surface)); color:var(--text); font-size:14px; }
+.party-strip.cleared { border-color:rgba(200,255,61,.55); background:linear-gradient(90deg,rgba(200,255,61,.12),var(--surface)); }
+.party-strip .e { font-size:24px; }
+.party-strip .t { flex:1; min-width:0; }
+.party-strip .t small { display:block; color:var(--text-2); font-size:12px; margin-top:2px; }
+.party-strip .x { font:700 14px/1 var(--font-en); color:var(--cyan); }
+.party-strip.cleared .x { color:var(--lime); }
+.pick-list { display:grid; gap:8px; max-height:44vh; overflow-y:auto; margin:6px 0 12px; }
+.pick { display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:var(--r-md); border:1px solid var(--line); background:var(--surface-2); font-size:14px; }
+.pick input { width:20px; height:20px; accent-color:var(--lime); }
+.pick .grow { flex:1; min-width:0; }
+.pick small { color:var(--muted); font-size:12px; }
+.pick[aria-disabled="true"] { opacity:.5; }
 </style>
 </head>
 <body>
@@ -680,6 +740,7 @@ table.rt tr:last-child td { border-bottom:0; }
       <div class="quest-progress" id="questProgress"></div>
       <div class="quest-list" id="questList"></div>
       <div id="bossCard"></div>
+      <div id="partyStrip"></div>
       <div class="sub-head"><span>추가 기록 (비정기 퀘스트)</span><button class="btn btn-sm btn-ghost" id="btnAddInline">+ 기록 추가</button></div>
       <div class="quest-list" id="adhocList"></div>
     </section>
@@ -756,6 +817,7 @@ table.rt tr:last-child td { border-bottom:0; }
         <div><span class="eyebrow">Friends League</span><h2>친구 랭킹</h2></div>
         <button class="btn btn-sm" id="btnLeagueRefresh">새로고침</button>
       </div>
+      <div id="partyBox"></div>
       <div id="lgHero"></div>
       <div class="seg" id="lgSeg" role="group" aria-label="랭킹 기준">
         <button type="button" data-mode="week" aria-pressed="true">주간 XP</button>
@@ -777,7 +839,7 @@ table.rt tr:last-child td { border-bottom:0; }
           <div class="cheer-list" id="cheerList"></div>
         </div>
       </div>
-      <p class="foot-note">랭킹은 각자 앱을 열 때 올라가는 기록 요약으로 계산합니다. 주간 리그는 월~일 기준이고, 지난주 1위에게는 👑가 붙습니다. 친구의 루틴 상세 기록은 공유되지 않고 레벨·XP·연속 기록 같은 요약만 보입니다.</p>
+      <p class="foot-note">랭킹은 각자 앱을 열 때 올라가는 기록 요약으로 계산합니다. 주간 리그는 월~일 기준이고, 지난주 1위에게는 👑가 붙습니다. 친구의 루틴 상세 기록은 공유되지 않고 레벨·XP·연속 기록 같은 요약만 보입니다. 파티퀘스트: 파티원(2~5명) 모두가 그날 목표(퍼펙트 또는 80% 이상, 루틴 없는 날은 기록 XP 20 이상)를 채우면 전원에게 30 + 10×(인원−1) XP, 연속 클리어 하루마다 +5(최대 +20)가 들어갑니다. 친구가 늦게 기록해도 7일 안이면 클리어가 소급 처리돼요.</p>
     </section>
 
     <section id="tab-retro" data-panel="retro" hidden>
@@ -941,6 +1003,34 @@ table.rt tr:last-child td { border-bottom:0; }
   </div>
 </div>
 
+<!-- 파티 만들기 / 설정 시트 -->
+<div class="sheet" id="partySheet" role="dialog" aria-modal="true" aria-labelledby="partySheetTitle" hidden>
+  <div class="grab"></div>
+  <h3 id="partySheetTitle">파티 만들기</h3>
+  <div class="field"><label for="ptName">파티 이름</label><input type="text" id="ptName" maxlength="16" placeholder="예: 새벽 6시 러너즈"></div>
+  <div class="field"><span class="label">파티 문장(엠블럼)</span><div class="emoji-grid" id="ptEmojis"></div></div>
+  <div class="field"><span class="label">일간 목표</span>
+    <div class="seg" id="ptGoal" role="group" aria-label="일간 목표">
+      <button type="button" data-goal="perfect" aria-pressed="true">모두 퍼펙트 데이 (100%)</button>
+      <button type="button" data-goal="rate80" aria-pressed="false">모두 80% 이상</button>
+    </div>
+  </div>
+  <div class="field" id="ptInviteWrap"><span class="label">같이 할 친구 (최대 4명)</span><div class="pick-list" id="ptFriends"></div></div>
+  <p class="hint">파티원 모두가 그날 목표를 채우면 전원에게 파티 보너스가 들어갑니다. 루틴이 없는 날은 기록 XP 20 이상이면 달성으로 봐요.</p>
+  <div class="sheet-actions">
+    <button type="button" class="btn" data-close>취소</button>
+    <button type="button" class="btn btn-primary" id="btnPartySave">파티 만들기</button>
+  </div>
+</div>
+
+<!-- 파티 초대 시트 -->
+<div class="sheet" id="partyInvSheet" role="dialog" aria-modal="true" aria-labelledby="partyInvTitle" hidden>
+  <div class="grab"></div>
+  <h3 id="partyInvTitle">파티에 친구 초대</h3>
+  <div class="pick-list" id="ptInvList"></div>
+  <div class="sheet-actions"><button type="button" class="btn" data-close>닫기</button></div>
+</div>
+
 <!-- Face ID 등록 시트 -->
 <div class="sheet" id="passkeySheet" role="dialog" aria-modal="true" aria-labelledby="passkeySheetTitle" hidden>
   <div class="grab"></div>
@@ -1060,6 +1150,9 @@ table.rt tr:last-child td { border-bottom:0; }
 
   var state = { token: null, name: '', routines: [], logs: [], profile: {}, retros: {}, retroMonth: '', viewDate: todayStr(), tab: 'today', pending: {}, period: '', photo: '' };
   try { var _ph = localStorage.getItem('dl_quest_photo'); if (_ph && /^data:image\//.test(_ph)) state.photo = _ph; } catch (e) {}
+  var PARTY_RW_KEY = 'dl_quest_party_rw';
+  state.partyRewards = [];
+  try { var _pr = JSON.parse(localStorage.getItem(PARTY_RW_KEY) || '[]'); if (Array.isArray(_pr)) state.partyRewards = _pr; } catch (e) {}
   var charts = {};
 
   /* ---------- utils ---------- */
@@ -1233,6 +1326,14 @@ table.rt tr:last-child td { border-bottom:0; }
       dx.retroXp = (dx.retroXp || 0) + sc.total; dx.xp += sc.total;
     });
 
+    // 파티퀘스트 보상: 서버에 기록된 파티 클리어 날짜에 지급
+    var partyClears = 0, bestCombo = 0;
+    (state.partyRewards || []).forEach(function (r) {
+      var dx = dayMap[r.date]; if (!dx || !(r.xp > 0)) return;
+      dx.partyXp = (dx.partyXp || 0) + r.xp; dx.xp += r.xp; dx.partyCombo = r.combo || 1;
+      partyClears++; if ((r.combo || 1) > bestCombo) bestCombo = r.combo || 1;
+    });
+
     var total = 0, catXp = {}, perfectCount = 0, mins = 0;
     days.forEach(function (x) {
       total += x.xp; mins += x.mins; if (x.perfect) perfectCount++;
@@ -1240,7 +1341,7 @@ table.rt tr:last-child td { border-bottom:0; }
     });
     Object.keys(byDate).forEach(function (d) { if (d > today) { var info = dayInfo(d, byDate); total += info.xp; } });
     var all = { byDate: byDate, days: days, dayMap: dayMap, total: total, catXp: catXp, perfectCount: perfectCount, streak: run, bestStreak: best, mins: mins,
-      shields: shields, shieldsEarned: earned, shieldsUsed: used, bosses: bosses, bossWins: bosses.filter(function (b) { return b.defeated; }).length,
+      shields: shields, shieldsEarned: earned, shieldsUsed: used, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses, bossWins: bosses.filter(function (b) { return b.defeated; }).length,
       today: dayMap[today] || dayInfo(today, byDate) };
     return all;
   }
@@ -1415,6 +1516,7 @@ table.rt tr:last-child td { border-bottom:0; }
       (info.shielded ? '<div class="shield-note">🛡 보호권 1장을 써서 연속 기록을 지켰습니다.</div>' : (dayOf(all, addDays(date, -1)).shielded && date === today ? '<div class="shield-note">🛡 어제 빠진 날은 보호권 1장으로 연속 기록을 지켰어요. 남은 보호권 ' + all.shields + '장</div>' : '')) + '</div>';
     renderBoss(all, date);
     renderRetroNudge();
+    renderPartyStrip(all, date);
 
     var byRoutine = {};
     logs.forEach(function (l) { if (l.kind === 'routine' || l.kind === 'skip') byRoutine[l.routine_id] = l; });
@@ -1625,13 +1727,14 @@ table.rt tr:last-child td { border-bottom:0; }
     ds.push({ label: '퍼펙트 보너스', data: days.map(function (x) { return x.perfect ? PERFECT_BONUS : 0; }), backgroundColor: 'rgba(200,255,61,.35)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
     ds.push({ label: '보스 보상', data: days.map(function (x) { return x.bossXp || 0; }), backgroundColor: 'rgba(255,122,146,.75)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
     ds.push({ label: '회고 보상', data: days.map(function (x) { return x.retroXp || 0; }), backgroundColor: 'rgba(255,207,74,.8)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
+    ds.push({ label: '파티 보너스', data: days.map(function (x) { return x.partyXp || 0; }), backgroundColor: 'rgba(102,219,255,.8)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
     upsertChart('chDaily', {
       type: 'bar', data: { labels: labels, datasets: ds },
       options: { responsive: true, maintainAspectRatio: false, animation: { duration: 300 }, interaction: { mode: 'index', intersect: false },
         plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (it) { return fmtDate(days[it[0].dataIndex].date); }, footer: function (it) { var s = 0; it.forEach(function (i) { s += i.parsed.y; }); return '합계 ' + s + 'XP'; } } } },
         scales: { x: { stacked: true, grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, autoSkipPadding: 6 } }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } }
     });
-    $('lgDaily').innerHTML = CAT_KEYS.map(function (k) { return '<span><i style="background:' + CATS[k].color + '"></i>' + CATS[k].en + ' ' + CATS[k].name + '</span>'; }).join('') + '<span><i style="background:rgba(200,255,61,.35)"></i>퍼펙트 보너스</span><span><i style="background:rgba(255,122,146,.75)"></i>보스 보상</span><span><i style="background:rgba(255,207,74,.8)"></i>회고 보상</span>';
+    $('lgDaily').innerHTML = CAT_KEYS.map(function (k) { return '<span><i style="background:' + CATS[k].color + '"></i>' + CATS[k].en + ' ' + CATS[k].name + '</span>'; }).join('') + '<span><i style="background:rgba(200,255,61,.35)"></i>퍼펙트 보너스</span><span><i style="background:rgba(255,122,146,.75)"></i>보스 보상</span><span><i style="background:rgba(255,207,74,.8)"></i>회고 보상</span><span><i style="background:rgba(102,219,255,.8)"></i>파티 보너스</span>';
   }
   function renderCalendar(all, days) {
     var month = state.period === 'all' ? todayStr().slice(0, 7) : state.period;
@@ -1724,7 +1827,9 @@ table.rt tr:last-child td { border-bottom:0; }
       ['⚔️', '보스 헌터', '주간 보스 4회 격파', Math.min(1, all.bossWins / 4)],
       ['🛡', '수호자', '스트릭 보호권 첫 획득', Math.min(1, all.shieldsEarned)],
       ['📝', '회고하는 러너', '월별 회고록 첫 제출', Math.min(1, Object.keys(state.retros).filter(function (m) { return state.retros[m] && state.retros[m].firstSaved; }).length)],
-      ['🏅', 'S급 회고', '회고록 S등급 받기', Object.keys(state.retros).some(function (m) { return retroScore(m, state.retros[m]).grade === 'S'; }) ? 1 : 0]
+      ['🏅', 'S급 회고', '회고록 S등급 받기', Object.keys(state.retros).some(function (m) { return retroScore(m, state.retros[m]).grade === 'S'; }) ? 1 : 0],
+      ['🤝', '파티 플레이', '파티퀘스트 첫 클리어', Math.min(1, all.partyClears)],
+      ['🔗', '찰떡 파티', '파티 클리어 5일 연속', Math.min(1, all.bestCombo / 5)]
     ];
     var on = B.filter(function (b) { return b[3] >= 1; }).length;
     $('badgeCount').textContent = on + ' / ' + B.length;
@@ -1745,7 +1850,7 @@ table.rt tr:last-child td { border-bottom:0; }
       var logs = all.byDate[d].filter(function (l) { return !fv || (fv === '_adhoc' ? l.kind === 'adhoc' : l.category === fv); });
       if (!logs.length) return '';
       var info = dayOf(all, d);
-      return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + (info.shielded ? ' 🛡' : '') + (info.bossXp ? ' ⚔️ 보스 +' + info.bossXp : '') + (info.retroXp ? ' 📝 회고 +' + info.retroXp : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
+      return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + (info.shielded ? ' 🛡' : '') + (info.bossXp ? ' ⚔️ 보스 +' + info.bossXp : '') + (info.retroXp ? ' 📝 회고 +' + info.retroXp : '') + (info.partyXp ? ' 🤝 파티 +' + info.partyXp : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
         var c = CATS[l.category] || CATS.life, r = routineById(l.routine_id);
         var e = l.kind === 'adhoc' ? c.emoji : (r && r.emoji) || c.emoji;
         var tag = l.kind === 'routine' ? '루틴' : l.kind === 'skip' ? '건너뜀' : '비정기';
@@ -2201,7 +2306,7 @@ table.rt tr:last-child td { border-bottom:0; }
   function logout(msg) {
     pushOnLogout(state.token);
     state.token = null; store(TOKEN_KEY, null); store(CACHE_KEY, null); state.logs = []; state.routines = []; state.profile = {}; state.retros = {}; lastLevel = null; lastShields = null; lastBossWins = null;
-    state.league = null; state.photo = ''; store(PHOTO_KEY, null); lastPushed = ''; clearTimeout(pushTimer); setFriendBadge(0);
+    state.league = null; state.partyRewards = []; store(PARTY_RW_KEY, null); state.photo = ''; store(PHOTO_KEY, null); lastPushed = ''; clearTimeout(pushTimer); setFriendBadge(0);
     showView('login'); if (msg) { $('loginError').textContent = msg; $('loginError').hidden = false; }
   }
   $('btnLogout').addEventListener('click', function () { if (confirm('로그아웃할까요?')) logout(); });
@@ -2225,7 +2330,7 @@ table.rt tr:last-child td { border-bottom:0; }
   var INVITE_KEY = 'dl_quest_invite';
   var CHEER_EMOJIS = [['🔥', '불태워'], ['👏', '박수'], ['💪', '힘내'], ['🏆', '1등감'], ['⚡', '번개'], ['❤️', '하트'], ['🫡', '존경'], ['🐢', '분발해']];
   var LB_MODES = { week: '주간 XP', season: '시즌 XP', streak: '연속 퍼펙트', level: '레벨', today: '오늘 달성' };
-  var lbMode = 'week', lastPushed = '', pushTimer = null, leagueBusy = false, cheerTo = null, cheerEmoji = '🔥';
+  var lastPartyKey = '', lbMode = 'week', lastPushed = '', pushTimer = null, leagueBusy = false, cheerTo = null, cheerEmoji = '🔥';
   function social(action, payload, noAuth) {
     return post('quest-social', { action: action, token: noAuth ? null : state.token, payload: payload ? JSON.stringify(payload) : null });
   }
@@ -2241,7 +2346,18 @@ table.rt tr:last-child td { border-bottom:0; }
     return { v: 1, nick: displayName(), avatar: m.avatar || '', color: m.color || '', cls: m.cls || '', motto: String(m.motto || '').slice(0, 60),
       level: levelFromXp(all.total).level, total_xp: all.total, week_key: ws, week_xp: wxp, last_week_key: pws, last_week_xp: pwxp, week_perfect: wperf,
       season_key: month, season_xp: ss.xp, rank: ss.rank.r.ko, streak: all.streak, best_streak: all.bestStreak,
-      today_key: t, today_done: td.done || 0, today_total: td.denom || 0, boss_wins: all.bossWins };
+      today_key: t, today_done: td.done || 0, today_total: td.denom || 0, boss_wins: all.bossWins, days: recentDays(all, 7) };
+  }
+  // 파티 판정용 최근 N일 요약: [날짜, 완료 루틴, 예정 루틴, 기록 XP(보너스 제외)]
+  function recentDays(all, n) {
+    var t = todayStr(), out = [];
+    for (var i = n - 1; i >= 0; i--) {
+      var d = addDays(t, -i), x = all.dayMap[d];
+      if (!x) continue;
+      var raw = 0; x.logs.forEach(function (l) { if (l.kind !== 'skip') raw += l.xp; });
+      if (x.denom || raw) out.push([d, x.done, x.denom, raw]);
+    }
+    return out;
   }
   function schedulePush(all) {
     if (!state.token || $('viewApp').hidden) return;
@@ -2250,7 +2366,12 @@ table.rt tr:last-child td { border-bottom:0; }
     if (key === lastPushed) return;
     clearTimeout(pushTimer);
     pushTimer = setTimeout(function () {
-      social('stats_push', { stats: snap }).then(function (d) { if (d.ok) lastPushed = key; });
+      social('stats_push', { stats: snap }).then(function (d) {
+        if (!d.ok) return;
+        lastPushed = key;
+        // 파티 중이면 내 기록이 올라간 직후 파티 클리어 여부를 다시 확인
+        if (state.league && state.league.party) setTimeout(function () { loadLeague(true); }, 400);
+      });
     }, 2500);
   }
   function setFriendBadge(n) {
@@ -2263,7 +2384,10 @@ table.rt tr:last-child td { border-bottom:0; }
       leagueBusy = false;
       if (!d.ok) { if (!silent) toast(d.error || '랭킹을 불러오지 못했어요.', true); return; }
       var firstLoad = !state.league;
-      state.league = { at: Date.now(), myCode: d.myCode, players: d.players || [], cheers: d.cheers || [], unread: d.unread || 0 };
+      state.league = { at: Date.now(), myCode: d.myCode, players: d.players || [], cheers: d.cheers || [], unread: d.unread || 0, party: d.party || null, partyInvites: d.partyInvites || [] };
+      applyPartyRewards(d.partyRewards, d.party);
+      var pk = JSON.stringify([d.party, d.partyInvites]);
+      if (pk !== lastPartyKey) { lastPartyKey = pk; if (state.tab === 'today') renderToday(computeAll()); }
       var meP = state.league.players.filter(function (x) { return x.me; })[0];
       if (meP && !photoBusy) { var sp = okPhoto(meP.photo) ? meP.photo : ''; if (sp !== (state.photo || '')) { state.photo = sp; store(PHOTO_KEY, sp || null); renderAll(); } }
       setFriendBadge(state.tab === 'friends' ? 0 : state.league.unread);
@@ -2298,7 +2422,8 @@ table.rt tr:last-child td { border-bottom:0; }
   }
   function renderFriends(all) {
     var L = state.league;
-    if (!L) { $('lgBoard').innerHTML = '<div class="empty">친구 리그를 불러오는 중…</div>'; $('lgHero').innerHTML = ''; loadLeague(); return; }
+    if (!L) { $('lgBoard').innerHTML = '<div class="empty">친구 리그를 불러오는 중…</div>'; $('lgHero').innerHTML = ''; $('partyBox').innerHTML = ''; loadLeague(); return; }
+    renderParty(all);
     if (Date.now() - L.at > 60000) loadLeague(true);
     var players = L.players.map(function (p) { return { pid: p.pid, name: p.name, me: p.me, photo: p.photo || '', st: p.me ? (state.mySnap || buildSnapshot(all)) : p.stats }; });
     // 지난주 챔피언
@@ -2386,6 +2511,205 @@ table.rt tr:last-child td { border-bottom:0; }
       closeSheet(); toast(cheerEmoji + ' 응원을 보냈어요!');
     });
   });
+  /* ---------- 파티퀘스트 ---------- */
+  var PARTY_EMOJIS = ['⚔️', '🛡️', '🔥', '🐉', '🚀', '🌱', '🏃', '🎯'];
+  var PARTY_GOALS = { perfect: '모두 퍼펙트 데이 (100%)', rate80: '모두 80% 이상 달성' };
+  var PARTY_MAX = 5;
+  var ptMode = 'create', ptEmoji = '⚔️', ptGoal = 'perfect', partyBusy = false;
+  function partyReward(n, combo) { return 30 + 10 * (n - 1) + 5 * Math.min(combo - 1, 4); }
+  // 서버(Shape League)와 같은 판정: 정기 루틴이 있으면 완료율, 없으면 기록 XP 20 이상
+  function partyAchieved(goal, done, total, xp) { return total > 0 ? (goal === 'rate80' ? done / total >= 0.8 : done >= total) : xp >= 20; }
+  function myTodayStatus(all, goal) {
+    var x = all.today || {}, raw = 0;
+    (x.logs || []).forEach(function (l) { if (l.kind !== 'skip') raw += l.xp; });
+    return { done: x.done || 0, total: x.denom || 0, xp: raw, ok: partyAchieved(goal, x.done || 0, x.denom || 0, raw) };
+  }
+  function applyPartyRewards(list, party) {
+    if (!Array.isArray(list)) return;
+    var clean = list.filter(function (r) { return r && /^\d{4}-\d{2}-\d{2}$/.test(r.date) && r.xp > 0; })
+      .map(function (r) { return { date: r.date, xp: +r.xp, combo: +r.combo || 1, n: +r.n || 2 }; });
+    var key = JSON.stringify(clean), oldKey = JSON.stringify(state.partyRewards || []);
+    if (key === oldKey) return;
+    var had = {}; (state.partyRewards || []).forEach(function (r) { had[r.date] = 1; });
+    var hadAny = (state.partyRewards || []).length > 0 || load(PARTY_RW_KEY) !== null;
+    state.partyRewards = clean; store(PARTY_RW_KEY, key);
+    var fresh = clean.filter(function (r) { return !had[r.date] && r.date >= addDays(todayStr(), -1); });
+    renderAll();
+    if (fresh.length && (hadAny || fresh.some(function (r) { return r.date === todayStr(); }))) setTimeout(function () { partyCleared(fresh[fresh.length - 1], party); }, 400);
+  }
+  function partyCleared(r, party) {
+    var el = document.createElement('div'); el.className = 'levelup';
+    var others = party ? party.members.filter(function (m) { return !m.me && m.pid; }) : [];
+    el.innerHTML = '<div class="box" style="border-color:var(--cyan);box-shadow:0 0 80px rgba(102,219,255,.25)"><span class="eyebrow" style="color:var(--cyan)">Party Quest Clear</span>' +
+      '<div style="font-size:52px;margin:10px 0 4px">' + esc(party ? party.emoji : '🤝') + '</div>' +
+      '<div style="font-weight:800;font-size:20px">' + esc(party ? party.name : '파티') + ' 클리어!</div>' +
+      '<p style="margin-top:6px">' + (r.date === todayStr() ? '오늘' : md(r.date)) + ' 파티원 ' + r.n + '명 모두 목표 달성' + (r.combo > 1 ? ' · 🔗 ' + r.combo + '일 연속' : '') + '</p>' +
+      '<div class="big" style="font-size:44px;color:var(--cyan)">+' + r.xp + ' XP</div>' +
+      (others.length ? '<button class="btn btn-primary" data-hi style="margin-top:8px;width:100%">🙌 파티원에게 하이파이브</button>' : '') +
+      '<button class="btn" data-x style="margin-top:8px;width:100%">닫기</button></div>';
+    document.body.appendChild(el);
+    burst(window.innerWidth / 2, window.innerHeight / 2, 36);
+    el.addEventListener('click', function (e) {
+      if (e.target.closest('[data-hi]')) {
+        others.forEach(function (m) { social('cheer', { to: m.pid, emoji: '🙌', message: '파티 클리어! 하이파이브 🙌' }); store('dl_quest_hi_' + todayStr() + '_' + m.pid, '1'); });
+        toast('🙌 파티원 ' + others.length + '명에게 하이파이브를 보냈어요!');
+        el.remove(); return;
+      }
+      if (e.target === el || e.target.closest('[data-x]')) el.remove();
+    });
+  }
+  function partyMemberRows(all, P) {
+    var t = todayStr();
+    return P.members.map(function (m) {
+      var st = m.me ? myTodayStatus(all, P.goal) : m.today, ok = !!(st && st.ok);
+      var stTxt = !st ? '오늘 기록 없음' : st.total ? st.done + ' / ' + st.total + ' 루틴' + (st.total ? ' · ' + Math.round(st.done / st.total * 100) + '%' : '') : '루틴 없는 날 · ' + st.xp + ' XP';
+      var wk = (m.week || []).map(function (v, i) { var d = addDays(P.weekStart || weekStart(t), i); if (m.me && d === t) v = ok ? 1 : 0; return '<i class="' + (v === null ? 'fut' : v ? 'on' : '') + '" title="' + DOW[(i + 1) % 7] + '"></i>'; }).join('');
+      var pf = m.me ? { avatar: me().avatar || '', color: me().color || '', photo: state.photo } : { avatar: m.avatar || '', color: m.color || '', photo: m.photo || '' };
+      var nm = m.me ? displayName() : m.name;
+      var act = '';
+      if (!m.me && m.pid) {
+        if (!ok) { var nudged = load('dl_quest_nudge_' + t + '_' + m.pid); act = '<button class="cheer-btn" data-nudge="' + esc(m.pid) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님 콕 찌르기"' + (nudged ? ' disabled style="opacity:.4"' : '') + '>👉</button>'; }
+        else { var hi = load('dl_quest_hi_' + t + '_' + m.pid); act = '<button class="cheer-btn" data-hi5="' + esc(m.pid) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님에게 하이파이브"' + (hi ? ' disabled style="opacity:.4"' : '') + '>🙌</button>'; }
+      }
+      return { ok: ok, html: '<div class="pm' + (ok ? ' ok' : '') + '"><div class="av">' + avatarSvg(m.me ? levelFromXp(all.total).level : (m.level || 1), pf) + '</div>' +
+        '<div class="nm"><b>' + esc(nm) + (m.leader ? ' 👑' : '') + (m.me ? ' <span style="color:var(--lime);font-size:12px">나</span>' : '') + '</b><small>' + esc(stTxt) + '</small><div class="wk" aria-label="이번 주 달성">' + wk + '</div></div>' +
+        '<div class="st">' + (ok ? '<span class="done">달성 ✓</span>' : '<span style="color:var(--muted)">진행 중</span>') + act + '</div></div>' };
+    });
+  }
+  function renderParty(all) {
+    var L = state.league, box = $('partyBox'); if (!box) return;
+    var P = L && L.party, inv = (L && L.partyInvites) || [];
+    if (!P) {
+      var invHtml = inv.map(function (x) {
+        return '<div class="pc-inv"><span class="e">' + esc(x.emoji) + '</span><div class="t"><b>' + esc(x.from) + '</b>님이 「' + esc(x.name) + '」 파티에 초대했어요<small>' + esc((x.names || []).join(', ')) + ' · ' + esc(PARTY_GOALS[x.goal] || '') + '</small></div>' +
+          '<button class="btn btn-sm" data-pdecline="' + esc(x.id) + '">거절</button><button class="btn btn-sm btn-primary" data-paccept="' + esc(x.id) + '">수락</button></div>';
+      }).join('');
+      box.innerHTML = '<div class="party-card"><div class="pc-head"><span class="pe">🤝</span><div class="grow"><span class="k">Party Quest</span><b>파티퀘스트</b>' +
+        '<small>친구 2~5명이 파티를 맺고, 그날 모두가 일간 목표를 채우면 파티원 전원에게 보너스 XP가 들어가요. 연속으로 클리어하면 콤보 보너스까지!</small></div></div>' +
+        invHtml + '<div class="pc-actions"><button class="btn btn-primary" id="btnPartyCreate">+ 파티 만들기</button></div></div>';
+      return;
+    }
+    var rows = partyMemberRows(all, P), n = rows.length, okN = rows.filter(function (r) { return r.ok; }).length;
+    var todayClear = (P.clears || []).filter(function (c) { return c.date === todayStr(); })[0];
+    var nextXp = partyReward(Math.max(2, n), (P.combo || 0) + (todayClear ? 0 : 1));
+    var sub = n < 2 ? '파티원이 2명 이상이어야 파티퀘스트가 시작돼요. 친구를 초대해 보세요.' :
+      todayClear ? '🎉 오늘 파티 클리어! 파티원 전원 +' + todayClear.xp + ' XP' + (todayClear.combo > 1 ? ' (🔗 ' + todayClear.combo + '일 연속)' : '') :
+      okN === n ? '모두 달성! 기록이 올라가면 곧 클리어 처리돼요 · +' + nextXp + ' XP' :
+      (n - okN) + '명만 더 달성하면 전원 +' + nextXp + ' XP' + ((P.combo || 0) ? ' · 콤보 ' + P.combo + '일 이어가기' : '');
+    var pend = (P.invites || []).map(function (x) { return '<span>' + esc(x.name) + ' 초대 대기<button data-pcancel="' + esc(x.pid) + '" aria-label="초대 취소">✕</button></span>'; }).join('');
+    var clears = (P.clears || []).slice(0, 10).map(function (c) { return '<span>' + md(c.date) + ' <b>+' + c.xp + '</b>' + (c.combo > 1 ? ' 🔗' + c.combo : '') + '</span>'; }).join('');
+    var bar = rows.map(function (r) { return r.ok ? 1 : 0; }).sort().reverse().map(function (v) { return '<i class="' + (v ? 'on' : '') + '"></i>'; }).join('');
+    box.innerHTML = '<div class="party-card' + (todayClear ? ' cleared' : '') + '">' +
+      '<div class="pc-head"><span class="pe">' + esc(P.emoji) + '</span><div class="grow"><span class="k">Party Quest</span><b>' + esc(P.name) + '</b>' +
+        '<div class="pc-chips"><span>🎯 ' + esc(PARTY_GOALS[P.goal] || '') + '</span><span>👥 ' + n + ' / ' + PARTY_MAX + '명</span>' + ((P.combo || 0) ? '<span class="hot">🔗 ' + P.combo + '일 연속 클리어</span>' : '') + '<span>🏁 누적 ' + (P.clears || []).length + '회</span></div></div>' +
+        (P.isLeader ? '<button class="icon-btn" id="btnPartyEdit" aria-label="파티 설정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>' : '') + '</div>' +
+      '<div class="pc-goal"><div class="row"><span>오늘 파티 진행</span><b>' + okN + ' / ' + n + '명</b></div><div class="pc-bar">' + bar + '</div><div class="s">' + esc(sub) + '</div></div>' +
+      '<div class="pm-list">' + rows.map(function (r) { return r.html; }).join('') + '</div>' +
+      (pend ? '<div class="pc-pending">' + pend + '</div>' : '') +
+      (clears ? '<div><div style="font-size:12px;color:var(--muted);margin-bottom:6px">최근 파티 클리어</div><div class="pc-clears">' + clears + '</div></div>' : '') +
+      '<div class="pc-actions">' + (n + (P.invites || []).length < PARTY_MAX ? '<button class="btn btn-primary" id="btnPartyInvite">+ 친구 초대</button>' : '') + '<button class="btn" id="btnPartyLeave">파티 나가기</button></div>' +
+      '</div>';
+  }
+  function renderPartyStrip(all, date) {
+    var el = $('partyStrip'); if (!el) return;
+    var L = state.league, P = L && L.party;
+    if (date !== todayStr() || !L) { el.innerHTML = ''; return; }
+    if (!P) {
+      var inv = L.partyInvites || [];
+      el.innerHTML = inv.length ? '<button class="party-strip" data-goparty><span class="e">📩</span><span class="t"><b>' + esc(inv[0].from) + '님이 「' + esc(inv[0].name) + '」 파티에 초대했어요</b><small>수락하면 오늘부터 바로 파티퀘스트가 시작돼요</small></span><span class="x">보기</span></button>' : '';
+      return;
+    }
+    var rows = partyMemberRows(all, P), n = rows.length, okN = rows.filter(function (r) { return r.ok; }).length;
+    if (n < 2) { el.innerHTML = ''; return; }
+    var todayClear = (P.clears || []).filter(function (c) { return c.date === todayStr(); })[0];
+    var mine = rows.filter(function (r, i) { return P.members[i].me; })[0];
+    var nextXp = partyReward(n, (P.combo || 0) + 1);
+    el.innerHTML = '<button class="party-strip' + (todayClear ? ' cleared' : '') + '" data-goparty><span class="e">' + esc(P.emoji) + '</span><span class="t"><b>' + esc(P.name) + ' · 오늘 ' + okN + ' / ' + n + '명 달성</b><small>' +
+      (todayClear ? '파티 클리어! 전원 보너스 획득' : mine && !mine.ok ? '내 목표만 채우면 파티에 한 걸음 더 · ' + esc(PARTY_GOALS[P.goal] || '') : '친구들을 기다리는 중 · 👉 콕 찔러서 깨워 보세요') +
+      '</small></span><span class="x">' + (todayClear ? '+' + todayClear.xp + ' XP' : '+' + nextXp + ' XP') + '</span></button>';
+  }
+  document.addEventListener('click', function (e) { if (e.target.closest('[data-goparty]')) setTab('friends'); });
+
+  function partyCall(action, payload, okMsg) {
+    if (partyBusy) return Promise.resolve({ ok: false });
+    partyBusy = true;
+    return social(action, payload).then(function (d) {
+      partyBusy = false;
+      if (!d.ok) { toast(d.error || '처리하지 못했어요.', true); return d; }
+      if (okMsg) toast(typeof okMsg === 'function' ? okMsg(d) : okMsg);
+      return loadLeague(true).then(function () { return d; });
+    });
+  }
+  function pickEmojiPt(e) { ptEmoji = e; document.querySelectorAll('#ptEmojis [data-pemo]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-pemo') === e ? 'true' : 'false'); }); }
+  function pickGoal(g) { ptGoal = g; document.querySelectorAll('#ptGoal [data-goal]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-goal') === g ? 'true' : 'false'); }); }
+  $('ptEmojis').innerHTML = PARTY_EMOJIS.map(function (x) { return '<button type="button" data-pemo="' + x + '" aria-pressed="false">' + x + '</button>'; }).join('');
+  $('ptEmojis').addEventListener('click', function (e) { var b = e.target.closest('[data-pemo]'); if (b) pickEmojiPt(b.getAttribute('data-pemo')); });
+  $('ptGoal').addEventListener('click', function (e) { var b = e.target.closest('[data-goal]'); if (b) pickGoal(b.getAttribute('data-goal')); });
+  function friendPickRows(selectable) {
+    var fr = ((state.league && state.league.players) || []).filter(function (p) { return !p.me; });
+    if (!fr.length) return '<div class="empty" style="padding:14px">아직 친구가 없어요. 아래 초대 링크로 먼저 친구를 데려와 주세요.</div>';
+    return fr.map(function (p) {
+      var nm = (p.stats && p.stats.nick) || p.name, busy = p.inParty && !p.sameParty;
+      if (p.sameParty) return '';
+      if (selectable) return '<label class="pick"' + (busy ? ' aria-disabled="true"' : '') + '><input type="checkbox" value="' + esc(p.pid) + '"' + (busy ? ' disabled' : '') + '><span class="grow">' + esc(nm) + '<br><small>LV ' + ((p.stats && p.stats.level) || 1) + (busy ? ' · 다른 파티에 있어요' : '') + '</small></span></label>';
+      return '<div class="pick"' + (busy ? ' aria-disabled="true"' : '') + '><span class="grow">' + esc(nm) + '<br><small>LV ' + ((p.stats && p.stats.level) || 1) + (busy ? ' · 다른 파티에 있어요' : '') + '</small></span>' + (busy ? '' : '<button class="btn btn-sm btn-primary" data-pinvite="' + esc(p.pid) + '">초대</button>') + '</div>';
+    }).join('') || '<div class="empty" style="padding:14px">초대할 수 있는 친구가 모두 파티에 들어와 있어요.</div>';
+  }
+  function openPartySheet(mode) {
+    var P = state.league && state.league.party;
+    ptMode = mode;
+    $('partySheetTitle').textContent = mode === 'edit' ? '파티 설정' : '파티 만들기';
+    $('btnPartySave').textContent = mode === 'edit' ? '저장' : '파티 만들기';
+    $('ptName').value = mode === 'edit' && P ? P.name : displayName() + '의 파티';
+    pickEmojiPt(mode === 'edit' && P ? P.emoji : '⚔️'); pickGoal(mode === 'edit' && P ? P.goal : 'perfect');
+    $('ptInviteWrap').hidden = mode === 'edit';
+    if (mode !== 'edit') $('ptFriends').innerHTML = friendPickRows(true);
+    openSheet($('partySheet'));
+  }
+  $('btnPartySave').addEventListener('click', function () {
+    var name = $('ptName').value.trim();
+    if (ptMode === 'edit') { partyCall('party_update', { name: name, emoji: ptEmoji, goal: ptGoal }, '파티 설정을 저장했어요.').then(function (d) { if (d.ok) closeSheet(); }); return; }
+    var picks = Array.prototype.slice.call(document.querySelectorAll('#ptFriends input:checked')).map(function (i) { return i.value; }).slice(0, PARTY_MAX - 1);
+    partyCall('party_create', { name: name, emoji: ptEmoji, goal: ptGoal, invite: picks }, function (d) { return '🎉 파티를 만들었어요' + (d.invited ? ' · 친구 ' + d.invited + '명에게 초대를 보냈어요' : ''); }).then(function (d) {
+      if (!d.ok) return;
+      closeSheet();
+      picks.forEach(function (pid) { social('cheer', { to: pid, emoji: '🙌', message: '「' + (name || '파티') + '」 파티에 초대했어요! 친구 탭에서 수락해 주세요' }); });
+    });
+  });
+  $('partyBox').addEventListener('click', function (e) {
+    var b;
+    if (e.target.closest('#btnPartyCreate')) return openPartySheet('create');
+    if (e.target.closest('#btnPartyEdit')) return openPartySheet('edit');
+    if (e.target.closest('#btnPartyInvite')) { $('ptInvList').innerHTML = friendPickRows(false); openSheet($('partyInvSheet')); return; }
+    if (e.target.closest('#btnPartyLeave')) { if (confirm('파티에서 나갈까요? 이미 받은 파티 보너스 XP는 그대로 남아요.')) partyCall('party_leave', null, '파티에서 나왔어요.'); return; }
+    if ((b = e.target.closest('[data-paccept]'))) { partyCall('party_accept', { party_id: b.getAttribute('data-paccept') }, function (d) { return '🤝 「' + (d.name || '파티') + '」에 합류했어요! 오늘부터 같이 달려요'; }); return; }
+    if ((b = e.target.closest('[data-pdecline]'))) { partyCall('party_decline', { party_id: b.getAttribute('data-pdecline') }, '초대를 거절했어요.'); return; }
+    if ((b = e.target.closest('[data-pcancel]'))) { partyCall('party_cancel_invite', { to: b.getAttribute('data-pcancel') }, '초대를 취소했어요.'); return; }
+    if ((b = e.target.closest('[data-nudge]'))) {
+      var pid = b.getAttribute('data-nudge'), nm = b.getAttribute('data-name'); b.disabled = true; b.style.opacity = '.4';
+      social('cheer', { to: pid, emoji: '👉', message: '콕! 오늘 파티퀘스트 같이 끝내요 💪' }).then(function (d) {
+        if (d.ok) { store('dl_quest_nudge_' + todayStr() + '_' + pid, '1'); toast('👉 ' + nm + '님을 콕 찔렀어요!'); } else { b.disabled = false; b.style.opacity = ''; toast(d.error || '보내지 못했어요.', true); }
+      });
+      return;
+    }
+    if ((b = e.target.closest('[data-hi5]'))) {
+      var hp = b.getAttribute('data-hi5'), hn = b.getAttribute('data-name'); b.disabled = true; b.style.opacity = '.4';
+      social('cheer', { to: hp, emoji: '🙌', message: '오늘 목표 달성 하이파이브 🙌' }).then(function (d) {
+        if (d.ok) { store('dl_quest_hi_' + todayStr() + '_' + hp, '1'); toast('🙌 ' + hn + '님에게 하이파이브!'); } else { b.disabled = false; b.style.opacity = ''; toast(d.error || '보내지 못했어요.', true); }
+      });
+    }
+  });
+  $('ptInvList').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pinvite]'); if (!b) return;
+    var pid = b.getAttribute('data-pinvite'); b.disabled = true;
+    partyCall('party_invite', { to: pid }, '파티 초대를 보냈어요.').then(function (d) {
+      if (!d.ok) { b.disabled = false; return; }
+      var P = state.league && state.league.party;
+      social('cheer', { to: pid, emoji: '🙌', message: '「' + ((P && P.name) || '파티') + '」 파티에 초대했어요! 친구 탭에서 수락해 주세요' });
+      $('ptInvList').innerHTML = friendPickRows(false);
+    });
+  });
+
   // 가입 화면
   function openSignup(code) {
     $('signupError').hidden = true;
