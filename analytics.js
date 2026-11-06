@@ -26,6 +26,30 @@
   };
   window.dlTrack=track;
 
+  /* AI 답변(ChatGPT·Perplexity·Gemini 등)에서 들어온 방문을 세션당 1회 ai_referral로 기록.
+   * referrer가 비어도 ChatGPT처럼 utm_source를 붙이는 경우를 함께 잡는다. */
+  const AI_SOURCES=[
+    [/(^|\.)chatgpt\.com$|(^|\.)openai\.com$/,'chatgpt'],
+    [/(^|\.)perplexity\.ai$/,'perplexity'],
+    [/^gemini\.google\.com$|^bard\.google\.com$/,'gemini'],
+    [/^copilot\.microsoft\.com$|^edgeservices\.bing\.com$/,'copilot'],
+    [/(^|\.)claude\.ai$/,'claude'],
+    [/(^|\.)you\.com$/,'you'],
+    [/(^|\.)deepseek\.com$/,'deepseek'],
+    [/(^|\.)wrtn\.ai$/,'wrtn'],
+    [/^cue\.search\.naver\.com$|(^|\.)clova\.ai$/,'naver_ai']
+  ];
+  const aiSource=host=>{host=(host||'').toLowerCase();for(const [re,name] of AI_SOURCES)if(re.test(host))return name;return '';};
+  try{
+    let ref='';try{ref=document.referrer?new URL(document.referrer).hostname:'';}catch(_){}
+    const utm=(new URLSearchParams(location.search).get('utm_source')||'').toLowerCase();
+    const src=aiSource(ref)||aiSource(utm)||(/^(chatgpt|perplexity|gemini|copilot|claude)$/.test(utm)?utm:'');
+    if(src&&!sessionStorage.getItem('dl_ai_ref')){
+      sessionStorage.setItem('dl_ai_ref',src);
+      track('ai_referral',{ai_source:src,referrer_host:ref||'(none)',landing_path:location.pathname});
+    }
+  }catch(_){}
+
   const $$=(s,c=document)=>[...c.querySelectorAll(s)];
   const txt=el=>el?(el.innerText||el.textContent):"";
   const clean=t=>(t||'').replace(/[↗↘]/g,'').replace(/\s+/g,' ').trim().slice(0,100);
