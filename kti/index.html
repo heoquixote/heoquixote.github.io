@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>한반도 긴장도 지수 | 데이터 러너즈</title>
   <meta name="description" content="공개 데이터(GDELT 뉴스, 금융 시장, 위키백과 조회수, 북한 군사 이벤트)로 계산한 한반도 긴장도 지수(KTI) 대시보드">
@@ -13,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-  <script src="/analytics.js?v=4" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+  <script src="/analytics.js?v=5" defer></script>
   <style>
     :root{
       --bg:#050607;--surface:#0b0d0e;--surface-2:#121516;--surface-3:#181c1d;

@@ -7,8 +7,21 @@
 (()=>{
   const meta=document.querySelector('meta[name="ga-measurement-id"]');
   const ID=(meta&&meta.content||'').trim();
-  const enabled=/^G-[A-Z0-9]+$/.test(ID)&&ID!=='G-XXXXXXXXXX';
   const debug=/[?&]ga_debug=1\b/.test(location.search);
+  /* 공식 도메인에서만 수집합니다. 로컬 미리보기·이전 주소(github.io)·복사된 사이트의 조회가 지표에 섞이지 않게 합니다.
+   * 다른 호스트에서 확인이 필요하면 ?ga_debug=1 을 붙입니다. */
+  const PROD_HOSTS=['www.data-learners.com','data-learners.com'];
+  const enabled=/^G-[A-Z0-9]+$/.test(ID)&&ID!=='G-XXXXXXXXXX'&&(PROD_HOSTS.includes(location.hostname)||debug);
+
+  /* 내부 트래픽 표시: 운영자 기기에서 ?dl_internal=1 로 한 번 열면 이 브라우저의 조회에 traffic_type=internal 이 붙습니다.
+   * GA4 관리 > 데이터 필터의 '내부 트래픽' 필터가 이 값을 기준으로 제외합니다. 해제는 ?dl_internal=0 */
+  const INTERNAL_KEY='dl_internal';
+  let internal=false;
+  try{
+    const q=location.search.match(/[?&]dl_internal=([01])\b/);
+    if(q){if(q[1]==='1')localStorage.setItem(INTERNAL_KEY,'1');else localStorage.removeItem(INTERNAL_KEY)}
+    internal=localStorage.getItem(INTERNAL_KEY)==='1';
+  }catch(_){}
 
   window.dataLayer=window.dataLayer||[];
   window.gtag=window.gtag||function(){dataLayer.push(arguments)};
@@ -17,7 +30,10 @@
     s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(ID);
     document.head.appendChild(s);
     gtag('js',new Date());
-    gtag('config',ID,debug?{debug_mode:true}:{});
+    const cfg={};
+    if(debug)cfg.debug_mode=true;
+    if(internal)cfg.traffic_type='internal';
+    gtag('config',ID,cfg);
   }
 
   const track=(name,params={})=>{

@@ -1,6 +1,6 @@
 /* Runner Quest 서비스 워커: 앱 껍데기만 캐시하고, 기록 API(n8n)는 항상 네트워크로 보냅니다.
    푸시 알림(저녁 9시 남은 퀘스트 등)도 여기서 받아 표시합니다. */
-var VERSION = 'rq-v4';
+var VERSION = 'rq-v5';
 var SHELL = [
   '/quest/',
   '/quest/manifest.webmanifest',
@@ -9,7 +9,7 @@ var SHELL = [
   '/quest/icon-192.png',
   '/quest/icon-512.png',
   '/quest/icon-maskable-512.png',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
+  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js'
 ];
 
 self.addEventListener('install', function (e) {
