@@ -649,10 +649,9 @@
     .shelf-item.is-active .si-arrow{opacity:1;transform:none}
     .shelf-item:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--book-accent)}
     .shelf-stage{position:sticky;top:calc(var(--nav-h) + 28px);min-height:560px;padding:clamp(28px,3.4vw,48px);display:grid;grid-template-columns:minmax(150px,42%) minmax(0,1fr);gap:clamp(24px,3vw,40px);align-items:end;border:1px solid var(--line);background:radial-gradient(120% 90% at 0% 100%,color-mix(in srgb,var(--book-accent) 22%,transparent),transparent 60%),linear-gradient(150deg,rgba(255,255,255,.04),transparent 45%),var(--surface);overflow:hidden}
-    .motion-ok .shelf-stage{transition:--book-accent .35s var(--ease)}
+    .motion-ok .shelf-stage{transition:--book-accent .5s ease}
     .shelf-stage:before{content:"";position:absolute;left:0;top:0;width:60%;height:2px;background:linear-gradient(90deg,var(--book-accent),transparent)}
     .stage-num{position:absolute;right:clamp(18px,2.4vw,32px);top:clamp(4px,1vw,12px);color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--book-accent) 55%,transparent);font:700 clamp(110px,13vw,190px)/1 var(--font-en);letter-spacing:-.06em;pointer-events:none;user-select:none}
-    .stage-flash{position:absolute;inset:0;z-index:3;background:var(--book-accent);transform:scaleX(0);transform-origin:left;pointer-events:none;mix-blend-mode:screen;opacity:.9}
     .stage-cover-frame{position:relative;z-index:1;width:100%;aspect-ratio:5/7;align-self:center;background:linear-gradient(155deg,var(--book-accent),#171a18 72%);box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.12)}
     .stage-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;visibility:hidden}
     .stage-cover.is-active{opacity:1;visibility:visible}
@@ -1179,7 +1178,6 @@
           </ol>
           <div class="shelf-stage" style="--book-accent:#c8ff3d" aria-live="polite">
             <span class="stage-num" aria-hidden="true">01</span>
-            <span class="stage-flash" aria-hidden="true"></span>
             <div class="stage-cover-frame">
               <img class="stage-cover is-active" src="assets/books/01-tableau.webp" width="480" height="672" alt="태블로를 활용한 데이터 시각화 표지" data-alt="태블로를 활용한 데이터 시각화 표지" loading="lazy" decoding="async">
               <img class="stage-cover" src="assets/books/02-sql.webp" width="480" height="672" alt="" data-alt="Learners School SQL 기초 표지" fetchpriority="low" loading="lazy" decoding="async">
@@ -1626,11 +1624,10 @@
     (()=>{
       const shelf=$('#bookShelf');if(!shelf)return;
       const items=$$('.shelf-item',shelf),stage=$('.shelf-stage',shelf),covers=$$('.stage-cover',stage);
-      const num=$('.stage-num',stage),count=$('.stage-count',stage),cat=$('.stage-cat-txt',stage),title=$('.stage-title',stage),desc=$('.stage-desc',stage),link=$('.stage-link',stage),flash=$('.stage-flash',stage);
+      const num=$('.stage-num',stage),count=$('.stage-count',stage),cat=$('.stage-cat-txt',stage),title=$('.stage-title',stage),desc=$('.stage-desc',stage),link=$('.stage-link',stage);
       const anim=document.documentElement.classList.contains('motion-ok')&&'animate' in Element.prototype;
-      const fast='cubic-bezier(.2,.9,.1,1)';
-      let cur=0;
-      const play=(el,kf,o)=>{el.getAnimations().forEach(a=>a.cancel());return el.animate(kf,{duration:260,easing:fast,fill:'both',...o})};
+      let cur=0,hov;
+      const play=(el,kf,o)=>{el.getAnimations().forEach(a=>a.cancel());return el.animate(kf,{fill:'both',...o})};
       const show=i=>{
         if(i===cur)return;
         const it=items[i],prev=covers[cur],next=covers[i],dir=i>cur?1:-1;
@@ -1643,17 +1640,17 @@
         link.href=it.href;
         prev.classList.remove('is-active');prev.alt='';next.classList.add('is-active');next.alt=next.dataset.alt;
         if(anim){
-          play(prev,[{opacity:1,transform:'none',visibility:'visible'},{opacity:0,transform:`translateY(${-18*dir}px) scale(.94)`,visibility:'visible'}],{duration:200,fill:'none'});
-          play(next,[{clipPath:dir>0?'inset(100% 0 0 0)':'inset(0 0 100% 0)',transform:`translateY(${28*dir}px) rotate(${-3*dir}deg) scale(1.04)`},{clipPath:'inset(0 0 0 0)',transform:'none'}],{duration:300});
-          play(num,[{transform:`translateY(${40*dir}%)`,opacity:0},{transform:'none',opacity:1}],{duration:280});
-          play(flash,[{transform:'scaleX(0)',transformOrigin:'left',opacity:.9},{transform:'scaleX(1)',transformOrigin:'left',opacity:.55,offset:.45},{transform:'scaleX(1)',transformOrigin:'right',opacity:0}],{duration:320,fill:'none'});
-          [cat,title,desc,link].forEach((el,k)=>play(el,[{opacity:0,transform:`translateY(${14*dir}px)`},{opacity:1,transform:'none'}],{duration:260,delay:40+k*35}));
+          play(prev,[{opacity:1,visibility:'visible'},{opacity:0,visibility:'visible'}],{duration:320,easing:'ease-out',fill:'none'});
+          play(next,[{opacity:0,transform:`translateY(${10*dir}px) scale(.985)`},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.22,.8,.3,1)'});
+          play(num,[{opacity:0,transform:`translateY(${8*dir}%)`},{opacity:1,transform:'none'}],{duration:420,easing:'cubic-bezier(.22,.8,.3,1)'});
+          [cat,title,desc,link].forEach((el,k)=>play(el,[{opacity:.15,transform:`translateY(${6*dir}px)`},{opacity:1,transform:'none'}],{duration:360,delay:k*30,easing:'cubic-bezier(.22,.8,.3,1)'}));
         }
         cur=i;
       };
       const touch=matchMedia('(hover: none)');
       items.forEach((it,i)=>{
-        it.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')show(i)});
+        it.addEventListener('pointerenter',e=>{if(e.pointerType!=='mouse')return;clearTimeout(hov);hov=setTimeout(()=>show(i),70)});
+        it.addEventListener('pointerleave',()=>clearTimeout(hov));
         it.addEventListener('focus',()=>show(i));
         it.addEventListener('click',e=>{if(touch.matches&&i!==cur){e.preventDefault();show(i)}});
       });
