@@ -628,25 +628,42 @@
 
     /* Books */
     .books-head .btn{justify-self:end}
-    .book-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-    .book-card{--book-accent:var(--lime);position:relative;min-height:440px;padding:24px;display:flex;flex-direction:column;border:1px solid var(--line);background:linear-gradient(150deg,rgba(255,255,255,.035),transparent 45%),var(--surface);overflow:hidden;transition:transform .3s var(--ease),border-color .3s}
-    .book-card.featured{grid-column:span 2;display:grid;grid-template-columns:minmax(150px,190px) 1fr;grid-template-rows:auto 1fr auto;column-gap:36px}
-    .book-card:before{content:"";position:absolute;left:0;top:0;width:52%;height:2px;background:linear-gradient(90deg,var(--book-accent),transparent)}
-    .book-card:hover{transform:translateY(-4px);border-color:var(--book-accent)}
-    .book-top{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--book-accent);font:650 12px/1 var(--font-en);letter-spacing:.12em}
-    .featured .book-top{grid-column:1/-1}
-    .book-cover-wrap{width:136px;aspect-ratio:5/7;margin:28px auto 0;position:relative;display:grid;place-items:center;border:1px solid rgba(255,255,255,.12);background:linear-gradient(155deg,var(--book-accent),#171a18 72%);box-shadow:0 22px 46px rgba(0,0,0,.45);overflow:hidden;transition:transform .35s var(--ease)}
-    .featured .book-cover-wrap{grid-column:1;grid-row:2/4;width:100%;max-width:190px;align-self:center}
-    .book-card:hover .book-cover-wrap{transform:translateY(-4px) rotate(-1deg)}
-    .book-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
-    .cover-fallback{color:#080a09;text-align:center;font:800 34px/1 var(--font-en);letter-spacing:-.06em}
-    .cover-fallback small{display:block;margin-top:8px;font-size:9px;letter-spacing:.1em}
-    .book-card h3{margin-top:24px;font-size:19px;line-height:1.35;letter-spacing:-.03em;font-weight:700}
-    .featured h3{grid-column:2;grid-row:2;align-self:end;margin:40px 0 14px;font-size:clamp(24px,2.3vw,32px);line-height:1.25}
-    .book-card p{margin-top:auto;padding-top:14px;color:var(--muted);font-size:14px;line-height:1.7}
-    .featured p{grid-column:2;grid-row:3;margin:0 0 8px;padding:0;font-size:15px}
-    .book-arrow{position:absolute;z-index:3;right:20px;bottom:20px;width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line-strong);border-radius:50%;color:var(--book-accent);font:500 15px/1 var(--font-en);opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s var(--ease)}
-    .book-card:hover .book-arrow,.book-card:focus-visible .book-arrow{opacity:1;transform:none}
+    @property --book-accent{syntax:"<color>";inherits:true;initial-value:#c8ff3d}
+    .shelf{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:clamp(28px,4vw,64px);align-items:start}
+    .shelf-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line);counter-reset:none}
+    .shelf-item{--book-accent:var(--lime);position:relative;display:grid;grid-template-columns:44px minmax(0,1fr) 28px;align-items:center;gap:14px;padding:17px 14px 17px 18px;border-bottom:1px solid var(--line);color:var(--text-2);text-decoration:none;overflow:hidden;isolation:isolate;transition:color .18s,padding .22s var(--ease)}
+    .shelf-item:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,color-mix(in srgb,var(--book-accent) 16%,transparent),transparent 75%);transform:scaleX(0);transform-origin:left;transition:transform .22s var(--ease)}
+    .shelf-item:after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--book-accent);transform:scaleY(0);transition:transform .18s var(--ease)}
+    .si-no{color:var(--subtle);font:650 13px/1 var(--font-en);letter-spacing:.08em;transition:color .18s}
+    .si-main{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .si-title{font-size:17px;font-weight:650;line-height:1.35;letter-spacing:-.02em;transition:transform .22s var(--ease)}
+    .si-cat{color:var(--subtle);font:650 10.5px/1 var(--font-en);letter-spacing:.14em;transition:color .18s}
+    .si-desc{display:none}
+    .si-arrow{justify-self:end;color:var(--book-accent);font:500 16px/1 var(--font-en);opacity:0;transform:translateX(-6px);transition:opacity .18s,transform .22s var(--ease)}
+    .shelf-list:hover .shelf-item:not(.is-active){color:var(--subtle)}
+    .shelf-item.is-active{color:var(--text)}
+    .shelf-item.is-active:before{transform:scaleX(1)}
+    .shelf-item.is-active:after{transform:scaleY(1)}
+    .shelf-item.is-active .si-no,.shelf-item.is-active .si-cat{color:var(--book-accent)}
+    .shelf-item.is-active .si-title{transform:translateX(8px)}
+    .shelf-item.is-active .si-arrow{opacity:1;transform:none}
+    .shelf-item:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--book-accent)}
+    .shelf-stage{position:sticky;top:calc(var(--nav-h) + 28px);min-height:560px;padding:clamp(28px,3.4vw,48px);display:grid;grid-template-columns:minmax(150px,42%) minmax(0,1fr);gap:clamp(24px,3vw,40px);align-items:end;border:1px solid var(--line);background:radial-gradient(120% 90% at 0% 100%,color-mix(in srgb,var(--book-accent) 22%,transparent),transparent 60%),linear-gradient(150deg,rgba(255,255,255,.04),transparent 45%),var(--surface);overflow:hidden}
+    .motion-ok .shelf-stage{transition:--book-accent .35s var(--ease)}
+    .shelf-stage:before{content:"";position:absolute;left:0;top:0;width:60%;height:2px;background:linear-gradient(90deg,var(--book-accent),transparent)}
+    .stage-num{position:absolute;right:clamp(18px,2.4vw,32px);top:clamp(4px,1vw,12px);color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--book-accent) 55%,transparent);font:700 clamp(110px,13vw,190px)/1 var(--font-en);letter-spacing:-.06em;pointer-events:none;user-select:none}
+    .stage-flash{position:absolute;inset:0;z-index:3;background:var(--book-accent);transform:scaleX(0);transform-origin:left;pointer-events:none;mix-blend-mode:screen;opacity:.9}
+    .stage-cover-frame{position:relative;z-index:1;width:100%;aspect-ratio:5/7;align-self:center;background:linear-gradient(155deg,var(--book-accent),#171a18 72%);box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.12)}
+    .stage-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;visibility:hidden}
+    .stage-cover.is-active{opacity:1;visibility:visible}
+    .stage-info{position:relative;z-index:1;min-width:0;padding-bottom:6px}
+    .stage-cat{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--book-accent);font:650 12px/1 var(--font-en);letter-spacing:.14em}
+    .stage-count{color:var(--text-2)}
+    .stage-title{margin-top:18px;font-size:clamp(24px,2.4vw,34px);line-height:1.25;letter-spacing:-.035em;font-weight:750;word-break:keep-all}
+    .stage-desc{margin-top:16px;color:var(--muted);font-size:15px;line-height:1.75;word-break:keep-all}
+    .stage-link{display:inline-flex;align-items:center;gap:8px;margin-top:26px;padding:12px 18px;border:1px solid var(--book-accent);color:var(--text);font-size:14px;font-weight:650;text-decoration:none;transition:background .2s,color .2s}
+    .stage-link:hover{background:var(--book-accent);color:#080a09}
+    .stage-link:focus-visible{outline:none;box-shadow:var(--focus)}
 
     /* Career */
     .partners{position:relative;margin-bottom:56px;padding:22px 0;border-block:1px solid var(--line);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
@@ -845,7 +862,8 @@
       .nav-links a:not(.btn),.nav-more-toggle{padding:10px}
       .nav-links .btn-sm{padding:0 12px}
       .course-card{grid-column:span 3}
-      .book-grid{grid-template-columns:repeat(2,1fr)}
+      .shelf-stage{grid-template-columns:1fr;align-items:start;min-height:0}
+      .stage-cover-frame{width:min(240px,70%);align-self:start}
       .method-list{grid-template-columns:repeat(2,1fr)}
       .method-step:nth-child(2){border-right:0}
       .method-step:nth-child(3){padding-left:0;border-top:1px solid var(--line)}
@@ -854,6 +872,18 @@
       .outcome:nth-child(2){border-right:0}
       .outcome:nth-child(-n+2){border-bottom:1px solid var(--line)}
       .career-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:900px){
+      .shelf{grid-template-columns:1fr;gap:0}
+      .shelf-stage{order:-1;top:calc(var(--nav-h) + 8px);z-index:5;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:18px;min-height:0;padding:18px;background-color:var(--surface)}
+      .stage-cover-frame{width:96px}
+      .stage-num{font-size:84px;top:6px;right:12px;opacity:.5}
+      .stage-title{margin-top:10px;font-size:19px}
+      .stage-desc{margin-top:8px;font-size:13px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+      .stage-link{margin-top:12px;padding:8px 12px;font-size:13px}
+      .shelf-list{margin-top:14px}
+      .shelf-item{padding:15px 12px 15px 14px;grid-template-columns:34px minmax(0,1fr) 22px}
+      .si-title{font-size:15.5px}
     }
     @media (max-width:960px){
       :root{--nav-h:68px}
@@ -903,13 +933,8 @@
       .outcome-grid{grid-template-columns:1fr 1fr}
       .outcome{min-height:170px;padding:20px}
       .outcome>span{font-size:15px}
-      .book-grid{grid-template-columns:1fr}
-      .book-card.featured{grid-column:auto;display:flex}
-      .book-card{min-height:0}
-      .book-card.featured .book-cover-wrap{width:150px;margin:28px auto 0}
       .featured h3{margin:24px 0 0;font-size:22px}
       .featured p{margin:0;padding-top:14px}
-      .book-arrow{opacity:1;transform:none}
       .career-grid{grid-template-columns:1fr}
       .career-item{min-height:0}
       .credential{grid-template-columns:90px 1fr;gap:14px}
@@ -1139,77 +1164,41 @@
           </div>
           <a class="btn" href="https://wikidocs.net/profile/info/book/35484" target="_blank" rel="noopener">WikiDocs 전체 보기</a>
         </header>
-        <div class="book-grid reveal">
-          <a class="book-card featured" style="--book-accent:#c8ff3d" href="https://wikidocs.net/book/19534" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">01 / 10</span><span>BI · VISUALIZATION</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">DL<small>TABLEAU</small></span><img class="book-cover" src="assets/books/01-tableau.webp" width="480" height="672" alt="" data-alt="태블로를 활용한 데이터 시각화 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>태블로를 활용한<br>데이터 시각화</h3>
-<p>설치와 기본 차트부터 계산, 전처리, 대시보드, Tableau Cloud 공유까지 실무 흐름으로 익힙니다.</p>
-</a>
-          <a class="book-card" style="--book-accent:#55e5ff" href="https://wikidocs.net/book/19579" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">02 / 10</span><span>DATABASE</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">SQL<small>LEARNERS SCHOOL</small></span><img class="book-cover" src="assets/books/02-sql.webp" width="480" height="672" alt="" data-alt="Learners School SQL 기초 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>Learners School : SQL 기초</h3>
-<p>비즈니스 질문을 데이터 구조로 해석하고 SQL로 표현하는 실습형 입문서입니다.</p>
-</a>
-          <a class="book-card" style="--book-accent:#ff9f58" href="https://wikidocs.net/book/19643" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">03 / 10</span><span>STATISTICS</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">STAT<small>LEARNERS SCHOOL</small></span><img class="book-cover" src="assets/books/03-stats.webp" width="480" height="672" alt="" data-alt="Learners School 통계 기초 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>Learners School : 통계 기초</h3>
-<p>데이터의 불확실성을 읽고 추정, 검정, 회귀, 실험 설계를 의사결정으로 연결합니다.</p>
-</a>
-          <a class="book-card" style="--book-accent:#b18cff" href="https://wikidocs.net/book/20709" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">04 / 10</span><span>COMPUTER SCIENCE</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">CS<small>LEARNERS SCHOOL</small></span><img class="book-cover" src="assets/books/04-cs.webp" width="480" height="672" alt="" data-alt="Learners School 컴퓨터 사이언스 기초 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>Learners School : 컴퓨터 사이언스 기초</h3>
-<p>소프트웨어, 데이터베이스, 프로그래밍 언어, 정보 시스템의 핵심 원칙을 정리합니다.</p>
-</a>
-          <a class="book-card" style="--book-accent:#ff6b8a" href="https://wikidocs.net/book/20662" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">05 / 10</span><span>MACHINE LEARNING</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">ML<small>LEARNERS SCHOOL</small></span><img class="book-cover" src="assets/books/05-ml.webp" width="480" height="672" alt="" data-alt="Learners School 머신러닝 기초 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>Learners School : 머신러닝 기초</h3>
-<p>문제 정의와 지표 해석부터 모델의 실패와 대안까지 10강으로 완성하는 입문 과정입니다.</p>
-</a>
-          <a class="book-card" style="--book-accent:#ffcf4a" href="https://wikidocs.net/book/19600" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">06 / 10</span><span>AUTOMATION</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">n8n<small>WORKFLOW</small></span><img class="book-cover" src="assets/books/06-n8n.webp" width="480" height="672" alt="" data-alt="n8n을 활용한 데이터 워크플로우 구축 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>n8n을 활용한 데이터 워크플로우 구축</h3>
-<p>반복 업무를 자동화 문제로 바꾸고 n8n 워크플로우로 구현하는 과정을 다룹니다.</p>
-</a>
-          <a class="book-card" style="--book-accent:#61db9c" href="https://wikidocs.net/book/20351" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">07 / 10</span><span>PYTHON</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">PY<small>LEARNERS SCHOOL</small></span><img class="book-cover" src="assets/books/07-python.webp" width="480" height="672" alt="" data-alt="Learners School Python 기초 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>Learners School : Python 기초</h3>
-<p>기초 문법의 동작 원리를 이해하고 데이터 처리와 자동화의 첫걸음까지 이어갑니다.</p>
-</a>
-          <a class="book-card" style="--book-accent:#4e8aff" href="https://wikidocs.net/book/22066" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">08 / 10</span><span>TIME SERIES</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">TS<small>LEARNERS SCHOOL</small></span><img class="book-cover" src="assets/books/08-timeseries.webp" width="480" height="672" alt="" data-alt="Learners School 시계열 분석 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>Learners School : 시계열 분석</h3>
-<p>분해와 자기상관으로 시계열을 읽고, ARIMA부터 머신러닝·Prophet 예측과 이상 탐지까지 이어갑니다.</p>
-</a>
-          <a class="book-card" style="--book-accent:#fe5bd4" href="https://wikidocs.net/book/22067" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">09 / 10</span><span>DEEP LEARNING</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">DL<small>LEARNERS SCHOOL</small></span><img class="book-cover" src="assets/books/09-deeplearning.webp" width="480" height="672" alt="" data-alt="Learners School 딥러닝 기초 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>Learners School : 딥러닝 기초</h3>
-<p>역전파와 최적화를 수식으로 이해하고 PyTorch로 CNN, RNN, 트랜스포머까지 직접 구현합니다.</p>
-</a>
-          <a class="book-card featured" style="--book-accent:#fe5a4b" href="https://wikidocs.net/book/22069" target="_blank" rel="noopener">
-<div class="book-top"><span class="book-no">10 / 10</span><span>DATA ENGINEERING</span></div>
-<span class="book-arrow" aria-hidden="true">↗</span>
-<div class="book-cover-wrap" aria-hidden="true"><span class="cover-fallback">DE<small>LEARNERS SCHOOL</small></span><img class="book-cover" src="assets/books/10-data-engineering.webp" width="480" height="672" alt="" data-alt="Learners School 데이터 엔지니어링 표지" loading="lazy" onerror="this.remove()"></div>
-<h3>Learners School :<br>데이터 엔지니어링</h3>
-<p>AI가 써 준 파이프라인이 대용량, 스키마 변경, 부분 장애에서 어디서 깨지는지 보고 프로덕션 패턴으로 고칩니다.</p>
-</a>
+        <div class="shelf reveal" id="bookShelf">
+          <ol class="shelf-list" aria-label="저서 목록">
+            <li><a class="shelf-item is-active" href="https://wikidocs.net/book/19534" target="_blank" rel="noopener" style="--book-accent:#c8ff3d" data-idx="0" aria-current="true"><span class="si-no">01</span><span class="si-main"><span class="si-title">태블로를 활용한 데이터 시각화</span><span class="si-cat">BI · VISUALIZATION</span></span><span class="si-desc">설치와 기본 차트부터 계산, 전처리, 대시보드, Tableau Cloud 공유까지 실무 흐름으로 익힙니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/19579" target="_blank" rel="noopener" style="--book-accent:#55e5ff" data-idx="1"><span class="si-no">02</span><span class="si-main"><span class="si-title">Learners School : SQL 기초</span><span class="si-cat">DATABASE</span></span><span class="si-desc">비즈니스 질문을 데이터 구조로 해석하고 SQL로 표현하는 실습형 입문서입니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/19643" target="_blank" rel="noopener" style="--book-accent:#ff9f58" data-idx="2"><span class="si-no">03</span><span class="si-main"><span class="si-title">Learners School : 통계 기초</span><span class="si-cat">STATISTICS</span></span><span class="si-desc">데이터의 불확실성을 읽고 추정, 검정, 회귀, 실험 설계를 의사결정으로 연결합니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/20709" target="_blank" rel="noopener" style="--book-accent:#b18cff" data-idx="3"><span class="si-no">04</span><span class="si-main"><span class="si-title">Learners School : 컴퓨터 사이언스 기초</span><span class="si-cat">COMPUTER SCIENCE</span></span><span class="si-desc">소프트웨어, 데이터베이스, 프로그래밍 언어, 정보 시스템의 핵심 원칙을 정리합니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/20662" target="_blank" rel="noopener" style="--book-accent:#ff6b8a" data-idx="4"><span class="si-no">05</span><span class="si-main"><span class="si-title">Learners School : 머신러닝 기초</span><span class="si-cat">MACHINE LEARNING</span></span><span class="si-desc">문제 정의와 지표 해석부터 모델의 실패와 대안까지 10강으로 완성하는 입문 과정입니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/19600" target="_blank" rel="noopener" style="--book-accent:#ffcf4a" data-idx="5"><span class="si-no">06</span><span class="si-main"><span class="si-title">n8n을 활용한 데이터 워크플로우 구축</span><span class="si-cat">AUTOMATION</span></span><span class="si-desc">반복 업무를 자동화 문제로 바꾸고 n8n 워크플로우로 구현하는 과정을 다룹니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/20351" target="_blank" rel="noopener" style="--book-accent:#61db9c" data-idx="6"><span class="si-no">07</span><span class="si-main"><span class="si-title">Learners School : Python 기초</span><span class="si-cat">PYTHON</span></span><span class="si-desc">기초 문법의 동작 원리를 이해하고 데이터 처리와 자동화의 첫걸음까지 이어갑니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/22066" target="_blank" rel="noopener" style="--book-accent:#4e8aff" data-idx="7"><span class="si-no">08</span><span class="si-main"><span class="si-title">Learners School : 시계열 분석</span><span class="si-cat">TIME SERIES</span></span><span class="si-desc">분해와 자기상관으로 시계열을 읽고, ARIMA부터 머신러닝·Prophet 예측과 이상 탐지까지 이어갑니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/22067" target="_blank" rel="noopener" style="--book-accent:#fe5bd4" data-idx="8"><span class="si-no">09</span><span class="si-main"><span class="si-title">Learners School : 딥러닝 기초</span><span class="si-cat">DEEP LEARNING</span></span><span class="si-desc">역전파와 최적화를 수식으로 이해하고 PyTorch로 CNN, RNN, 트랜스포머까지 직접 구현합니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/22069" target="_blank" rel="noopener" style="--book-accent:#fe5a4b" data-idx="9"><span class="si-no">10</span><span class="si-main"><span class="si-title">Learners School : 데이터 엔지니어링</span><span class="si-cat">DATA ENGINEERING</span></span><span class="si-desc">AI가 써 준 파이프라인이 대용량, 스키마 변경, 부분 장애에서 어디서 깨지는지 보고 프로덕션 패턴으로 고칩니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+          </ol>
+          <div class="shelf-stage" style="--book-accent:#c8ff3d" aria-live="polite">
+            <span class="stage-num" aria-hidden="true">01</span>
+            <span class="stage-flash" aria-hidden="true"></span>
+            <div class="stage-cover-frame">
+              <img class="stage-cover is-active" src="assets/books/01-tableau.webp" width="480" height="672" alt="태블로를 활용한 데이터 시각화 표지" data-alt="태블로를 활용한 데이터 시각화 표지" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/02-sql.webp" width="480" height="672" alt="" data-alt="Learners School SQL 기초 표지" fetchpriority="low" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/03-stats.webp" width="480" height="672" alt="" data-alt="Learners School 통계 기초 표지" fetchpriority="low" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/04-cs.webp" width="480" height="672" alt="" data-alt="Learners School 컴퓨터 사이언스 기초 표지" fetchpriority="low" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/05-ml.webp" width="480" height="672" alt="" data-alt="Learners School 머신러닝 기초 표지" fetchpriority="low" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/06-n8n.webp" width="480" height="672" alt="" data-alt="n8n을 활용한 데이터 워크플로우 구축 표지" fetchpriority="low" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/07-python.webp" width="480" height="672" alt="" data-alt="Learners School Python 기초 표지" fetchpriority="low" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/08-timeseries.webp" width="480" height="672" alt="" data-alt="Learners School 시계열 분석 표지" fetchpriority="low" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/09-deeplearning.webp" width="480" height="672" alt="" data-alt="Learners School 딥러닝 기초 표지" fetchpriority="low" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/10-data-engineering.webp" width="480" height="672" alt="" data-alt="Learners School 데이터 엔지니어링 표지" fetchpriority="low" loading="lazy" decoding="async">
+            </div>
+            <div class="stage-info">
+              <p class="stage-cat"><span class="stage-count">01 / 10</span><span class="stage-cat-txt">BI · VISUALIZATION</span></p>
+              <h3 class="stage-title">태블로를 활용한 데이터 시각화</h3>
+              <p class="stage-desc">설치와 기본 차트부터 계산, 전처리, 대시보드, Tableau Cloud 공유까지 실무 흐름으로 익힙니다.</p>
+              <a class="stage-link" href="https://wikidocs.net/book/19534" target="_blank" rel="noopener">WikiDocs에서 읽기 <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1632,6 +1621,44 @@
       const ro=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');ro.unobserve(en.target)}}),{threshold:.1,rootMargin:'0px 0px -40px 0px'});
       $$('.reveal').forEach(el=>ro.observe(el));
     }
+
+    /* Books shelf: hover/focus a title to swap the stage */
+    (()=>{
+      const shelf=$('#bookShelf');if(!shelf)return;
+      const items=$$('.shelf-item',shelf),stage=$('.shelf-stage',shelf),covers=$$('.stage-cover',stage);
+      const num=$('.stage-num',stage),count=$('.stage-count',stage),cat=$('.stage-cat-txt',stage),title=$('.stage-title',stage),desc=$('.stage-desc',stage),link=$('.stage-link',stage),flash=$('.stage-flash',stage);
+      const anim=document.documentElement.classList.contains('motion-ok')&&'animate' in Element.prototype;
+      const fast='cubic-bezier(.2,.9,.1,1)';
+      let cur=0;
+      const play=(el,kf,o)=>{el.getAnimations().forEach(a=>a.cancel());return el.animate(kf,{duration:260,easing:fast,fill:'both',...o})};
+      const show=i=>{
+        if(i===cur)return;
+        const it=items[i],prev=covers[cur],next=covers[i],dir=i>cur?1:-1;
+        items[cur].classList.remove('is-active');items[cur].removeAttribute('aria-current');
+        it.classList.add('is-active');it.setAttribute('aria-current','true');
+        stage.style.setProperty('--book-accent',it.style.getPropertyValue('--book-accent'));
+        const no=$('.si-no',it).textContent;
+        num.textContent=no;count.textContent=no+' / 10';
+        cat.textContent=$('.si-cat',it).textContent;title.textContent=$('.si-title',it).textContent;desc.textContent=$('.si-desc',it).textContent;
+        link.href=it.href;
+        prev.classList.remove('is-active');prev.alt='';next.classList.add('is-active');next.alt=next.dataset.alt;
+        if(anim){
+          play(prev,[{opacity:1,transform:'none',visibility:'visible'},{opacity:0,transform:`translateY(${-18*dir}px) scale(.94)`,visibility:'visible'}],{duration:200,fill:'none'});
+          play(next,[{clipPath:dir>0?'inset(100% 0 0 0)':'inset(0 0 100% 0)',transform:`translateY(${28*dir}px) rotate(${-3*dir}deg) scale(1.04)`},{clipPath:'inset(0 0 0 0)',transform:'none'}],{duration:300});
+          play(num,[{transform:`translateY(${40*dir}%)`,opacity:0},{transform:'none',opacity:1}],{duration:280});
+          play(flash,[{transform:'scaleX(0)',transformOrigin:'left',opacity:.9},{transform:'scaleX(1)',transformOrigin:'left',opacity:.55,offset:.45},{transform:'scaleX(1)',transformOrigin:'right',opacity:0}],{duration:320,fill:'none'});
+          [cat,title,desc,link].forEach((el,k)=>play(el,[{opacity:0,transform:`translateY(${14*dir}px)`},{opacity:1,transform:'none'}],{duration:260,delay:40+k*35}));
+        }
+        cur=i;
+      };
+      const touch=matchMedia('(hover: none)');
+      items.forEach((it,i)=>{
+        it.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')show(i)});
+        it.addEventListener('focus',()=>show(i));
+        it.addEventListener('click',e=>{if(touch.matches&&i!==cur){e.preventDefault();show(i)}});
+      });
+      covers.forEach((c,i)=>{if(i)c.loading='eager'});
+    })();
 
     /* Counters: final values live in the HTML; animate only when motion is OK */
     if(!reduce&&'IntersectionObserver' in window){
