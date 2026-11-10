@@ -436,6 +436,20 @@ table.rt tr:last-child td { border-bottom:0; }
 .boss.dead .boss-ico { filter:grayscale(1); opacity:.55; animation:none; }
 .boss.dead .stamp { position:absolute; right:14px; top:38px; transform:rotate(-12deg); border:2px solid var(--lime); color:var(--lime); font:800 15px/1 var(--font-en); letter-spacing:.08em; padding:6px 10px; border-radius:6px; background:rgba(5,6,7,.7); }
 .boss.fled { border-color:var(--line); opacity:.75; }
+.boss.sp { border-color:color-mix(in srgb,var(--bc) 45%,transparent); background:radial-gradient(420px 160px at 0% 0%,color-mix(in srgb,var(--bc) 16%,transparent),transparent 70%),var(--surface); }
+.boss.sp:before { background:repeating-linear-gradient(90deg,var(--bc) 0 14px,transparent 14px 20px); }
+.boss.sp .boss-top .eyebrow:before { background:repeating-linear-gradient(90deg,var(--bc) 0 3px,transparent 3px 6px); }
+.boss.sp .boss-top .eyebrow, .boss.sp .hp-head b, .boss.sp .hp-note b { color:var(--bc); }
+.boss.sp .boss-ico { border-color:color-mix(in srgb,var(--bc) 45%,transparent); }
+.boss.sp .hp-fill { background:linear-gradient(90deg,color-mix(in srgb,var(--bc) 70%,#ff4d6d),var(--bc)); }
+.boss.dead.sp { border-color:rgba(200,255,61,.45); background:radial-gradient(420px 160px at 0% 0%,rgba(200,255,61,.12),transparent 70%),var(--surface); }
+.boss.dead.sp:before { background:repeating-linear-gradient(90deg,var(--lime) 0 14px,transparent 14px 20px); }
+.boss-lore { margin-top:4px; color:var(--muted); font-size:12px; }
+.boss-traits { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.boss-traits span { font-size:11.5px; padding:3px 8px; border-radius:999px; border:1px solid var(--line); color:var(--text-2); background:var(--surface-2); }
+.boss-traits .weak { border-color:color-mix(in srgb,var(--bc,var(--rose)) 55%,transparent); color:var(--text); }
+.boss-next { margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); font-size:12px; color:var(--muted); }
+.boss-next b { color:var(--text-2); }
 .shield-note { margin-top:6px; color:var(--cyan); font-size:12px; }
 .cal .day.shielded:after { content:"🛡"; position:absolute; right:3px; top:2px; font-size:10px; }
 /* Season card */
@@ -1118,6 +1132,23 @@ table.rt tr:last-child td { border-bottom:0; }
     health: ['🗿', '강철 골렘'], study: ['🐉', '망각의 드래곤'], work: ['👹', '마감 오우거'], teach: ['🦅', '침묵의 그리핀'],
     life: ['🐙', '나태의 크라켄'], perfect: ['💀', '혼돈의 리치'], xp: ['🐲', 'XP 히드라']
   };
+  // 주간 보스 로테이션 (ROSTER_START 주부터). 디스코드 n8n 집계(wq0zIH5Mm2VXYHb1)에 같은 규칙이 복제되어 있으니 함께 수정
+  var ROSTER_START = '2026-11-09';
+  var BOSS_ROSTER = [
+    { id: 'golem', emoji: '🗿', name: '강철 골렘', color: '#ff9a51', mech: 'cat', cat: 'health', lore: '강철 피부라 체력 XP로만 금이 갑니다.' },
+    { id: 'kraken', emoji: '🐙', name: '나태의 크라켄', color: '#61db9c', mech: 'days', lore: '아무 기록도 없는 날이면 촉수가 다시 자랍니다.' },
+    { id: 'hydra', emoji: '🐲', name: 'XP 히드라', color: '#ffcf4a', mech: 'xp', weakness: true, lore: '어떤 XP든 통하지만, 약점 능력치 XP는 2배 피해입니다.' },
+    { id: 'dragon', emoji: '🐉', name: '망각의 드래곤', color: '#66dbff', mech: 'routine', cat: 'study', lore: '하루라도 거르면 배운 것을 삼켜 버립니다.' },
+    { id: 'phantom', emoji: '👻', name: '미루기 유령', color: '#a896ff', mech: 'adhoc', lore: '루틴 밖에서 스스로 한 일만 유령에게 닿습니다.' },
+    { id: 'ogre', emoji: '👹', name: '마감 오우거', color: '#ff7a92', mech: 'checks', weakness: true, lore: '루틴 체크 한 번이 한 방, 약점 능력치 루틴은 두 방입니다.' },
+    { id: 'lich', emoji: '💀', name: '혼돈의 리치', color: '#c9d4da', mech: 'perfect', lore: '하루를 완벽하게 끝낸 날에만 봉인이 하나씩 풀립니다.' },
+    { id: 'chimera', emoji: '🦁', name: '변덕의 키메라', color: '#ff9a51', mech: 'variety', lore: '머리마다 다른 루틴으로 한 번씩 때려야 쓰러집니다.' },
+    { id: 'griffin', emoji: '🦅', name: '침묵의 그리핀', color: '#ffcf4a', mech: 'cat', cat: 'teach', lore: '가르치고 나누는 영향력 XP로만 날개가 꺾입니다.' }
+  ];
+  var BOSS_MECH = {
+    cat: '능력치 XP', days: '기록한 날', xp: '주간 XP', routine: '루틴 횟수', adhoc: '비정기 기록 시간',
+    checks: '루틴 체크', perfect: '퍼펙트 데이', variety: '서로 다른 루틴'
+  };
   var DOW = ['일', '월', '화', '수', '목', '금', '토'];
 
   var CATS = {
@@ -1267,17 +1298,95 @@ table.rt tr:last-child td { border-bottom:0; }
     var pick = c[((weekIdx(ws) % c.length) + c.length) % c.length];
     return { type: 'routine', rid: pick.r.id, target: pick.n };
   }
-  function bossDef(ws) {
+  function round10(n) { return Math.round(n / 10) * 10; }
+  // 이번 주 예정 루틴 통계: 루틴별 예정 횟수, 능력치별 예정 XP, 총 체크 수, 루틴 있는 날 수
+  function weekPlan(ws) {
+    var per = {}, catXp = {}, checks = 0, days = 0;
+    for (var i = 0; i < 7; i++) {
+      var s = scheduledForStats(addDays(ws, i)); if (s.length) days++;
+      s.forEach(function (r) { per[r.id] = (per[r.id] || 0) + 1; catXp[r.category] = (catXp[r.category] || 0) + (+r.xp || 0); checks++; });
+    }
+    return { per: per, catXp: catXp, checks: checks, days: days };
+  }
+  // 약점 = 이번 주 루틴이 있는 능력치(커리어 제외) 중 지난주 XP가 가장 적었던 것
+  function weakCat(ws, plan, dayMap) {
+    var cands = CAT_KEYS.filter(function (k) { return k !== 'work' && plan.catXp[k] > 0; });
+    if (!cands.length) return '';
+    var last = {}; for (var i = -7; i < 0; i++) { var x = dayMap && dayMap[addDays(ws, i)]; if (x) Object.keys(x.catXp).forEach(function (k) { last[k] = (last[k] || 0) + x.catXp[k]; }); }
+    var best = cands[0]; cands.forEach(function (k) { if ((last[k] || 0) < (last[best] || 0)) best = k; });
+    return best;
+  }
+  // 보스 종에 맞는 이번 주 미션 (조건이 안 맞으면 null → 다음 보스로 넘어감)
+  function speciesMission(sp, ws, plan) {
+    var nonWork = state.routines.filter(function (r) { return r.category !== 'work' && plan.per[r.id]; });
+    var allXp = 0; Object.keys(plan.catXp).forEach(function (k) { allXp += plan.catXp[k]; });
+    switch (sp.mech) {
+      case 'cat': return (plan.catXp[sp.cat] || 0) >= 40 ? { target: Math.max(20, round10(plan.catXp[sp.cat] * 0.8)) } : null;
+      case 'routine':
+        var c = nonWork.filter(function (r) { return r.category === sp.cat && plan.per[r.id] >= 3; });
+        if (!c.length) return null;
+        c.sort(function (a, b) { return plan.per[b.id] - plan.per[a.id]; });
+        return { rid: c[0].id, target: plan.per[c[0].id] };
+      case 'days': return { target: 6 };
+      case 'adhoc': return { target: 120 };
+      case 'xp': return { target: Math.max(150, round10(allXp * 0.8)) };
+      case 'checks': return plan.checks >= 7 ? { target: Math.ceil(plan.checks * 0.9) } : null;
+      case 'perfect': return plan.days >= 4 ? { target: Math.max(2, Math.min(5, Math.floor(plan.days / 2))) } : null;
+      case 'variety': return nonWork.length >= 3 ? { target: nonWork.length } : null;
+    }
+    return null;
+  }
+  // 순서대로 돌되 조건 안 맞는 보스는 건너뛰고, 지난주와 같은 보스는 한 칸 더 넘김 (ROSTER_START부터 순차 계산)
+  var spCache = {};
+  function pickSpecies(ws) {
+    if (spCache[ws]) return spCache[ws];
+    var prev = ws > ROSTER_START ? pickSpecies(addDays(ws, -7)).sp.id : '', plan = weekPlan(ws);
+    var n = BOSS_ROSTER.length, start = ((weekIdx(ws) % n) + n) % n, res = null;
+    for (var i = 0; i < n && !res; i++) { var sp = BOSS_ROSTER[(start + i) % n], m = sp.id !== prev && speciesMission(sp, ws, plan); if (m) res = { sp: sp, m: m, plan: plan }; }
+    return (spCache[ws] = res || { sp: BOSS_ROSTER[1], m: { target: 6 }, plan: plan }); // 크라켄(기록한 날)은 항상 가능
+  }
+  function bossGoal(type, target, r, cat) {
+    var c = CATS[cat] || {};
+    return type === 'routine' ? (r.emoji || '') + ' ' + r.title + ' ' + target + '회' : type === 'perfect' ? '⭐ 퍼펙트 데이 ' + target + '일' : type === 'xp' ? '⚡ 주간 XP ' + fmtNum(target) :
+      type === 'cat' ? c.emoji + ' ' + c.name + ' XP ' + fmtNum(target) : type === 'days' ? '📅 기록한 날 ' + target + '일' : type === 'adhoc' ? '🧭 비정기 기록 ' + target + '분' :
+      type === 'checks' ? '✅ 루틴 체크 ' + target + '회' : '🎲 서로 다른 루틴 ' + target + '종';
+  }
+  var BOSS_UNIT = { xp: 'XP', cat: 'XP', perfect: '일', days: '일', adhoc: '분', variety: '종', routine: '회', checks: '회' };
+  function bossDef(ws, dayMap) {
     var o = (state.profile.bosses || {})[ws], custom = !!(o && o.type);
+    if (!custom && ws >= ROSTER_START) {
+      var pk = pickSpecies(ws), plan = pk.plan, sp = pk.sp, m = pk.m;
+      var weak = sp.weakness ? weakCat(ws, plan, dayMap) : '';
+      var rr = m.rid ? routineById(m.rid) : null;
+      return { ws: ws, type: sp.mech, rid: m.rid || '', cat: sp.cat || '', weak: weak, target: m.target, custom: false, species: sp.id, color: sp.color, lore: sp.lore,
+        emoji: sp.emoji, name: sp.name, goal: bossGoal(sp.mech, m.target, rr, sp.cat), unit: BOSS_UNIT[sp.mech] };
+    }
     var d = custom ? o : autoBoss(ws);
     var r = d.type === 'routine' ? routineById(d.rid) : null;
     if (d.type === 'routine' && !r) { d = autoBoss(ws); custom = false; r = d.type === 'routine' ? routineById(d.rid) : null; }
     var skin = d.type === 'routine' ? BOSS_SKINS[r.category] || BOSS_SKINS.life : BOSS_SKINS[d.type];
-    var goal = d.type === 'routine' ? (r.emoji || '') + ' ' + r.title + ' ' + d.target + '회' : d.type === 'perfect' ? '⭐ 퍼펙트 데이 ' + d.target + '일' : '⚡ 주간 XP ' + fmtNum(d.target);
-    return { ws: ws, type: d.type, rid: d.rid || '', target: Math.max(1, +d.target || 1), custom: custom, emoji: skin[0], name: skin[1], goal: goal, unit: d.type === 'xp' ? 'XP' : d.type === 'perfect' ? '일' : '회' };
+    var tg = Math.max(1, +d.target || 1);
+    return { ws: ws, type: d.type, rid: d.rid || '', target: tg, custom: custom, emoji: skin[0], name: skin[1], goal: bossGoal(d.type, tg, r), unit: BOSS_UNIT[d.type] };
+  }
+  // 하루 기록이 보스에게 주는 피해 (variety는 computeAll에서 누적 집합으로 계산)
+  function bossHit(b, x) {
+    switch (b.type) {
+      case 'routine': return x.logs.some(function (l) { return l.kind === 'routine' && l.routine_id === b.rid; }) ? 1 : 0;
+      case 'perfect': return x.perfect ? 1 : 0;
+      case 'xp': return x.baseXp + (b.weak ? x.catXp[b.weak] || 0 : 0);
+      case 'cat': return x.catXp[b.cat] || 0;
+      case 'days': return x.logs.some(function (l) { return l.kind !== 'skip'; }) ? 1 : 0;
+      case 'adhoc': return x.logs.reduce(function (s, l) { return s + (l.kind === 'adhoc' ? l.minutes : 0); }, 0);
+      case 'checks':
+        var seen = {}, n = 0;
+        x.logs.forEach(function (l) { if (l.kind !== 'routine' || seen[l.routine_id]) return; seen[l.routine_id] = 1; n += b.weak && l.category === b.weak ? 2 : 1; });
+        return n;
+    }
+    return 0;
   }
 
   function computeAll() {
+    spCache = {};
     var byDate = indexLogs();
     var today = todayStr();
     var first = SEASON_START;
@@ -1303,14 +1412,13 @@ table.rt tr:last-child td { border-bottom:0; }
     if (days.length) {
       var ws0 = weekStart(days[0].date); if (ws0 < days[0].date) ws0 = addDays(ws0, 7); // 시즌 첫 주가 중간에 시작하면 다음 월요일부터
       for (var ws = ws0; ws <= today; ws = addDays(ws, 7)) {
-        var b = bossDef(ws), prog = 0;
+        var b = bossDef(ws, dayMap), prog = 0, kinds = {};
         b.end = addDays(ws, 6); b.reward = BOSS_REWARD;
         for (var i = 0; i < 7; i++) {
           var dd = addDays(ws, i), x = dayMap[dd];
           if (!x) continue;
-          if (b.type === 'routine') prog += x.logs.some(function (l) { return l.kind === 'routine' && l.routine_id === b.rid; }) ? 1 : 0;
-          else if (b.type === 'perfect') prog += x.perfect ? 1 : 0;
-          else prog += x.baseXp;
+          if (b.type === 'variety') { x.logs.forEach(function (l) { if (l.kind === 'routine' && (routineById(l.routine_id) || {}).category !== 'work') kinds[l.routine_id] = 1; }); prog = Object.keys(kinds).length; }
+          else prog += bossHit(b, x);
           if (!b.defeatDate && prog >= b.target) b.defeatDate = dd;
         }
         b.progress = prog; b.defeated = !!b.defeatDate; b.over = b.end < today;
@@ -1543,9 +1651,10 @@ table.rt tr:last-child td { border-bottom:0; }
 
   function bossNote(b, left) {
     var hit = Math.min(b.progress, b.target);
-    var what = b.type === 'routine' ? esc((routineById(b.rid) || {}).title || '루틴') + ' ' + fmtNum(b.progress) + '회' : b.type === 'perfect' ? '퍼펙트 데이 ' + fmtNum(b.progress) + '일' : '주간 XP ' + fmtNum(b.progress);
+    var what = b.type === 'routine' ? esc((routineById(b.rid) || {}).title || '루틴') + ' ' + fmtNum(b.progress) + '회' : b.type === 'xp' ? '주간 XP ' + fmtNum(b.progress) : b.type === 'cat' ? (CATS[b.cat] || {}).name + ' XP ' + fmtNum(b.progress) : (BOSS_MECH[b.type] || '진행') + ' ' + fmtNum(b.progress) + b.unit;
     if (b.defeated) return '⚔️ ' + what + '로 격파했어요!';
-    if (!hit) return '아직 공격 전 · ' + (b.type === 'routine' ? '루틴을 체크할 때마다' : b.type === 'perfect' ? '퍼펙트 데이마다' : 'XP를 얻을 때마다') + ' HP가 깎여요';
+    if (!hit) return '아직 공격 전 · ' + ({ routine: '루틴을 체크할 때마다', perfect: '퍼펙트 데이마다', xp: 'XP를 얻을 때마다', cat: (CATS[b.cat] || {}).name + ' XP를 얻을 때마다', days: '무엇이든 기록한 날마다',
+      adhoc: '비정기 기록 1분마다', checks: '루틴을 체크할 때마다', variety: '새로운 루틴을 처음 체크할 때마다' }[b.type] || '기록할 때마다') + ' HP가 깎여요';
     return '⚔️ ' + what + ' → <span class="hit">HP -' + fmtNum(hit) + '</span> · ' + (b.over ? '남은 HP <b>' + fmtNum(left) + '</b>' : '<b>' + fmtNum(left) + b.unit + '</b> 더 하면 격파');
   }
   function renderBoss(all, date) {
@@ -1554,17 +1663,21 @@ table.rt tr:last-child td { border-bottom:0; }
     if (!b) { $('bossCard').innerHTML = ''; return; }
     var left = Math.max(0, b.target - b.progress), cur = ws === weekStart(today);
     var dLeft = Math.round((parse(b.end) - parse(today)) / 864e5);
-    var seg = b.type === 'xp' ? 10 : b.target;
-    var cls = 'boss' + (b.defeated ? ' dead' : b.over ? ' fled' : '');
+    var seg = b.unit === 'XP' || b.unit === '분' || b.target > 20 ? 10 : b.target;
+    var cls = 'boss' + (b.species ? ' sp' : '') + (b.defeated ? ' dead' : b.over ? ' fled' : '');
+    var traits = b.species ? '<div class="boss-lore">' + esc(b.lore) + '</div><div class="boss-traits"><span>' + esc(BOSS_MECH[b.type]) + '</span>' +
+      (b.weak ? '<span class="weak">약점 ' + CATS[b.weak].emoji + ' ' + CATS[b.weak].name + ' ×2</span>' : '') + '</div>' : '';
+    var nx = null; if (cur) { var nws = addDays(ws, 7); nx = (state.profile.bosses || {})[nws] ? null : pickSpecies(nws).sp; }
     var when = b.defeated ? md(b.defeatDate) + ' 격파' : b.over ? '도주함' : dLeft === 0 ? '오늘 자정까지' : 'D-' + dLeft;
-    $('bossCard').innerHTML = '<div class="' + cls + '">' +
+    $('bossCard').innerHTML = '<div class="' + cls + '"' + (b.species ? ' style="--bc:' + b.color + '"' : '') + '>' +
       '<div class="boss-top"><span class="eyebrow">Weekly Boss</span><small>' + md(b.ws) + '–' + md(b.end) + ' · ' + when + '</small></div>' +
       (b.defeated ? '<span class="stamp">CLEAR</span>' : '') +
-      '<div class="boss-main"><div class="boss-ico">' + b.emoji + '</div><div><div class="boss-name">' + esc(b.name) + '</div><div class="boss-goal">' + esc(b.goal) + (b.custom ? '' : ' <span class="tag">자동</span>') + '</div>' +
+      '<div class="boss-main"><div class="boss-ico">' + b.emoji + '</div><div><div class="boss-name">' + esc(b.name) + '</div><div class="boss-goal">' + esc(b.goal) + (b.custom ? '' : ' <span class="tag">자동</span>') + '</div>' + traits +
       '<div class="hp"><div class="hp-head"><span>보스 HP</span><span><b>' + fmtNum(left) + '</b> / ' + fmtNum(b.target) + ' 남음</span></div><div class="hp-bar" style="--seg:' + (100 / seg) + '%"><div class="hp-fill" style="width:' + (left / b.target * 100) + '%"></div><div class="hp-lost" style="width:' + (100 - left / b.target * 100) + '%"></div></div>' +
       '<div class="hp-note">' + bossNote(b, left) + '</div></div></div></div>' +
       '<div class="boss-foot"><span>' + (b.defeated ? '보상 획득 <span class="rw">+' + b.reward + ' XP</span>' : b.over ? '이번 주는 놓쳤어요. 다음 보스에 도전하세요.' : '격파 보상 <span class="rw">+' + b.reward + ' XP</span> · ' + fmtNum(b.progress) + b.unit + ' 진행') + '</span>' +
-      (cur && !b.defeated ? '<button class="btn btn-sm btn-ghost" type="button" id="btnBossEdit">보스 변경</button>' : '') + '</div></div>';
+      (cur && !b.defeated ? '<button class="btn btn-sm btn-ghost" type="button" id="btnBossEdit">보스 변경</button>' : '') + '</div>' +
+      (nx ? '<div class="boss-next">다음 주 예고 · <b>' + nx.emoji + ' ' + esc(nx.name) + '</b> (' + esc(BOSS_MECH[nx.mech]) + ')</div>' : '') + '</div>';
     var be = $('btnBossEdit'); if (be) be.addEventListener('click', function () { openBossSheet(b); });
   }
 
@@ -1826,6 +1939,7 @@ table.rt tr:last-child td { border-bottom:0; }
       ['🥇', '데이터 러너', '레벨 10 달성', Math.min(1, lv / 10)],
       ['👑', '보스 슬레이어', '주간 보스 첫 격파', Math.min(1, all.bossWins)],
       ['⚔️', '보스 헌터', '주간 보스 4회 격파', Math.min(1, all.bossWins / 4)],
+      ['📖', '보스 도감', '서로 다른 보스 5종 격파', Math.min(1, Object.keys(all.bosses.reduce(function (o, b) { if (b.defeated) o[b.species || b.name] = 1; return o; }, {})).length / 5)],
       ['🛡', '수호자', '스트릭 보호권 첫 획득', Math.min(1, all.shieldsEarned)],
       ['📝', '회고하는 러너', '월별 회고록 첫 제출', Math.min(1, Object.keys(state.retros).filter(function (m) { return state.retros[m] && state.retros[m].firstSaved; }).length)],
       ['🏅', 'S급 회고', '회고록 S등급 받기', Object.keys(state.retros).some(function (m) { return retroScore(m, state.retros[m]).grade === 'S'; }) ? 1 : 0],
@@ -2234,9 +2348,10 @@ table.rt tr:last-child td { border-bottom:0; }
       bfType === 'perfect' ? '이번 주 퍼펙트 데이 수로 보스 HP를 깎습니다.' : '루틴·비정기 기록 XP 합계로 보스 HP를 깎습니다 (보스 보상 제외).';
   }
   function openBossSheet(b) {
-    bfWs = b.ws; bfType = b.type;
+    bfWs = b.ws; bfType = ['routine', 'perfect', 'xp'].indexOf(b.type) >= 0 ? b.type : 'routine';
     $('bfRoutine').innerHTML = state.routines.map(function (r) { return '<option value="' + esc(r.id) + '"' + (r.id === b.rid ? ' selected' : '') + '>' + esc((r.emoji || '') + ' ' + r.title) + (r.active ? '' : ' (꺼짐)') + '</option>'; }).join('');
-    $('bfTarget').value = b.target;
+    var r0 = routineById($('bfRoutine').value);
+    $('bfTarget').value = bfType === b.type ? b.target : r0 ? Math.max(1, schedCount(r0, bfWs)) : 3;
     bfSync(); openSheet($('bossSheet'));
   }
   $('bfType').addEventListener('click', function (e) {
