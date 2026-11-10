@@ -397,8 +397,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
 
         <div class="field">
           <label for="rMembers" class="req">조원 명단</label>
-          <textarea id="rMembers" placeholder="쉼표나 줄바꿈으로 구분. 예: 김민지, 박서준, 이하늘" style="min-height:64px"></textarea>
-          <span class="hint">명단에 있는 수강생은 모두 로그에 나오고, 조순회에서 확인하지 못한 수강생은 따로 표시됩니다.</span>
+          <textarea id="rMembers" placeholder="쉼표, 띄어쓰기, 줄바꿈으로 구분. 예: 김민지, 박서준, 이하늘" style="min-height:64px"></textarea>
+          <span class="hint" id="rMembersPreview">명단에 있는 수강생은 모두 로그에 나오고, 조순회에서 확인하지 못한 수강생은 따로 표시됩니다.</span>
         </div>
 
         <div class="field">
@@ -672,7 +672,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     $('interviewForm').reset(); $('roundForm').reset();
     $('fDate').value = today(); $('rDate').value = today();
     state.file = null; $('fileName').hidden = true;
-    state.rfile = null; $('rFileName').hidden = true;
+    state.rfile = null; $('rFileName').hidden = true; renderMembersPreview();
     show($('formError'), false); show($('roundError'), false);
     showForm();
     show($('viewProgress'), false); show($('viewResult'), false);
@@ -733,7 +733,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
   });
 
   function parseMembers(text) {
-    return text.split(/[,\n、·\/]+/).map(function (x) { return x.trim().replace(/님$/, ''); }).filter(Boolean);
+    return text.split(/[,\s、·\/]+/).map(function (x) { return x.trim().replace(/님$/, ''); }).filter(Boolean);
   }
   $('roundForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -941,7 +941,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
       b.appendChild(el('span', null, t.team));
       b.appendChild(el('small', null, t.members));
       b.setAttribute('aria-pressed', $('rTeam').value.trim() === t.team ? 'true' : 'false');
-      b.addEventListener('click', function () { $('rTeam').value = t.team; $('rMembers').value = t.members; renderTeams(); });
+      b.addEventListener('click', function () { applyTeam(t); });
       box.appendChild(b);
     });
     show($('teamPresetField'), (hist.teams || []).length > 0);
@@ -950,11 +950,22 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     var n = name.replace(/\s+/g, '');
     return (hist.teams || []).filter(function (t) { return t.team.replace(/\s+/g, '') === n; })[0];
   }
+  function applyTeam(t) {
+    $('rTeam').value = t.team;
+    $('rMembers').value = parseMembers(t.members).join(', ');
+    renderMembersPreview(); renderTeams();
+  }
+  function renderMembersPreview() {
+    var names = parseMembers($('rMembers').value);
+    var pv = $('rMembersPreview');
+    pv.textContent = names.length ? '인식된 조원 ' + names.length + '명: ' + names.join(' · ') : '명단에 있는 수강생은 모두 로그에 나오고, 조순회에서 확인하지 못한 수강생은 따로 표시됩니다.';
+  }
   $('rTeam').addEventListener('input', function () {
     var t = findTeam(this.value);
-    if (t && !$('rMembers').value.trim()) $('rMembers').value = t.members;
+    if (t) { $('rMembers').value = parseMembers(t.members).join(', '); renderMembersPreview(); }
     renderTeams();
   });
+  $('rMembers').addEventListener('input', renderMembersPreview);
   function loadTeams() {
     post('history', { token: state.token }).then(function (d) {
       if (!d.ok) return;
