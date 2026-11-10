@@ -165,7 +165,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
 .qgroup ul li::marker { color: var(--accent); }
 .tip { font-size: 12.5px; background: var(--warn-soft); border-radius: 8px; padding: 10px 12px; }
 .tip b { color: var(--warn); }
-.member-list { display: grid; gap: 4px; }
+.team-chip { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--surface); cursor: pointer; font-size: 14px; display: inline-flex; gap: 8px; align-items: baseline; }
+.team-chip small { color: var(--muted); font-size: 12px; }
+.team-chip:hover, .team-chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 
 /* Progress */
 .progress { display: grid; gap: 14px; }
@@ -365,6 +367,12 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
         <div class="sheet-head">
           <h1>조순회 로그 작성</h1>
           <p>조순회 녹음이나 자막을 올리면 수강생별 학습 상태를 운영 기준 4개 항목으로 정리합니다.</p>
+        </div>
+
+        <div class="field" id="teamPresetField" hidden>
+          <span class="label">저장된 조</span>
+          <div class="seg" id="teamPresets"></div>
+          <span class="hint">누르면 조 이름과 조원 명단이 채워집니다.</span>
         </div>
 
         <div class="grid-2">
@@ -913,6 +921,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
       var busy = !$('viewProgress').hidden && state.poll;
       if (mode !== state.mode && !busy) { state.mode = mode; resetForm(); }
       else if (!busy && $('viewResult').hidden) { state.mode = mode; showForm(); }
+      if (mode === 'round') { if (hist.stale || !hist.items) loadTeams(); else renderTeams(); }
     }
     if (isHistory) {
       show($('historyList'), true); show($('historyDetail'), false);
@@ -924,7 +933,35 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
   $('tabHistory').addEventListener('click', function () { switchTab('history'); });
 
   /* ---------- 면담 기록 ---------- */
-  var hist = { items: null, stale: true };
+  var hist = { items: null, stale: true, teams: [] };
+  function renderTeams() {
+    var box = $('teamPresets'); box.innerHTML = '';
+    (hist.teams || []).forEach(function (t) {
+      var b = el('button', 'team-chip'); b.type = 'button';
+      b.appendChild(el('span', null, t.team));
+      b.appendChild(el('small', null, t.members));
+      b.setAttribute('aria-pressed', $('rTeam').value.trim() === t.team ? 'true' : 'false');
+      b.addEventListener('click', function () { $('rTeam').value = t.team; $('rMembers').value = t.members; renderTeams(); });
+      box.appendChild(b);
+    });
+    show($('teamPresetField'), (hist.teams || []).length > 0);
+  }
+  function findTeam(name) {
+    var n = name.replace(/\s+/g, '');
+    return (hist.teams || []).filter(function (t) { return t.team.replace(/\s+/g, '') === n; })[0];
+  }
+  $('rTeam').addEventListener('input', function () {
+    var t = findTeam(this.value);
+    if (t && !$('rMembers').value.trim()) $('rMembers').value = t.members;
+    renderTeams();
+  });
+  function loadTeams() {
+    post('history', { token: state.token }).then(function (d) {
+      if (!d.ok) return;
+      hist.items = d.items || []; hist.teams = d.teams || []; hist.stale = false;
+      renderTeams();
+    }).catch(function () {});
+  }
   function loadHistory() {
     show($('historyError'), false);
     $('historyCount').textContent = '불러오는 중';
@@ -933,8 +970,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     post('history', { token: state.token }).then(function (d) {
       if (d._status === 401) { logout('로그인이 만료되었습니다. 다시 로그인해 주세요.'); return; }
       if (!d.ok) { $('historyError').textContent = d.error || '기록을 불러오지 못했습니다.'; show($('historyError'), true); $('historyCount').textContent = ''; return; }
-      hist.items = d.items || []; hist.stale = false;
-      renderHistory();
+      hist.items = d.items || []; hist.teams = d.teams || []; hist.stale = false;
+      renderHistory(); renderTeams();
     }).catch(function () {
       $('historyError').textContent = '서버에 연결하지 못했습니다. 새로고침을 눌러 다시 시도해 주세요.';
       show($('historyError'), true); $('historyCount').textContent = '';
