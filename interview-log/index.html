@@ -853,7 +853,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     if (r.followup_needed) bs.appendChild(badge('지원·확인 필요', 'warn'));
     box.appendChild(bs);
     if (r.one_line_summary) box.appendChild(callout('summary', '한 줄 요약', r.one_line_summary));
-    if (r.missing_items) box.appendChild(callout('warn', '이번 조순회에서 확인하지 못한 수강생', r.missing_items.split(', ').join('\n') + '\n다음 조순회에서 이름을 불러 상태를 확인해 주세요.'));
+    if (r.missing_items) box.appendChild(callout('summary', '로그에서 생략한 수강생', r.missing_items + '\n특별히 언급된 내용이 없어 로그에서 뺐습니다. 다음 조순회에서 한 번 더 확인해 주세요.'));
     else if (members.length) box.appendChild(callout('ok', '조원 ' + members.length + '명 모두 상태 기록됨'));
     if (r.followup_detail) box.appendChild(callout('warn', '추가 지원 및 운영진 확인', r.followup_detail));
     if (r.audio_warning) box.appendChild(callout('warn', '녹음 품질 확인 필요', r.audio_warning));
@@ -866,7 +866,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     var pre = el('pre', 'log', r.log_text || '');
     box.appendChild(pre);
     cb.addEventListener('click', function () { copyText(pre); });
-    if (isNew) box.appendChild(el('p', 'foot', '녹취와 튜터 메모를 바탕으로 한 초안입니다. 조순회 로그 DB에 붙여넣기 전에 수강생 이름과 내용을 검토해 주세요.'));
+    if (isNew) box.appendChild(el('p', 'foot', '노션 형식(제목, 굵은 글씨, 글머리 기호)으로 작성했습니다. 로그 복사 후 노션에 붙여넣으면 서식이 그대로 적용됩니다. 붙여넣기 전에 이름과 내용을 검토해 주세요.'));
   }
   function buildDetail(box, r, isNew) {
     box.innerHTML = '';
