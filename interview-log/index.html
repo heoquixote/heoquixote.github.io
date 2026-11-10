@@ -157,6 +157,17 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
 .time-table th { font-weight: 600; font-family: var(--font-mono); }
 .time-table td { color: var(--muted); }
 .note { font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+.guide-body { display: grid; gap: 14px; min-width: 0; }
+.qgroup { display: grid; gap: 6px; }
+.qgroup h3 { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.qgroup h3 .num { font-family: var(--font-mono); font-size: 12px; color: var(--accent); background: var(--accent-soft); border-radius: 5px; padding: 0 6px; }
+.qgroup ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.qgroup ul li::marker { color: var(--accent); }
+.tip { font-size: 12.5px; background: var(--warn-soft); border-radius: 8px; padding: 10px 12px; }
+.tip b { color: var(--warn); }
+.team-chip { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--surface); cursor: pointer; font-size: 14px; display: inline-flex; gap: 8px; align-items: baseline; }
+.team-chip small { color: var(--muted); font-size: 12px; }
+.team-chip:hover, .team-chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 
 /* Progress */
 .progress { display: grid; gap: 14px; }
@@ -239,7 +250,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
   </a>
   <nav class="tabs" id="tabs" hidden aria-label="화면 전환">
     <button type="button" class="tab" id="tabNew" aria-current="page">새 면담</button>
-    <button type="button" class="tab" id="tabHistory">면담 기록</button>
+    <button type="button" class="tab" id="tabRound">조순회</button>
+    <button type="button" class="tab" id="tabHistory">기록</button>
   </nav>
   <div class="user-box" id="userBox" hidden>
     <span id="userName"></span>
@@ -349,6 +361,69 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
       </div>
     </form>
 
+    <!-- 조순회 입력 -->
+    <form id="roundForm" novalidate hidden>
+      <div style="display:grid;gap:22px">
+        <div class="sheet-head">
+          <h1>조순회 로그 작성</h1>
+          <p>조순회 녹음이나 자막을 올리면 수강생별 학습 상태를 운영 기준 4개 항목으로 정리합니다.</p>
+        </div>
+
+        <div class="field" id="teamPresetField" hidden>
+          <span class="label">저장된 조</span>
+          <div class="seg" id="teamPresets"></div>
+          <span class="hint">누르면 조 이름과 조원 명단이 채워집니다.</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="rTeam" class="req">조</label>
+            <input type="text" id="rTeam" placeholder="예: 3조" required>
+          </div>
+          <div class="field">
+            <label for="rDate" class="req">조순회 일자</label>
+            <input type="date" id="rDate" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="label req">진행 단계</span>
+          <div class="seg" role="radiogroup" aria-label="진행 단계">
+            <input type="radio" name="stage" id="s1" value="학습 주차"><label for="s1">학습 주차</label>
+            <input type="radio" name="stage" id="s2" value="과제 수행" checked><label for="s2">과제 수행</label>
+            <input type="radio" name="stage" id="s3" value="프로젝트 주차"><label for="s3">프로젝트 주차</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="rMembers" class="req">조원 명단</label>
+          <textarea id="rMembers" placeholder="쉼표나 줄바꿈으로 구분. 예: 김민지, 박서준, 이하늘" style="min-height:64px"></textarea>
+          <span class="hint">명단에 있는 수강생은 모두 로그에 나오고, 조순회에서 확인하지 못한 수강생은 따로 표시됩니다.</span>
+        </div>
+
+        <div class="field">
+          <span class="label req">녹음 또는 자막 파일</span>
+          <label class="drop" id="rDrop" for="rFile">
+            <strong>파일을 끌어다 놓거나 눌러서 선택</strong>
+            <span class="hint">.vtt .txt .m4a .mp3 .wav · Zoom 자막(.vtt)이면 이름별 화자 구분이 정확합니다</span>
+            <span class="file-name" id="rFileName" hidden></span>
+            <input type="file" id="rFile" accept=".vtt,.txt,.m4a,.mp3,.wav">
+          </label>
+        </div>
+
+        <div class="field">
+          <label for="rMemo">튜터 메모 (선택)</label>
+          <textarea id="rMemo" placeholder="녹음에 없는 관찰 내용, 운영진에 전달할 사항. 튜터 안내 및 운영진 확인 항목에 반영됩니다."></textarea>
+        </div>
+
+        <div class="error-msg" id="roundError" hidden></div>
+        <div class="actions">
+          <button class="btn" type="submit" id="roundSubmitBtn">조순회 로그 생성</button>
+          <span class="hint">자막 파일은 30초 안팎, 녹음 파일은 길이에 따라 3~10분 걸립니다.</span>
+        </div>
+      </div>
+    </form>
+
     <!-- 진행 -->
     <div class="progress" id="viewProgress" hidden>
       <div class="sheet-head">
@@ -358,7 +433,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
       <ol class="steps" id="steps">
         <li data-step="0"><span class="dot"></span>파일 업로드</li>
         <li data-step="1"><span class="dot"></span>전사본 준비</li>
-        <li data-step="2"><span class="dot"></span>8개 항목 로그 작성</li>
+        <li data-step="2"><span class="dot"></span><span id="stepLabel2">8개 항목 로그 작성</span></li>
         <li data-step="3"><span class="dot"></span>저장 및 결과 정리</li>
       </ol>
       <div class="elapsed" id="elapsed">00:00</div>
@@ -372,13 +447,14 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     <div id="viewResult" hidden class="stack">
       <div id="resultBody" class="stack"></div>
       <div class="actions">
-        <button class="btn btn-ghost" type="button" id="newBtn">새 면담 작성</button>
-        <button class="btn btn-ghost" type="button" id="toHistoryBtn">면담 기록 보기</button>
+        <button class="btn btn-ghost" type="button" id="newBtn">새로 작성</button>
+        <button class="btn btn-ghost" type="button" id="toHistoryBtn">기록 보기</button>
       </div>
     </div>
   </div>
 
   <aside class="guide">
+   <div class="guide-body" id="guideInterview">
     <div>
       <div class="eyebrow">1주차 전수면담</div>
       <h2>필수 확인 항목</h2>
@@ -401,6 +477,51 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
       </tbody>
     </table>
     <p class="note">면담 일정을 바꾸면 학습관리 매니저에게 변경된 요일과 시간을 꼭 공유해 주세요.</p>
+   </div>
+   <div class="guide-body" id="guideRound" hidden>
+    <div>
+      <div class="eyebrow">QAQC 8회차 조순회</div>
+      <h2>조순회 질문 가이드</h2>
+    </div>
+    <p class="tip"><b>녹음 팁</b> 질문할 때 수강생 이름을 불러 주세요. "민지 님은 어디까지 하셨어요?"처럼 호명하면 로그가 수강생별로 정확하게 나뉩니다.</p>
+    <div class="qgroup">
+      <h3><span class="num">0</span>조 전체 열기</h3>
+      <ul>
+        <li>오늘 과제(학습) 조 전체로 어디까지 왔나요?</li>
+        <li>조 안에서 공통으로 막힌 부분이 있나요?</li>
+      </ul>
+    </div>
+    <div class="qgroup">
+      <h3><span class="num">1</span>학습 및 과제 수행 현황</h3>
+      <ul>
+        <li>지금 과제 몇 번까지 했나요? 오늘 목표 대비 어느 정도인가요?</li>
+        <li>손을 못 대고 있는 단계가 있나요? 어디서 멈췄나요?</li>
+      </ul>
+    </div>
+    <div class="qgroup">
+      <h3><span class="num">2</span>학습 이해도 및 어려움</h3>
+      <ul>
+        <li>이번 주 내용 중 가장 헷갈리는 개념 하나만 꼽는다면요?</li>
+        <li>해결 못 한 에러나 코드가 있으면 화면으로 보여 줄래요?</li>
+        <li>강의 속도는 빠른가요, 적당한가요?</li>
+      </ul>
+    </div>
+    <div class="qgroup">
+      <h3><span class="num">3</span>학습 참여 및 적응 상태</h3>
+      <ul>
+        <li>조원끼리 질문이나 역할은 어떻게 나누고 있나요?</li>
+        <li>하루 학습 시간이나 컨디션은 괜찮나요? 장비나 공간 문제는 없나요?</li>
+      </ul>
+    </div>
+    <div class="qgroup">
+      <h3><span class="num">4</span>추가 지원 필요 여부</h3>
+      <ul>
+        <li>튜터가 따로 설명해 주면 좋을 부분이 있나요?</li>
+        <li>매니저에게 전달할 출결, 환경, 건의 사항이 있나요?</li>
+      </ul>
+    </div>
+    <p class="note">어려움이 없는 수강생도 "무엇을 원활하게 하고 있는지" 한마디는 듣고 넘어가 주세요. "특이사항 없음" 일괄 기록은 지양합니다. 운영진 확인이 필요한 사항은 로그와 별도로 바로 공유해 주세요.</p>
+   </div>
   </aside>
 </main>
 
@@ -409,18 +530,20 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
   <div class="sheet stack" id="historyList">
     <div class="history-head">
       <div class="sheet-head">
-        <h1>면담 기록</h1>
+        <h1>면담·조순회 기록</h1>
         <p id="historyCount">불러오는 중</p>
       </div>
       <button class="btn btn-ghost" type="button" id="refreshBtn">새로고침</button>
     </div>
     <div class="history-tools">
       <div class="field search">
-        <label for="hSearch">수강생 또는 내용 검색</label>
+        <label for="hSearch">수강생, 조 또는 내용 검색</label>
         <input type="text" id="hSearch" placeholder="예: 김민지, 시간 부족">
       </div>
       <div class="seg" role="radiogroup" aria-label="기록 필터">
         <input type="radio" name="hFilter" id="hfAll" value="all" checked><label for="hfAll">전체</label>
+        <input type="radio" name="hFilter" id="hfInt" value="interview"><label for="hfInt">면담</label>
+        <input type="radio" name="hFilter" id="hfRound" value="round"><label for="hfRound">조순회</label>
         <input type="radio" name="hFilter" id="hfRisk" value="risk"><label for="hfRisk">이탈 신호</label>
         <input type="radio" name="hFilter" id="hfFollow" value="follow"><label for="hfFollow">후속 조치</label>
         <input type="radio" name="hFilter" id="hfMissing" value="missing"><label for="hfMissing">항목 누락</label>
@@ -430,7 +553,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     <div class="table-wrap">
       <table class="htable">
         <thead>
-          <tr><th>면담일</th><th>수강생</th><th>말머리</th><th>등급</th><th>상태</th><th>한 줄 요약</th></tr>
+          <tr><th>일자</th><th>수강생 / 조</th><th>말머리</th><th>등급 / 단계</th><th>상태</th><th>한 줄 요약</th></tr>
         </thead>
         <tbody id="historyRows"></tbody>
       </table>
@@ -464,7 +587,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
   var POLL_MS = 4000;
   var TIMEOUT_MS = 15 * 60 * 1000;
 
-  var state = { token: null, name: '', email: '', file: null, timer: null, poll: null, started: 0 };
+  var state = { token: null, name: '', email: '', file: null, rfile: null, mode: 'interview', timer: null, poll: null, started: 0 };
+  function isRoundLog(r) { return r && (r.log_type === 'round' || r.log_prefix === '[조순회]'); }
 
   function $(id) { return document.getElementById(id); }
   function store(key, val) {
@@ -545,32 +669,43 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     return d.getFullYear() + '-' + m + '-' + day;
   }
   function resetForm() {
-    $('interviewForm').reset();
-    $('fDate').value = today();
+    $('interviewForm').reset(); $('roundForm').reset();
+    $('fDate').value = today(); $('rDate').value = today();
     state.file = null; $('fileName').hidden = true;
-    show($('formError'), false);
-    show($('interviewForm'), true); show($('viewProgress'), false); show($('viewResult'), false);
+    state.rfile = null; $('rFileName').hidden = true;
+    show($('formError'), false); show($('roundError'), false);
+    showForm();
+    show($('viewProgress'), false); show($('viewResult'), false);
+  }
+  function showForm() {
+    var round = state.mode === 'round';
+    show($('interviewForm'), !round); show($('roundForm'), round);
+    show($('guideInterview'), !round); show($('guideRound'), round);
   }
   function radio(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : ''; }
 
-  function setFile(f) {
+  function setFile(f, key, nameId, errId) {
     if (!f) return;
     var ext = (f.name.split('.').pop() || '').toLowerCase();
     if (['vtt', 'txt', 'm4a', 'mp3', 'wav'].indexOf(ext) === -1) {
-      $('formError').textContent = '지원하지 않는 파일 형식입니다. .vtt .txt .m4a .mp3 .wav 중 하나를 올려 주세요.';
-      show($('formError'), true); return;
+      $(errId).textContent = '지원하지 않는 파일 형식입니다. .vtt .txt .m4a .mp3 .wav 중 하나를 올려 주세요.';
+      show($(errId), true); return;
     }
-    state.file = f;
+    state[key] = f;
     var mb = (f.size / 1048576).toFixed(1);
-    $('fileName').textContent = f.name + ' (' + mb + 'MB)';
-    $('fileName').hidden = false;
-    show($('formError'), false);
+    $(nameId).textContent = f.name + ' (' + mb + 'MB)';
+    $(nameId).hidden = false;
+    show($(errId), false);
   }
-  $('fFile').addEventListener('change', function () { setFile(this.files[0]); });
-  var drop = $('drop');
-  ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('drag'); }); });
-  ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('drag'); }); });
-  drop.addEventListener('drop', function (e) { if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
+  function bindDrop(dropId, inputId, key, nameId, errId) {
+    $(inputId).addEventListener('change', function () { setFile(this.files[0], key, nameId, errId); });
+    var drop = $(dropId);
+    ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('drag'); }); });
+    ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('drag'); }); });
+    drop.addEventListener('drop', function (e) { if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0], key, nameId, errId); });
+  }
+  bindDrop('drop', 'fFile', 'file', 'fileName', 'formError');
+  bindDrop('rDrop', 'rFile', 'rfile', 'rFileName', 'roundError');
 
   $('interviewForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -585,9 +720,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
       $('formError').textContent = '파일이 ' + MAX_MB + 'MB를 넘습니다. 자막 파일(.vtt)을 올리거나 녹음을 압축해 주세요.';
       show($('formError'), true); return;
     }
-    startProgress();
-    post('submit', {
-      token: state.token,
+    submitJob({
+      logType: 'interview',
       student: $('fStudent').value.trim(),
       interviewDate: $('fDate').value,
       logPrefix: radio('logPrefix'),
@@ -595,13 +729,46 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
       basecamp: radio('basecamp'),
       preInfo: $('fPre').value,
       memo: $('fMemo').value
-    }, state.file).then(function (d) {
+    }, state.file);
+  });
+
+  function parseMembers(text) {
+    return text.split(/[,\n、·\/]+/).map(function (x) { return x.trim().replace(/님$/, ''); }).filter(Boolean);
+  }
+  $('roundForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var members = parseMembers($('rMembers').value);
+    var missing = [];
+    if (!$('rTeam').value.trim()) missing.push('조');
+    if (!$('rDate').value) missing.push('조순회 일자');
+    if (!radio('stage')) missing.push('진행 단계');
+    if (!members.length) missing.push('조원 명단');
+    if (!state.rfile) missing.push('녹음 또는 자막 파일');
+    if (missing.length) { $('roundError').textContent = '입력이 필요합니다: ' + missing.join(', '); show($('roundError'), true); return; }
+    if (state.rfile.size > MAX_MB * 1048576) {
+      $('roundError').textContent = '파일이 ' + MAX_MB + 'MB를 넘습니다. 자막 파일(.vtt)을 올리거나 녹음을 압축해 주세요.';
+      show($('roundError'), true); return;
+    }
+    submitJob({
+      logType: 'round',
+      student: $('rTeam').value.trim(),
+      interviewDate: $('rDate').value,
+      stage: radio('stage'),
+      members: members.join(', '),
+      memo: $('rMemo').value
+    }, state.rfile);
+  });
+
+  function submitJob(fields, file) {
+    startProgress();
+    fields.token = state.token;
+    post('submit', fields, file).then(function (d) {
       if (d._status === 401) { logout('로그인이 만료되었습니다. 다시 로그인해 주세요.'); return; }
       if (!d.ok || !d.jobId) { failProgress(d.error || '제출에 실패했습니다.'); return; }
       setStep(1);
       pollJob(d.jobId);
     }).catch(function () { failProgress('업로드 중 연결이 끊겼습니다. 파일 크기를 확인하고 다시 시도해 주세요.'); });
-  });
+  }
 
   /* ---------- 진행 ---------- */
   function setStep(n) {
@@ -612,9 +779,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
   }
   function stopTimers() { clearInterval(state.timer); clearTimeout(state.poll); state.timer = null; state.poll = null; }
   function startProgress() {
-    show($('interviewForm'), false); show($('viewResult'), false); show($('viewProgress'), true);
+    show($('interviewForm'), false); show($('roundForm'), false); show($('viewResult'), false); show($('viewProgress'), true);
     show($('progressError'), false); show($('progressActions'), false);
-    $('progressTitle').textContent = '면담 로그 작성 중';
+    var round = state.mode === 'round';
+    $('progressTitle').textContent = round ? '조순회 로그 작성 중' : '면담 로그 작성 중';
+    $('stepLabel2').textContent = round ? '수강생별 4개 항목 정리' : '8개 항목 로그 작성';
     setStep(0);
     state.started = Date.now();
     stopTimers();
@@ -635,7 +804,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     show($('progressActions'), true);
   }
   $('backBtn').addEventListener('click', function () {
-    show($('viewProgress'), false); show($('interviewForm'), true);
+    show($('viewProgress'), false); showForm();
   });
 
   function pollJob(jobId) {
@@ -670,8 +839,38 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
     else fallback();
   }
+  function buildRoundDetail(box, r, isNew) {
+    var head = el('div', 'sheet-head');
+    head.appendChild(el('h1', null, r.student + ' 조순회 로그'));
+    head.appendChild(el('p', null, (r.interview_date || '') + (r.file_name ? ' · ' + r.file_name : '')));
+    box.appendChild(head);
+    var members = String(r.basecamp || '').split(', ').filter(Boolean);
+    var bs = el('div', 'badges');
+    bs.appendChild(badge(r.log_prefix, 'prefix'));
+    if (r.risk_grade) bs.appendChild(badge(r.risk_grade));
+    if (members.length) bs.appendChild(badge('조원 ' + members.length + '명'));
+    bs.appendChild(r.risk_signal ? badge('이탈 신호 있음', 'risk') : badge('이탈 신호 없음', 'ok'));
+    if (r.followup_needed) bs.appendChild(badge('지원·확인 필요', 'warn'));
+    box.appendChild(bs);
+    if (r.one_line_summary) box.appendChild(callout('summary', '한 줄 요약', r.one_line_summary));
+    if (r.missing_items) box.appendChild(callout('warn', '이번 조순회에서 확인하지 못한 수강생', r.missing_items.split(', ').join('\n') + '\n다음 조순회에서 이름을 불러 상태를 확인해 주세요.'));
+    else if (members.length) box.appendChild(callout('ok', '조원 ' + members.length + '명 모두 상태 기록됨'));
+    if (r.followup_detail) box.appendChild(callout('warn', '추가 지원 및 운영진 확인', r.followup_detail));
+    if (r.audio_warning) box.appendChild(callout('warn', '녹음 품질 확인 필요', r.audio_warning));
+    if (r.risk_signal) box.appendChild(callout('risk', '이탈 신호 근거', r.risk_evidence));
+    var lh = el('div', 'log-head');
+    lh.appendChild(el('h2', null, '로그 원문'));
+    var cb = el('button', 'btn', '로그 복사'); cb.type = 'button';
+    lh.appendChild(cb);
+    box.appendChild(lh);
+    var pre = el('pre', 'log', r.log_text || '');
+    box.appendChild(pre);
+    cb.addEventListener('click', function () { copyText(pre); });
+    if (isNew) box.appendChild(el('p', 'foot', '녹취와 튜터 메모를 바탕으로 한 초안입니다. 조순회 로그 DB에 붙여넣기 전에 수강생 이름과 내용을 검토해 주세요.'));
+  }
   function buildDetail(box, r, isNew) {
     box.innerHTML = '';
+    if (isRoundLog(r)) { buildRoundDetail(box, r, isNew); return; }
     var head = el('div', 'sheet-head');
     head.appendChild(el('h1', null, r.student + ' 면담 로그'));
     head.appendChild(el('p', null, (r.interview_date || '') + (r.file_name ? ' · ' + r.file_name : '')));
@@ -713,18 +912,56 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     var isHistory = name === 'history';
     show($('viewApp'), !isHistory);
     show($('viewHistory'), isHistory);
-    if (isHistory) { $('tabHistory').setAttribute('aria-current', 'page'); $('tabNew').removeAttribute('aria-current'); }
-    else { $('tabNew').setAttribute('aria-current', 'page'); $('tabHistory').removeAttribute('aria-current'); }
+    var ids = { 'new': 'tabNew', round: 'tabRound', history: 'tabHistory' };
+    Object.keys(ids).forEach(function (k) {
+      if (k === name) $(ids[k]).setAttribute('aria-current', 'page'); else $(ids[k]).removeAttribute('aria-current');
+    });
+    if (!isHistory) {
+      var mode = name === 'round' ? 'round' : 'interview';
+      var busy = !$('viewProgress').hidden && state.poll;
+      if (mode !== state.mode && !busy) { state.mode = mode; resetForm(); }
+      else if (!busy && $('viewResult').hidden) { state.mode = mode; showForm(); }
+      if (mode === 'round') { if (hist.stale || !hist.items) loadTeams(); else renderTeams(); }
+    }
     if (isHistory) {
       show($('historyList'), true); show($('historyDetail'), false);
       if (hist.stale || !hist.items) loadHistory();
     }
   }
   $('tabNew').addEventListener('click', function () { switchTab('new'); });
+  $('tabRound').addEventListener('click', function () { switchTab('round'); });
   $('tabHistory').addEventListener('click', function () { switchTab('history'); });
 
   /* ---------- 면담 기록 ---------- */
-  var hist = { items: null, stale: true };
+  var hist = { items: null, stale: true, teams: [] };
+  function renderTeams() {
+    var box = $('teamPresets'); box.innerHTML = '';
+    (hist.teams || []).forEach(function (t) {
+      var b = el('button', 'team-chip'); b.type = 'button';
+      b.appendChild(el('span', null, t.team));
+      b.appendChild(el('small', null, t.members));
+      b.setAttribute('aria-pressed', $('rTeam').value.trim() === t.team ? 'true' : 'false');
+      b.addEventListener('click', function () { $('rTeam').value = t.team; $('rMembers').value = t.members; renderTeams(); });
+      box.appendChild(b);
+    });
+    show($('teamPresetField'), (hist.teams || []).length > 0);
+  }
+  function findTeam(name) {
+    var n = name.replace(/\s+/g, '');
+    return (hist.teams || []).filter(function (t) { return t.team.replace(/\s+/g, '') === n; })[0];
+  }
+  $('rTeam').addEventListener('input', function () {
+    var t = findTeam(this.value);
+    if (t && !$('rMembers').value.trim()) $('rMembers').value = t.members;
+    renderTeams();
+  });
+  function loadTeams() {
+    post('history', { token: state.token }).then(function (d) {
+      if (!d.ok) return;
+      hist.items = d.items || []; hist.teams = d.teams || []; hist.stale = false;
+      renderTeams();
+    }).catch(function () {});
+  }
   function loadHistory() {
     show($('historyError'), false);
     $('historyCount').textContent = '불러오는 중';
@@ -733,8 +970,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     post('history', { token: state.token }).then(function (d) {
       if (d._status === 401) { logout('로그인이 만료되었습니다. 다시 로그인해 주세요.'); return; }
       if (!d.ok) { $('historyError').textContent = d.error || '기록을 불러오지 못했습니다.'; show($('historyError'), true); $('historyCount').textContent = ''; return; }
-      hist.items = d.items || []; hist.stale = false;
-      renderHistory();
+      hist.items = d.items || []; hist.teams = d.teams || []; hist.stale = false;
+      renderHistory(); renderTeams();
     }).catch(function () {
       $('historyError').textContent = '서버에 연결하지 못했습니다. 새로고침을 눌러 다시 시도해 주세요.';
       show($('historyError'), true); $('historyCount').textContent = '';
@@ -745,15 +982,17 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
     var f = radio('hFilter');
     var all = hist.items || [];
     var rows = all.filter(function (r) {
+      if (f === 'round' && !isRoundLog(r)) return false;
+      if (f === 'interview' && isRoundLog(r)) return false;
       if (f === 'risk' && !r.risk_signal) return false;
       if (f === 'follow' && !r.followup_needed) return false;
       if (f === 'missing' && !r.missing_items) return false;
       if (!q) return true;
-      return (r.student + ' ' + r.one_line_summary + ' ' + r.log_text).toLowerCase().indexOf(q) !== -1;
+      return (r.student + ' ' + (r.basecamp || '') + ' ' + r.one_line_summary + ' ' + r.log_text).toLowerCase().indexOf(q) !== -1;
     });
-    var students = {};
-    all.forEach(function (r) { students[r.student] = true; });
-    $('historyCount').textContent = '총 ' + all.length + '건 · 수강생 ' + Object.keys(students).length + '명' + (rows.length !== all.length ? ' · 조건에 맞는 ' + rows.length + '건' : '');
+    var students = {}; var rounds = 0;
+    all.forEach(function (r) { if (isRoundLog(r)) rounds += 1; else students[r.student] = true; });
+    $('historyCount').textContent = '면담 ' + (all.length - rounds) + '건(수강생 ' + Object.keys(students).length + '명) · 조순회 ' + rounds + '건' + (rows.length !== all.length ? ' · 조건에 맞는 ' + rows.length + '건' : '');
     var tb = $('historyRows'); tb.innerHTML = '';
     rows.forEach(function (r) {
       var tr = document.createElement('tr'); tr.tabIndex = 0;
@@ -763,8 +1002,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
       tr.appendChild(el('td', 'date', r.risk_grade));
       var tdf = el('td'); var fl = el('div', 'flags');
       if (r.risk_signal) fl.appendChild(badge('이탈 신호', 'risk'));
-      if (r.followup_needed) fl.appendChild(badge('후속 조치', 'warn'));
-      if (r.missing_items) fl.appendChild(badge('누락 있음', 'warn'));
+      if (r.followup_needed) fl.appendChild(badge(isRoundLog(r) ? '지원·확인' : '후속 조치', 'warn'));
+      if (r.missing_items) fl.appendChild(badge(isRoundLog(r) ? '미확인 수강생' : '누락 있음', 'warn'));
       if (!fl.children.length) fl.appendChild(badge('정상', 'ok'));
       tdf.appendChild(fl); tr.appendChild(tdf);
       tr.appendChild(el('td', 'sum', r.one_line_summary || '요약 없음'));
@@ -773,7 +1012,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent); outline
       tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
       tb.appendChild(tr);
     });
-    if (!all.length) { $('historyEmpty').textContent = '아직 저장된 면담 기록이 없습니다. 새 면담 탭에서 첫 로그를 만들어 보세요.'; show($('historyEmpty'), true); }
+    if (!all.length) { $('historyEmpty').textContent = '아직 저장된 기록이 없습니다. 새 면담이나 조순회 탭에서 첫 로그를 만들어 보세요.'; show($('historyEmpty'), true); }
     else if (!rows.length) { $('historyEmpty').textContent = '조건에 맞는 기록이 없습니다.'; show($('historyEmpty'), true); }
     else show($('historyEmpty'), false);
   }
