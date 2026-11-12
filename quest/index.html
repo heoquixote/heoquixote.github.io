@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Runner Quest | 데이터 러너즈</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="매일의 루틴을 퀘스트로 체크하고 경험치와 레벨로 나를 육성하는 자기육성 대시보드">
@@ -38,7 +38,9 @@
   color-scheme:dark;
 }
 *,*:before,*:after { box-sizing:border-box; }
-html { -webkit-text-size-adjust:100%; }
+html { -webkit-text-size-adjust:100%; touch-action:manipulation; }
+/* 모바일 더블탭 확대 방지: manipulation은 스크롤·핀치는 두고 더블탭 줌만 끈다 (iOS 13+ Safari, Android Chrome) */
+*,*:before,*:after { touch-action:manipulation; }
 body {
   margin:0; background:var(--bg); color:var(--text); font-family:var(--font-ko); font-size:15px; line-height:1.55;
   -webkit-font-smoothing:antialiased; word-break:keep-all; overflow-wrap:break-word; overflow-x:hidden;
