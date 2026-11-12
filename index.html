@@ -1218,21 +1218,21 @@
           </div>
         </div>
         <div class="career-group reveal">
-          <div class="career-group-head"><h3>교육기관 · 대학 · 공인과정</h3><span>09</span></div>
+          <div class="career-group-head"><h3>교육기관 · 대학 · 공인과정</h3><span data-org-count>06</span></div>
           <ul class="career-grid">
             <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/teamsparta.png)"></i></span><span>TeamSparta</span></h4><p>QAQC 과정 6기 · 8기</p><strong>데이터 분석 및 시각화 실무 교육</strong></li>
             <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/codeit.png)"></i></span><span>Codeit</span></h4><p>데이터 분석 과정 11기</p><strong>데이터 분석 실무 교육</strong></li>
             <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/teamsparta.png)"></i></span><span>TeamSparta</span></h4><p>데이터 분석 과정 7기 · 11기</p><strong>데이터 분석 실무 교육</strong></li>
             <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/bdai.png)"></i></span><span>BDAI</span></h4><p>데이터 분석가 과정 1·2·3기</p><strong>데이터 시각화 실무 교육</strong></li>
-            <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/sesac.png)"></i></span><span>청년사관학교 강동캠퍼스 <small>· Salesforce CRM101 · S.T.A Track</small></span></h4><strong>Tableau 실무 특강</strong></li>
-            <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/sesac.png)"></i></span><span>청년취업사관학교 강북캠퍼스</span></h4><strong>데이터 현업 특강</strong></li>
+            <li class="career-item" data-org="sesac"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/sesac.png)"></i></span><span>청년사관학교 강동캠퍼스 <small>· Salesforce CRM101 · S.T.A Track</small></span></h4><strong>Tableau 실무 특강</strong></li>
+            <li class="career-item" data-org="sesac"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/sesac.png)"></i></span><span>청년취업사관학교 강북캠퍼스</span></h4><strong>데이터 현업 특강</strong></li>
             <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/bdai.png)"></i></span><span>BDAI</span></h4><strong>경영정보시각화 특강</strong></li>
             <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/kookmin.png)"></i></span><span>국민대학교 <small>KMU</small></span></h4><strong>대학원생 대상 데이터 시각화 교육</strong></li>
             <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><svg><use href="#pl-salesforce"/></svg></span><span>Trailhead Academy <small>Salesforce</small></span></h4><p>TTD101 · TTD201</p><strong>Tableau 공인과정 운영</strong></li>
           </ul>
         </div>
         <div class="career-group reveal">
-          <div class="career-group-head"><h3>기업 임직원 교육</h3><span>08</span></div>
+          <div class="career-group-head"><h3>기업 임직원 교육</h3><span data-org-count>08</span></div>
           <ul class="career-grid">
             <li class="career-item"><h4><span class="pl-tile" aria-hidden="true">KB</span><span>KB</span></h4><p>Cursor AI · Claude · 2026.05 ~ 2026.07</p><strong>AI 기반 업무 자동화 교육</strong></li>
             <li class="career-item"><h4><span class="pl-tile pl-tile--mark" aria-hidden="true"><i class="pl-img" style="--m:url(/assets/logos/jobkorea.png)"></i></span><span>잡코리아</span></h4><strong>임직원 대상 데이터 시각화 교육</strong></li>
@@ -1764,6 +1764,18 @@
     bForm.addEventListener('input',e=>{const f=e.target.closest('.inq-field');if(f&&f.classList.contains('invalid'))setErr(f,'')});
     bForm.addEventListener('change',e=>{const f=e.target.closest('.inq-field');if(f&&f.classList.contains('invalid'))setErr(f,'')});
   })();
+  </script>
+  <script>
+  /* 경력 그룹 숫자: 카드 수가 아니라 고유 기관 수. 같은 기관의 다른 캠퍼스·과정은 data-org로 묶는다 */
+  document.querySelectorAll('.career-group').forEach(g=>{
+    const out=g.querySelector('[data-org-count]');if(!out)return;
+    const orgs=new Set([...g.querySelectorAll('.career-item')].map(li=>{
+      if(li.dataset.org)return li.dataset.org;
+      const n=li.querySelector('h4 .pl-tile+span')||li.querySelector('h4');
+      return (n.firstChild?n.firstChild.textContent:n.textContent).trim().toLowerCase();
+    }));
+    out.textContent=String(orgs.size).padStart(2,'0');
+  });
   </script>
 </body>
 </html>
