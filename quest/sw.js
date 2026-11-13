@@ -1,6 +1,6 @@
 /* Runner Quest 서비스 워커: 앱 껍데기만 캐시하고, 기록 API(n8n)는 항상 네트워크로 보냅니다.
    푸시 알림(저녁 9시 남은 퀘스트 등)도 여기서 받아 표시합니다. */
-var VERSION = 'rq-v9';
+var VERSION = 'rq-v10';
 var SHELL = [
   '/quest/',
   '/quest/manifest.webmanifest',

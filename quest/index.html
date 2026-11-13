@@ -420,6 +420,26 @@ table.rt tr:last-child td { border-bottom:0; }
 /* Season / Boss / Shield */
 .chip.btnlike { cursor:pointer; font:inherit; font-size:12px; }
 .chip.btnlike:hover { border-color:var(--line-strong); }
+.chip.gold { border-color:color-mix(in srgb, var(--amber) 55%, transparent); color:var(--text); }
+.chip.gold b { color:var(--amber); }
+.shop-bal { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border:1px solid color-mix(in srgb, var(--amber) 45%, transparent); border-radius:var(--r-md); background:linear-gradient(100deg,rgba(255,207,74,.14),transparent 70%),var(--surface-2); }
+.shop-bal .v { font-family:var(--font-en); font-size:30px; font-weight:800; color:var(--amber); line-height:1; }
+.shop-bal small { display:block; color:var(--muted); font-size:12px; margin-top:6px; }
+.shop-sec { margin-top:16px; font-size:12px; font-weight:700; color:var(--subtle); letter-spacing:.04em; }
+.shop-list { display:grid; gap:8px; margin-top:8px; }
+.shop-item { display:grid; grid-template-columns:40px 1fr auto auto; gap:10px; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface-2); }
+.shop-item .e { font-size:24px; text-align:center; }
+.shop-item .n { font-weight:700; font-size:14px; }
+.shop-item .n small { display:block; color:var(--muted); font-weight:500; font-size:12px; }
+.shop-item .p { font-family:var(--font-en); color:var(--amber); font-weight:700; font-size:13px; }
+.shop-item .btn:disabled { opacity:.45; cursor:not-allowed; }
+.shop-item .x { border:0; background:none; color:var(--subtle); font-size:16px; padding:4px; cursor:pointer; }
+.shop-item.hist { grid-template-columns:32px 1fr auto; padding:8px 12px; }
+.shop-item.hist .e { font-size:18px; }
+.shop-add { display:grid; grid-template-columns:64px 1fr 96px auto; gap:8px; margin-top:8px; }
+.shop-add input { min-width:0; }
+.shop-add #shEmoji { text-align:center; font-size:18px; }
+@media (max-width:420px) { .shop-add { grid-template-columns:56px 1fr 80px; } .shop-add .btn { grid-column:1 / -1; } }
 .chip.outbox { border-color:color-mix(in srgb, var(--amber) 60%, transparent); color:var(--amber); }
 .chip.outbox b { color:var(--amber); }
 .quick-link { display:flex; gap:8px; align-items:center; }
@@ -750,6 +770,7 @@ table.rt tr:last-child td { border-bottom:0; }
           <button type="button" class="chip btnlike outbox" id="chipOutbox" hidden title="연결되면 자동으로 저장합니다. 눌러서 지금 다시 시도">⏳ 저장 대기 <b id="chipOutboxN">0</b></button>
           <button type="button" class="chip btnlike season" id="chipSeason"></button>
           <span class="chip" id="chipStreakWrap">🔥 연속 <b id="chipStreak">0</b>일 · 🛡 <b id="chipShield">0</b></span>
+          <button type="button" class="chip btnlike gold" id="chipGold" title="보상 상점 열기">🪙 <b id="chipGoldN">0</b> G</button>
           <span class="chip">⚡ 오늘 <b id="chipToday">0</b> XP</span>
           <span class="chip hide-sm">🏆 누적 <b id="chipTotal">0</b> XP</span>
         </div>
@@ -1128,6 +1149,27 @@ table.rt tr:last-child td { border-bottom:0; }
   </form>
 </div>
 
+<!-- 보상 상점 시트 -->
+<div class="sheet" id="shopSheet" role="dialog" aria-modal="true" aria-labelledby="shopSheetTitle" hidden>
+  <div class="grab"></div>
+  <h3 id="shopSheetTitle">보상 상점</h3>
+  <div class="shop-bal"><div><div class="v">🪙 <span id="shBal">0</span> G</div><small>골드 = 지금까지 얻은 XP − 쓴 골드. 써도 레벨·시즌 랭크는 그대로예요.</small></div></div>
+  <div class="shop-sec">시스템 아이템</div>
+  <div class="shop-list" id="shSystem"></div>
+  <div class="shop-sec">내 보상 (현실에서 나에게 주는 선물)</div>
+  <div class="shop-list" id="shItems"></div>
+  <form class="shop-add" id="shopForm" novalidate>
+    <input type="text" id="shEmoji" maxlength="4" value="🎁" aria-label="아이콘">
+    <input type="text" id="shName" maxlength="30" placeholder="예: 치킨 한 마리" aria-label="보상 이름">
+    <input type="number" id="shPrice" inputmode="numeric" min="10" max="100000" placeholder="가격 G" aria-label="가격">
+    <button type="submit" class="btn btn-sm btn-primary">추가</button>
+  </form>
+  <div class="recent" id="shSuggest" style="margin-top:8px"></div>
+  <div class="shop-sec">최근 교환 내역</div>
+  <div class="shop-list" id="shHist"></div>
+  <div class="sheet-actions" style="margin-top:14px"><button type="button" class="btn" data-close>닫기</button></div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -1428,7 +1470,9 @@ table.rt tr:last-child td { border-bottom:0; }
     // 스트릭 + 보호권 + 복귀 퀘스트 (시간순)
     var shields = 0, earned = 0, used = 0, perfSeen = 0, run = 0, best = 0;
     var gap = 0, cb = null, comebacks = [];
+    var boughtShields = {}; shopData().buys.forEach(function (b) { if (b.kind === 'shield') boughtShields[b.date] = (boughtShields[b.date] || 0) + 1; });
     days.forEach(function (x) {
+      if (boughtShields[x.date]) { x.shieldBought = boughtShields[x.date]; shields = Math.min(SHIELD_MAX, shields + boughtShields[x.date]); }
       var logged = x.logs.some(function (l) { return l.kind !== 'skip'; });
       if (gap >= COMEBACK_GAP && (!cb || x.date > cb.end) && (logged || x.date === today)) {
         cb = { start: x.date, end: addDays(x.date, COMEBACK_DAYS - 1), gap: gap, days: 0, shield: false, xp: 0 }; comebacks.push(cb);
@@ -1610,6 +1654,8 @@ table.rt tr:last-child td { border-bottom:0; }
     if (lastBossWins) Object.keys(wins).forEach(function (k) { if (!lastBossWins[k]) setTimeout(function () { bossDefeated(wins[k]); }, 350); });
     lastBossWins = wins;
     $('chipToday').textContent = fmtNum(all.today.xp);
+    $('chipGoldN').textContent = fmtNum(goldOf(all));
+    if (!$('shopSheet').hidden) renderShop(all);
     $('chipTotal').textContent = fmtNum(all.total);
     var max = 0; CAT_KEYS.forEach(function (k) { max = Math.max(max, all.catXp[k] || 0); });
     $('statList').innerHTML = CAT_KEYS.map(function (k) {
@@ -2025,6 +2071,7 @@ table.rt tr:last-child td { border-bottom:0; }
       ['⚔️', '보스 헌터', '주간 보스 4회 격파', Math.min(1, all.bossWins / 4)],
       ['📖', '보스 도감', '서로 다른 보스 5종 격파', Math.min(1, Object.keys(all.bosses.reduce(function (o, b) { if (b.defeated) o[b.species || b.name] = 1; return o; }, {})).length / 5)],
       ['🛡', '수호자', '스트릭 보호권 첫 획득', Math.min(1, all.shieldsEarned)],
+      ['🪙', '나에게 주는 선물', '보상 상점에서 첫 교환', Math.min(1, shopData().buys.filter(function (b) { return b.kind !== 'shield'; }).length)],
       ['🔄', '다시 일어선 러너', '복귀 퀘스트 성공 (3일 중 2일 기록)', Math.min(1, all.comebackWins)],
       ['📝', '회고하는 러너', '월별 회고록 첫 제출', Math.min(1, Object.keys(state.retros).filter(function (m) { return state.retros[m] && state.retros[m].firstSaved; }).length)],
       ['🏅', 'S급 회고', '회고록 S등급 받기', Object.keys(state.retros).some(function (m) { return retroScore(m, state.retros[m]).grade === 'S'; }) ? 1 : 0],
@@ -2551,6 +2598,84 @@ table.rt tr:last-child td { border-bottom:0; }
       toast('✅ ' + r.title + ' 기록 완료! +' + r.xp + ' XP');
     }, 250);
   }
+
+  /* ---------- 보상 상점 (골드) ---------- */
+  // 골드는 누적 XP와 1:1로 쌓이고, 쓴 만큼만 빠집니다. 레벨·시즌 랭크·리그는 XP 기준이라 영향 없음. 저장은 profile.shop
+  var SHOP_SHIELD_PRICE = 600;
+  var SHOP_SUGGEST = [['☕', '좋아하는 카페 음료', 300], ['🎮', '게임 2시간', 800], ['🍗', '치킨 한 마리', 1500], ['🎬', '영화 보러 가기', 1200], ['🛍', '갖고 싶던 물건', 5000]];
+  function shopData() {
+    var sh = state.profile && state.profile.shop;
+    if (!sh || typeof sh !== 'object') sh = {};
+    return { items: Array.isArray(sh.items) ? sh.items : [], buys: Array.isArray(sh.buys) ? sh.buys : [] };
+  }
+  function goldOf(all) {
+    var spent = shopData().buys.reduce(function (s, b) { return s + (+b.price || 0); }, 0);
+    return Math.max(0, Math.round(all.total) - spent);
+  }
+  function saveShop(sh, msg) { state.profile.shop = sh; return saveProfile(msg); }
+  function renderShop(all) {
+    all = all || computeAll();
+    var g = goldOf(all), sh = shopData(), today = todayStr();
+    $('shBal').textContent = fmtNum(g);
+    var full = all.shields >= SHIELD_MAX;
+    $('shSystem').innerHTML = '<div class="shop-item"><span class="e">🛡</span><span class="n">스트릭 보호권 1장<small>' + (full ? '이미 최대 ' + SHIELD_MAX + '장을 갖고 있어요' : '놓친 날 연속 기록을 지켜 줘요 · 보유 ' + all.shields + '/' + SHIELD_MAX) + '</small></span><span class="p">' + fmtNum(SHOP_SHIELD_PRICE) + ' G</span>' +
+      '<button class="btn btn-sm btn-primary" type="button" data-buy-shield' + (full || g < SHOP_SHIELD_PRICE ? ' disabled' : '') + '>구매</button></div>';
+    $('shItems').innerHTML = sh.items.length ? sh.items.map(function (it) {
+      var lack = g < it.price;
+      return '<div class="shop-item"><span class="e">' + esc(it.emoji || '🎁') + '</span><span class="n">' + esc(it.name) + (lack ? '<small>' + fmtNum(it.price - g) + ' G 더 모으면 교환 가능</small>' : '<small>지금 교환할 수 있어요</small>') + '</span>' +
+        '<button class="btn btn-sm' + (lack ? '' : ' btn-primary') + '" type="button" data-buy="' + esc(it.id) + '"' + (lack ? ' disabled' : '') + '>' + fmtNum(it.price) + ' G</button>' +
+        '<button class="x" type="button" data-rm="' + esc(it.id) + '" aria-label="삭제">×</button></div>';
+    }).join('') : '<div class="empty">아직 등록한 보상이 없어요. 아래에서 나에게 줄 보상과 가격을 정해 보세요.</div>';
+    $('shSuggest').innerHTML = SHOP_SUGGEST.filter(function (x) { return !sh.items.some(function (it) { return it.name === x[1]; }); })
+      .map(function (x, i) { return '<button type="button" data-sug="' + i + '">' + x[0] + ' ' + esc(x[1]) + ' · ' + fmtNum(x[2]) + 'G</button>'; }).join('');
+    var hist = sh.buys.slice().reverse().slice(0, 10);
+    $('shHist').innerHTML = hist.length ? hist.map(function (b) {
+      return '<div class="shop-item hist"><span class="e">' + esc(b.emoji || '🎁') + '</span><span class="n">' + esc(b.name) + '<small>' + fmtDate(b.date) + ' · ' + fmtNum(b.price) + ' G</small></span>' +
+        (b.date === today ? '<button class="btn btn-sm btn-ghost" type="button" data-undo="' + esc(b.bid) + '">취소</button>' : '<span></span>') + '</div>';
+    }).join('') : '<div class="empty">교환 내역이 없습니다.</div>';
+  }
+  function openShop() { renderShop(); openSheet($('shopSheet')); }
+  function buy(entry) {
+    var all = computeAll(), g = goldOf(all);
+    if (g < entry.price) { toast('골드가 부족해요.', true); return; }
+    if (!confirm((entry.emoji || '') + ' ' + entry.name + '을(를) ' + fmtNum(entry.price) + 'G로 교환할까요?')) return;
+    var sh = shopData();
+    sh.buys = sh.buys.concat([{ bid: 'b' + Date.now().toString(36), id: entry.id || '', kind: entry.kind || 'reward', name: entry.name, emoji: entry.emoji, price: entry.price, date: todayStr(), at: new Date().toISOString() }]);
+    if (sh.buys.length > 300) sh.buys = sh.buys.slice(-300);
+    saveShop(sh, entry.kind === 'shield' ? '🛡 보호권 1장을 샀어요.' : '🎁 교환 완료! ' + entry.name + ', 마음껏 즐기세요.');
+    var r = $('shBal').getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 10, 24);
+  }
+  $('chipGold').addEventListener('click', openShop);
+  $('shopSheet').addEventListener('click', function (e) {
+    var t;
+    if ((t = e.target.closest('[data-buy-shield]'))) { buy({ kind: 'shield', name: '스트릭 보호권', emoji: '🛡', price: SHOP_SHIELD_PRICE }); return; }
+    if ((t = e.target.closest('[data-buy]'))) { var it = shopData().items.filter(function (x) { return x.id === t.getAttribute('data-buy'); })[0]; if (it) buy(it); return; }
+    if ((t = e.target.closest('[data-rm]'))) {
+      var sh = shopData(), id = t.getAttribute('data-rm'), it2 = sh.items.filter(function (x) { return x.id === id; })[0];
+      if (!it2 || !confirm(it2.name + ' 보상을 목록에서 지울까요? 교환 내역은 남습니다.')) return;
+      sh.items = sh.items.filter(function (x) { return x.id !== id; }); saveShop(sh, '보상을 지웠어요.'); return;
+    }
+    if ((t = e.target.closest('[data-undo]'))) {
+      var sh2 = shopData(), bid = t.getAttribute('data-undo'), b = sh2.buys.filter(function (x) { return x.bid === bid; })[0];
+      if (!b || !confirm(b.name + ' 교환을 취소하고 ' + fmtNum(b.price) + 'G를 돌려받을까요?')) return;
+      sh2.buys = sh2.buys.filter(function (x) { return x.bid !== bid; }); saveShop(sh2, '교환을 취소하고 골드를 돌려받았어요.'); return;
+    }
+    if ((t = e.target.closest('[data-sug]'))) {
+      var sg = SHOP_SUGGEST[+t.getAttribute('data-sug')]; if (!sg) return;
+      $('shEmoji').value = sg[0]; $('shName').value = sg[1]; $('shPrice').value = sg[2]; $('shName').focus();
+    }
+  });
+  $('shopForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = $('shName').value.trim(), price = Math.round(+$('shPrice').value || 0);
+    if (!name) { toast('보상 이름을 입력해 주세요.', true); return; }
+    if (price < 10 || price > 100000) { toast('가격은 10~100,000G 사이로 정해 주세요.', true); return; }
+    var sh = shopData();
+    if (sh.items.length >= 30) { toast('보상은 30개까지 등록할 수 있어요.', true); return; }
+    sh.items = sh.items.concat([{ id: 'i' + Date.now().toString(36), emoji: $('shEmoji').value.trim() || '🎁', name: name, price: price }]);
+    $('shName').value = ''; $('shPrice').value = ''; $('shEmoji').value = '🎁';
+    saveShop(sh, '보상을 추가했어요.');
+  });
 
   /* ---------- auth & sync ---------- */
   function normLog(l) {
