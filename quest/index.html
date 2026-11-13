@@ -407,6 +407,10 @@ table.rt tr:last-child td { border-bottom:0; }
 /* Season / Boss / Shield */
 .chip.btnlike { cursor:pointer; font:inherit; font-size:12px; }
 .chip.btnlike:hover { border-color:var(--line-strong); }
+.chip.outbox { border-color:color-mix(in srgb, var(--amber) 60%, transparent); color:var(--amber); }
+.chip.outbox b { color:var(--amber); }
+.quick-link { display:flex; gap:8px; align-items:center; }
+.quick-link input { flex:1; min-width:0; font-family:var(--font-en); font-size:12px; color:var(--muted); }
 .chip.season { border-color:color-mix(in srgb, var(--rk) 55%, transparent); color:var(--text); }
 .chip.season b { color:var(--rk); }
 @media (max-width:639px) { .chip.hide-sm, .hide-sm-in { display:none; } }
@@ -730,6 +734,7 @@ table.rt tr:last-child td { border-bottom:0; }
           <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
         </div>
         <div class="char-chips">
+          <button type="button" class="chip btnlike outbox" id="chipOutbox" hidden title="연결되면 자동으로 저장합니다. 눌러서 지금 다시 시도">⏳ 저장 대기 <b id="chipOutboxN">0</b></button>
           <button type="button" class="chip btnlike season" id="chipSeason"></button>
           <span class="chip" id="chipStreakWrap">🔥 연속 <b id="chipStreak">0</b>일 · 🛡 <b id="chipShield">0</b></span>
           <span class="chip">⚡ 오늘 <b id="chipToday">0</b> XP</span>
@@ -975,6 +980,11 @@ table.rt tr:last-child td { border-bottom:0; }
       <div class="field"><label for="rfMin">기본 시간(분)</label><input type="number" id="rfMin" inputmode="numeric" min="0" max="1440" value="30"></div>
     </div>
     <label class="chip" style="justify-self:start;cursor:pointer"><input type="checkbox" id="rfActive" checked> 활성화</label>
+    <div class="field" id="rfQuickWrap" hidden>
+      <span class="label">원탭 기록 링크</span>
+      <div class="quick-link"><input type="text" id="rfQuick" readonly aria-label="원탭 기록 링크"><button type="button" class="btn btn-sm" id="rfQuickCopy">복사</button></div>
+      <p class="hint">이 링크를 열면 오늘 이 루틴이 바로 체크됩니다. 아이폰 단축어의 「URL 열기」, NFC 태그, 홈 화면 바로가기에 넣어 두세요.</p>
+    </div>
     <div class="error-msg" id="rfError" hidden></div>
     <div class="sheet-actions">
       <button type="button" class="btn btn-danger" id="rfDelete">삭제</button>
@@ -1227,6 +1237,7 @@ table.rt tr:last-child td { border-bottom:0; }
   function api(action, payload) {
     return post('quest', { token: state.token, action: action, payload: payload ? JSON.stringify(payload) : null }).then(function (d) {
       if (d._status === 401) { logout('로그인이 만료되었습니다. 다시 로그인해 주세요.'); throw new Error(d.error); }
+      if (d._status === 0) { var ne = new Error(d.error); ne.offline = true; throw ne; }
       if (!d.ok) throw new Error(d.error || '요청이 실패했습니다.');
       return d;
     });
@@ -1700,7 +1711,7 @@ table.rt tr:last-child td { border-bottom:0; }
         var after = computeAll();
         if (after.byDate[date] && dayInfo(date, after.byDate).perfect && !dayInfo(date, before.byDate).perfect) {
           toast('퍼펙트 데이! 보너스 +' + PERFECT_BONUS + 'XP ★');
-          var rr = el.getBoundingClientRect(); burst(rr.left + rr.width / 2, rr.top, 22);
+          if (el) { var rr = el.getBoundingClientRect(); burst(rr.left + rr.width / 2, rr.top, 22); }
         }
       });
       if (el) { floatXp(el.querySelector('.check') || el, '+' + r.xp + ' XP'); if (navigator.vibrate) navigator.vibrate(12); }
@@ -1718,15 +1729,20 @@ table.rt tr:last-child td { border-bottom:0; }
 
   function addLog(log, key) {
     state.logs.push(log); if (key) state.pending[key] = true; saveCache(); renderAll();
+    if (state.outbox.length) { if (key) delete state.pending[key]; queueOp({ op: 'add', log: log }, true); flushOutbox(); return Promise.resolve(true); }
     return api('log_add', log).then(function () { if (key) delete state.pending[key]; renderAll(); return true; }, function (e) {
+      if (e.offline) { if (key) delete state.pending[key]; queueOp({ op: 'add', log: log }); return true; }
       state.logs = state.logs.filter(function (l) { return l.log_id !== log.log_id; });
       if (key) delete state.pending[key]; saveCache(); renderAll(); toast(e.message || '저장 실패', true); return false;
     });
   }
   function removeLog(log, key) {
     state.logs = state.logs.filter(function (l) { return l.log_id !== log.log_id; });
+    var queued = state.outbox.some(function (o) { return o.op === 'add' && o.log.log_id === log.log_id; });
+    if (queued || state.outbox.length) { queueOp({ op: 'del', log_id: log.log_id }); if (!queued) flushOutbox(); return Promise.resolve(); }
     if (key) state.pending[key] = true; saveCache(); renderAll();
     return api('log_delete', { log_id: log.log_id }).then(function () { if (key) delete state.pending[key]; renderAll(); }, function (e) {
+      if (e.offline) { if (key) delete state.pending[key]; queueOp({ op: 'del', log_id: log.log_id }); saveCache(); renderAll(); return; }
       state.logs.push(log); if (key) delete state.pending[key]; saveCache(); renderAll(); toast(e.message || '삭제 실패', true);
     });
   }
@@ -2081,6 +2097,7 @@ table.rt tr:last-child td { border-bottom:0; }
     rfCat = r.category; catChips($('rfCats'), rfCat, function (k) { rfCat = k; });
     $('rfDays').innerHTML = [1,2,3,4,5,6,0].map(function (i) { return '<label><input type="checkbox" value="' + i + '"' + (r.days.indexOf(i) >= 0 ? ' checked' : '') + '><span>' + DOW[i] + '</span></label>'; }).join('');
     $('rfDelete').hidden = !id; $('rfError').hidden = true;
+    $('rfQuickWrap').hidden = !id; if (id) $('rfQuick').value = quickUrl(id);
     openSheet($('routineSheet'));
   }
   function saveRoutines(msg) {
@@ -2386,6 +2403,86 @@ table.rt tr:last-child td { border-bottom:0; }
   $('chipSeason').addEventListener('click', function () { showSeasonCard(computeAll(), todayStr().slice(0, 7)); });
   $('seasonList').addEventListener('click', function (e) { var b = e.target.closest('[data-season]'); if (b) showSeasonCard(computeAll(), b.getAttribute('data-season')); });
 
+  /* ---------- 원탭 기록 · 오프라인 저장 대기열 ---------- */
+  // 네트워크가 끊긴 상태에서 체크하면 기록을 지우지 않고 대기열(localStorage)에 넣었다가 연결되면 순서대로 보냅니다.
+  var OUTBOX_KEY = 'dl_quest_outbox', outboxBusy = false, pendingDo = '';
+  state.outbox = [];
+  try { var _ob = JSON.parse(localStorage.getItem(OUTBOX_KEY) || '[]'); if (Array.isArray(_ob)) state.outbox = _ob; } catch (e) {}
+  function renderOutbox() {
+    var n = state.outbox.length; $('chipOutbox').hidden = !n; $('chipOutboxN').textContent = n;
+  }
+  function queueOp(o, quiet) {
+    if (o.op === 'del') {
+      var had = state.outbox.length;
+      var inflight = outboxBusy ? state.outbox[0] : null; // 전송 중인 항목은 서버에 들어갈 수 있으니 삭제 요청을 따로 남김
+      state.outbox = state.outbox.filter(function (x) { return x === inflight || !(x.op === 'add' && x.log.log_id === o.log_id); });
+      if (state.outbox.length === had) state.outbox.push(o);
+    } else state.outbox.push(o);
+    store(OUTBOX_KEY, state.outbox.length ? JSON.stringify(state.outbox) : null);
+    saveCache(); renderAll(); renderOutbox();
+    if (o.op === 'add' && !quiet) toast('오프라인이에요. 기록은 이 기기에 두었다가 연결되면 자동으로 저장할게요.');
+  }
+  // 서버에서 받은 기록에 아직 못 보낸 추가·삭제를 반영
+  function applyOutbox(logs) {
+    state.outbox.forEach(function (o) {
+      if (o.op === 'add' && !logs.some(function (l) { return l.log_id === o.log.log_id; })) logs.push(normLog(o.log));
+      if (o.op === 'del') logs = logs.filter(function (l) { return l.log_id !== o.log_id; });
+    });
+    return logs;
+  }
+  function flushOutbox() {
+    if (outboxBusy || !state.outbox.length || !state.token) return Promise.resolve();
+    outboxBusy = true;
+    var sent = 0;
+    function step() {
+      var o = state.outbox[0];
+      if (!o) return Promise.resolve();
+      var call = o.op === 'add' ? api('log_add', o.log) : api('log_delete', { log_id: o.log_id });
+      return call.then(function () { sent++; next(o); return step(); }, function (e) {
+        if (e.offline) throw e;
+        // 서버가 거절한 항목(형식 오류·이미 지워진 기록 등)은 버리고 계속
+        if (o.op === 'add') state.logs = state.logs.filter(function (l) { return l.log_id !== o.log.log_id; });
+        next(o); toast(e.message || '저장하지 못한 기록이 있어요.', true); return step();
+      });
+    }
+    function next(o) { state.outbox = state.outbox.filter(function (x) { return x !== o; }); store(OUTBOX_KEY, state.outbox.length ? JSON.stringify(state.outbox) : null); renderOutbox(); }
+    return step().then(function () {
+      outboxBusy = false; saveCache(); renderAll();
+      if (sent) toast('대기 중이던 기록 ' + sent + '건을 저장했어요.');
+    }, function () { outboxBusy = false; renderOutbox(); });
+  }
+  window.addEventListener('online', function () { flushOutbox(); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) flushOutbox(); });
+  $('chipOutbox').addEventListener('click', function () {
+    if (!navigator.onLine) { toast('아직 오프라인이에요. 연결되면 자동으로 저장합니다.'); return; }
+    flushOutbox();
+  });
+
+  // ?do=<루틴 id> 링크: 오늘 그 루틴을 바로 체크 (next = 아직 안 한 다음 루틴)
+  function quickUrl(id) { return location.origin + '/quest/?do=' + encodeURIComponent(id); }
+  $('rfQuickCopy').addEventListener('click', function () { copyText($('rfQuick').value, '원탭 기록 링크를 복사했어요.'); });
+  function runQuickDo() {
+    if (!pendingDo || !state.routines.length) return;
+    var rid = pendingDo; pendingDo = '';
+    var today = todayStr();
+    state.viewDate = today; if (state.tab !== 'today') setTab('today');
+    var done = {}; state.logs.forEach(function (l) { if (l.log_date === today && (l.kind === 'routine' || l.kind === 'skip')) done[l.routine_id] = 1; });
+    var r = null;
+    if (rid === 'next') {
+      r = scheduledOn(today).filter(function (x) { return !done[x.id]; }).sort(function (a, b) { return (a.start || '99') < (b.start || '99') ? -1 : 1; })[0] || null;
+      if (!r) { toast('오늘 남은 루틴이 없어요. 모두 끝냈습니다!'); return; }
+    } else {
+      r = routineById(rid);
+      if (!r) { toast('링크의 루틴을 찾을 수 없어요. 루틴 탭에서 링크를 다시 복사해 주세요.', true); return; }
+      if (done[r.id]) { toast((r.emoji || '') + ' ' + r.title + '은(는) 오늘 이미 기록했어요.'); return; }
+    }
+    setTimeout(function () {
+      var el = document.querySelector('#questList .quest[data-rid="' + r.id.replace(/"/g, '') + '"]');
+      toggleRoutine(r.id, el);
+      toast('✅ ' + r.title + ' 기록 완료! +' + r.xp + ' XP');
+    }, 250);
+  }
+
   /* ---------- auth & sync ---------- */
   function normLog(l) {
     l.xp = Number(l.xp) || 0; l.minutes = Number(l.minutes) || 0;
@@ -2410,21 +2507,22 @@ table.rt tr:last-child td { border-bottom:0; }
       state.profile = cfg.profile && typeof cfg.profile === 'object' && !Array.isArray(cfg.profile) ? cfg.profile : {};
       state.retros = cfg.retros && typeof cfg.retros === 'object' && !Array.isArray(cfg.retros) ? cfg.retros : {};
       var pendingLogs = state.logs.filter(function (l) { return Object.keys(state.pending).length && !d.logs.some(function (x) { return x.log_id === l.log_id; }); });
-      state.logs = (d.logs || []).map(normLog).concat(Object.keys(state.pending).length ? pendingLogs : []);
-      saveCache(); showView('app'); renderAll();
+      state.logs = applyOutbox((d.logs || []).map(normLog).concat(Object.keys(state.pending).length ? pendingLogs : []));
+      saveCache(); showView('app'); renderAll(); runQuickDo(); flushOutbox();
       if (needSeed) api('config_save', { key: 'routines', value: state.routines }).catch(function () {});
       loadLeague(true); pushAfterSync();
     }, function (e) { if (!silent && state.token) { showView('app'); renderAll(); toast(e.message || '동기화 실패 · 저장된 데이터로 표시합니다.', true); } });
   }
   function enter() {
     var cache = null; try { cache = JSON.parse(load(CACHE_KEY) || 'null'); } catch (e) {}
-    if (cache && cache.routines) { state.routines = cache.routines; state.profile = cache.profile || {}; state.retros = cache.retros || {}; state.logs = (cache.logs || []).map(normLog); showView('app'); renderAll(); sync(true); }
+    if (cache && cache.routines) { state.routines = cache.routines; state.profile = cache.profile || {}; state.retros = cache.retros || {}; state.logs = (cache.logs || []).map(normLog); showView('app'); renderAll(); runQuickDo(); sync(true); }
     else { showView('loading'); sync(false); }
   }
   function logout(msg) {
     pushOnLogout(state.token);
     state.token = null; store(TOKEN_KEY, null); store(CACHE_KEY, null); state.logs = []; state.routines = []; state.profile = {}; state.retros = {}; lastLevel = null; lastShields = null; lastBossWins = null;
     state.league = null; state.partyRewards = []; store(PARTY_RW_KEY, null); state.photo = ''; store(PHOTO_KEY, null); lastPushed = ''; clearTimeout(pushTimer); setFriendBadge(0);
+    state.outbox = []; store(OUTBOX_KEY, null); renderOutbox();
     showView('login'); if (msg) { $('loginError').textContent = msg; $('loginError').hidden = false; }
   }
   $('btnLogout').addEventListener('click', function () { if (confirm('로그아웃할까요?')) logout(); });
@@ -3139,6 +3237,9 @@ table.rt tr:last-child td { border-bottom:0; }
     try { sessionStorage.setItem(INVITE_KEY, inviteCode); } catch (e) {}
     try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
   }
+  pendingDo = (location.search.match(/[?&]do=([A-Za-z0-9_-]{1,40})/) || [])[1] || '';
+  if (pendingDo) { state.tab = 'today'; try { history.replaceState(null, '', location.pathname + '#today'); } catch (e) {} }
+  renderOutbox();
   var initialTab = (location.hash || '').slice(1);
   if (/[?&]source=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
   if (['today', 'stats', 'logs', 'routines', 'retro', 'friends'].indexOf(initialTab) >= 0) state.tab = initialTab;

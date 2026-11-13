@@ -19,6 +19,7 @@
     { "src": "/quest/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
+    { "name": "다음 퀘스트 바로 체크", "short_name": "바로 체크", "url": "/quest/?do=next", "icons": [{ "src": "/quest/icon-192.png", "sizes": "192x192" }] },
     { "name": "오늘의 퀘스트", "short_name": "오늘", "url": "/quest/?source=shortcut#today", "icons": [{ "src": "/quest/icon-192.png", "sizes": "192x192" }] },
     { "name": "통계", "short_name": "통계", "url": "/quest/?source=shortcut#stats", "icons": [{ "src": "/quest/icon-192.png", "sizes": "192x192" }] },
     { "name": "월별 회고록", "short_name": "회고", "url": "/quest/?source=shortcut#retro", "icons": [{ "src": "/quest/icon-192.png", "sizes": "192x192" }] }
