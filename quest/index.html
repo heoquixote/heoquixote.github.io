@@ -237,6 +237,19 @@ input:focus,select:focus,textarea:focus { outline:none; border-color:var(--lime)
 .quest.skip .t { text-decoration:line-through; }
 .quest .more { position:absolute; right:66px; top:8px; border:0; background:none; color:var(--subtle); font-size:11px; padding:4px 6px; }
 .quest .more:hover { color:var(--text); }
+.quest .mini-btn { display:inline-block; margin-top:7px; border:1px solid color-mix(in srgb, var(--cyan) 45%, transparent); border-radius:999px; background:color-mix(in srgb, var(--cyan) 10%, transparent); color:var(--cyan); font-size:11px; padding:3px 9px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.quest .mini-tag { color:var(--cyan); }
+.comeback { display:grid; gap:10px; margin-bottom:12px; padding:14px 16px; border:1px solid color-mix(in srgb, var(--cyan) 50%, transparent); border-radius:var(--r-md); background:linear-gradient(100deg,rgba(102,219,255,.14),transparent 70%),var(--surface); }
+.comeback .hd { display:flex; align-items:center; gap:12px; }
+.comeback .hd .e { font-size:28px; }
+.comeback .hd b { display:block; font-size:15px; }
+.comeback .hd small { color:var(--muted); font-size:12px; }
+.comeback .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.comeback .steps span { padding:7px 4px; border:1px solid var(--line); border-radius:10px; text-align:center; font-size:11px; color:var(--subtle); }
+.comeback .steps span.on { border-color:var(--cyan); color:var(--text); background:rgba(102,219,255,.12); }
+.comeback .steps span.now { border-style:dashed; border-color:var(--cyan); color:var(--cyan); }
+.comeback .rw { font-size:12px; color:var(--text-2); }
+.comeback .rw b { color:var(--cyan); }
 .quest.pending { opacity:.7; }
 .quest.adhoc .check { display:none; }
 .quest.adhoc { grid-template-columns:48px 1fr auto; }
@@ -757,6 +770,7 @@ table.rt tr:last-child td { border-bottom:0; }
           <button class="icon-btn" id="dNext" aria-label="다음 날"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         </div>
       </div>
+      <div id="comebackCard"></div>
       <div id="retroNudge"></div>
       <div id="pushNudge"></div>
       <div class="quest-progress" id="questProgress"></div>
@@ -979,6 +993,7 @@ table.rt tr:last-child td { border-bottom:0; }
       <div class="field"><label for="rfXp">완료 XP</label><input type="number" id="rfXp" inputmode="numeric" min="0" max="1000" value="20"></div>
       <div class="field"><label for="rfMin">기본 시간(분)</label><input type="number" id="rfMin" inputmode="numeric" min="0" max="1440" value="30"></div>
     </div>
+    <div class="field"><label for="rfMini">미니 버전 (선택)</label><input type="text" id="rfMini" maxlength="30" placeholder="예: 스트레칭 5분, 레슨 1개"><p class="hint">복귀 퀘스트 기간에는 미니 버전만 해도 완료로 인정되고 XP의 절반을 받아요.</p></div>
     <label class="chip" style="justify-self:start;cursor:pointer"><input type="checkbox" id="rfActive" checked> 활성화</label>
     <div class="field" id="rfQuickWrap" hidden>
       <span class="label">원탭 기록 링크</span>
@@ -1123,6 +1138,9 @@ table.rt tr:last-child td { border-bottom:0; }
   var SEASON_START = '2026-11-01';
   var PERFECT_BONUS = 20;
   var BOSS_REWARD = 150, SHIELD_EVERY = 7, SHIELD_MAX = 3;
+  // 복귀 퀘스트: 루틴 있는 날 기록 0건이 COMEBACK_GAP일 이어진 뒤 돌아오면 COMEBACK_DAYS일 동안 XP 보너스, 그중 2일 기록 시 보호권 1장
+  // 디스코드 n8n 집계(wq0zIH5Mm2VXYHb1)에 같은 규칙이 복제되어 있으니 함께 수정
+  var COMEBACK_GAP = 3, COMEBACK_DAYS = 3, COMEBACK_BONUS = 0.5, COMEBACK_SHIELD_AT = 2, MINI_RATE = 0.5;
   var SEASON_KEY = 'dl_quest_season_seen_';
   var RETRO_QS = [
     { k: 'keep', t: '🏆 이번 달 가장 잘한 것은?', ph: '예: 크로스핏을 한 번도 빠지지 않았다. 아침 루틴이 자리 잡았다.' },
@@ -1407,14 +1425,27 @@ table.rt tr:last-child td { border-bottom:0; }
     var days = [], dayMap = {};
     for (var d = first; d <= today; d = addDays(d, 1)) { var info = dayInfo(d, byDate); days.push(info); dayMap[d] = info; }
 
-    // 스트릭 + 보호권 (시간순)
+    // 스트릭 + 보호권 + 복귀 퀘스트 (시간순)
     var shields = 0, earned = 0, used = 0, perfSeen = 0, run = 0, best = 0;
+    var gap = 0, cb = null, comebacks = [];
     days.forEach(function (x) {
+      var logged = x.logs.some(function (l) { return l.kind !== 'skip'; });
+      if (gap >= COMEBACK_GAP && (!cb || x.date > cb.end) && (logged || x.date === today)) {
+        cb = { start: x.date, end: addDays(x.date, COMEBACK_DAYS - 1), gap: gap, days: 0, shield: false, xp: 0 }; comebacks.push(cb);
+      }
+      if (cb && x.date >= cb.start && x.date <= cb.end) {
+        x.comeback = cb; x.cbDay = Math.round((parse(x.date) - parse(cb.start)) / 864e5) + 1;
+        if (logged) cb.days++;
+      }
+      if (logged) gap = 0; else if (x.denom > 0 && x.date < today) gap++;
       if (x.perfect) {
         run++; perfSeen++;
         if (perfSeen % SHIELD_EVERY === 0) { earned++; x.shieldEarned = true; if (shields < SHIELD_MAX) shields++; }
       } else if (x.denom > 0 && x.date < today) {
         if (shields > 0) { shields--; used++; x.shielded = true; } else run = 0;
+      }
+      if (x.comeback && !x.comeback.shield && x.comeback.days >= COMEBACK_SHIELD_AT) {
+        x.comeback.shield = true; x.comebackShield = true; earned++; if (shields < SHIELD_MAX) shields++;
       }
       if (run > best) best = run;
       x.run = run;
@@ -1456,6 +1487,14 @@ table.rt tr:last-child td { border-bottom:0; }
       partyClears++; if ((r.combo || 1) > bestCombo) bestCombo = r.combo || 1;
     });
 
+    // 복귀 퀘스트 보너스: 기간 중 기록 XP(퍼펙트·보스 보상 제외)의 50% 추가
+    days.forEach(function (x) {
+      if (!x.comeback) return;
+      var raw = x.logs.reduce(function (s, l) { return s + (l.kind === 'skip' ? 0 : l.xp); }, 0);
+      var bonus = Math.round(raw * COMEBACK_BONUS);
+      if (bonus > 0) { x.comebackXp = bonus; x.xp += bonus; x.comeback.xp += bonus; }
+    });
+
     var total = 0, catXp = {}, perfectCount = 0, mins = 0;
     days.forEach(function (x) {
       total += x.xp; mins += x.mins; if (x.perfect) perfectCount++;
@@ -1463,7 +1502,7 @@ table.rt tr:last-child td { border-bottom:0; }
     });
     Object.keys(byDate).forEach(function (d) { if (d > today) { var info = dayInfo(d, byDate); total += info.xp; } });
     var all = { byDate: byDate, days: days, dayMap: dayMap, total: total, catXp: catXp, perfectCount: perfectCount, streak: run, bestStreak: best, mins: mins,
-      shields: shields, shieldsEarned: earned, shieldsUsed: used, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses, bossWins: bosses.filter(function (b) { return b.defeated; }).length,
+      shields: shields, shieldsEarned: earned, shieldsUsed: used, comebacks: comebacks, comebackWins: comebacks.filter(function (c) { return c.shield; }).length, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses, bossWins: bosses.filter(function (b) { return b.defeated; }).length,
       today: dayMap[today] || dayInfo(today, byDate) };
     return all;
   }
@@ -1637,10 +1676,11 @@ table.rt tr:last-child td { border-bottom:0; }
       (info.shieldEarned ? '<div class="shield-note">🛡 이 날 퍼펙트로 스트릭 보호권 1장 획득</div>' : '') +
       (info.shielded ? '<div class="shield-note">🛡 보호권 1장을 써서 연속 기록을 지켰습니다.</div>' : (dayOf(all, addDays(date, -1)).shielded && date === today ? '<div class="shield-note">🛡 어제 빠진 날은 보호권 1장으로 연속 기록을 지켰어요. 남은 보호권 ' + all.shields + '장</div>' : '')) + '</div>';
     renderBoss(all, date);
+    renderComeback(all, date);
     renderRetroNudge();
     renderPartyStrip(all, date);
 
-    var byRoutine = {};
+    var byRoutine = {}, inCb = !!info.comeback;
     logs.forEach(function (l) { if (l.kind === 'routine' || l.kind === 'skip') byRoutine[l.routine_id] = l; });
     $('questList').innerHTML = sched.length ? sched.map(function (r) {
       var l = byRoutine[r.id], c = CATS[r.category] || CATS.life;
@@ -1648,7 +1688,8 @@ table.rt tr:last-child td { border-bottom:0; }
       var time = r.start ? r.start + (r.end ? '–' + r.end : '') : '언제든';
       return '<div class="' + cls + '" style="--c:' + c.color + '" data-rid="' + esc(r.id) + '" role="button" tabindex="0" aria-pressed="' + (l && l.kind === 'routine') + '">' +
         '<div class="ico">' + esc(r.emoji || c.emoji) + '</div>' +
-        '<div class="body"><div class="t">' + esc(r.title) + '</div><div class="s"><span>' + esc(time) + '</span><span>' + c.en + ' ' + c.name + '</span><span class="xp">+' + r.xp + ' XP</span></div></div>' +
+        '<div class="body"><div class="t">' + esc(r.title) + (l && l.mini ? ' <small class="mini-tag">미니</small>' : '') + '</div><div class="s"><span>' + esc(time) + '</span><span>' + c.en + ' ' + c.name + '</span><span class="xp">+' + (l && l.kind === 'routine' ? l.xp : r.xp) + ' XP</span></div>' +
+        (inCb && !l ? '<button class="mini-btn" data-mini="' + esc(r.id) + '" type="button" title="미니 버전으로 완료">⚡ 미니 +' + Math.max(1, Math.round((+r.xp || 0) * MINI_RATE)) + ' · ' + esc(r.mini || '가볍게 맛보기') + '</button>' : '') + '</div>' +
         '<button class="more" data-skip="' + esc(r.id) + '" type="button">' + (l && l.kind === 'skip' ? '건너뛰기 취소' : (l ? '' : '건너뛰기')) + '</button>' +
         '<span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></div>';
     }).join('') : '<div class="empty">예정된 정기 루틴이 없습니다.</div>';
@@ -1716,6 +1757,31 @@ table.rt tr:last-child td { border-bottom:0; }
       });
       if (el) { floatXp(el.querySelector('.check') || el, '+' + r.xp + ' XP'); if (navigator.vibrate) navigator.vibrate(12); }
     }
+  }
+  // 복귀 퀘스트 기간: 미니 버전으로 완료 (XP 절반, 완료로 인정)
+  function miniRoutine(rid, el) {
+    var date = state.viewDate, key = rid + date;
+    if (state.pending[key] || date > todayStr()) return;
+    var r = routineById(rid); if (!r) return;
+    if (state.logs.some(function (l) { return l.log_date === date && l.routine_id === rid && (l.kind === 'routine' || l.kind === 'skip'); })) return;
+    var xp = Math.max(1, Math.round((+r.xp || 0) * MINI_RATE));
+    var log = { log_id: uid(), log_date: date, routine_id: r.id, title: r.title, category: r.category, kind: 'routine', xp: xp, minutes: Math.round((r.minutes || 0) * 0.2), note: '미니 버전: ' + (r.mini || '가볍게 맛보기'), created_at: new Date().toISOString(), mini: true };
+    addLog(log, key);
+    if (el) floatXp(el.querySelector('.check') || el, '+' + xp + ' XP');
+  }
+  function renderComeback(all, date) {
+    var x = dayOf(all, date), cb = x.comeback;
+    if (!cb) { $('comebackCard').innerHTML = ''; return; }
+    var steps = '';
+    for (var i = 0; i < COMEBACK_DAYS; i++) {
+      var d = addDays(cb.start, i), dx = all.dayMap[d], on = dx && dx.logs.some(function (l) { return l.kind !== 'skip'; });
+      steps += '<span class="' + (on ? 'on' : d === date ? 'now' : '') + '">D' + (i + 1) + ' · ' + md(d) + (on ? ' ✓' : '') + '</span>';
+    }
+    var left = Math.max(0, COMEBACK_SHIELD_AT - cb.days);
+    $('comebackCard').innerHTML = '<div class="comeback"><div class="hd"><span class="e">🔄</span><span><b>복귀 퀘스트 D' + x.cbDay + ' / ' + COMEBACK_DAYS + '</b><small>' + cb.gap + '일 쉬었지만 괜찮아요. 오늘은 작게라도 다시 시작하는 날!</small></span></div>' +
+      '<div class="steps">' + steps + '</div>' +
+      '<div class="rw">' + md(cb.end) + '까지 얻는 XP <b>×1.5</b> · 루틴의 <b>⚡ 미니</b> 버튼으로 가볍게 해도 완료 인정 · ' +
+      (cb.shield ? '🛡 보호권 1장 획득 완료' : '🛡 ' + left + '일 더 기록하면 보호권 1장') + (cb.xp ? ' · 지금까지 보너스 <b>+' + fmtNum(cb.xp) + ' XP</b>' : '') + '</div></div>';
   }
   function skipRoutine(rid) {
     var date = state.viewDate, key = rid + date;
@@ -1959,6 +2025,7 @@ table.rt tr:last-child td { border-bottom:0; }
       ['⚔️', '보스 헌터', '주간 보스 4회 격파', Math.min(1, all.bossWins / 4)],
       ['📖', '보스 도감', '서로 다른 보스 5종 격파', Math.min(1, Object.keys(all.bosses.reduce(function (o, b) { if (b.defeated) o[b.species || b.name] = 1; return o; }, {})).length / 5)],
       ['🛡', '수호자', '스트릭 보호권 첫 획득', Math.min(1, all.shieldsEarned)],
+      ['🔄', '다시 일어선 러너', '복귀 퀘스트 성공 (3일 중 2일 기록)', Math.min(1, all.comebackWins)],
       ['📝', '회고하는 러너', '월별 회고록 첫 제출', Math.min(1, Object.keys(state.retros).filter(function (m) { return state.retros[m] && state.retros[m].firstSaved; }).length)],
       ['🏅', 'S급 회고', '회고록 S등급 받기', Object.keys(state.retros).some(function (m) { return retroScore(m, state.retros[m]).grade === 'S'; }) ? 1 : 0],
       ['🤝', '파티 플레이', '파티퀘스트 첫 클리어', Math.min(1, all.partyClears)],
@@ -2093,7 +2160,7 @@ table.rt tr:last-child td { border-bottom:0; }
     editingId = id; var r = id ? routineById(id) : { title: '', emoji: '⭐', category: 'study', days: [1,2,3,4,5], start: '', end: '', from: todayStr() < SEASON_START ? SEASON_START : todayStr(), until: '', xp: 20, minutes: 30, active: true };
     $('routineSheetTitle').textContent = id ? '루틴 편집' : '새 루틴';
     $('rfTitle').value = r.title; $('rfEmoji').value = r.emoji; $('rfStart').value = r.start || ''; $('rfEnd').value = r.end || '';
-    $('rfFrom').value = r.from || SEASON_START; $('rfUntil').value = r.until || ''; $('rfXp').value = r.xp; $('rfMin').value = r.minutes || 0; $('rfActive').checked = r.active !== false;
+    $('rfFrom').value = r.from || SEASON_START; $('rfUntil').value = r.until || ''; $('rfXp').value = r.xp; $('rfMin').value = r.minutes || 0; $('rfActive').checked = r.active !== false; $('rfMini').value = r.mini || '';
     rfCat = r.category; catChips($('rfCats'), rfCat, function (k) { rfCat = k; });
     $('rfDays').innerHTML = [1,2,3,4,5,6,0].map(function (i) { return '<label><input type="checkbox" value="' + i + '"' + (r.days.indexOf(i) >= 0 ? ' checked' : '') + '><span>' + DOW[i] + '</span></label>'; }).join('');
     $('rfDelete').hidden = !id; $('rfError').hidden = true;
@@ -2116,7 +2183,7 @@ table.rt tr:last-child td { border-bottom:0; }
     var days = Array.prototype.map.call($('rfDays').querySelectorAll('input:checked'), function (i) { return +i.value; });
     if (!title) { $('rfError').textContent = '루틴 이름을 입력해 주세요.'; $('rfError').hidden = false; return; }
     if (!days.length) { $('rfError').textContent = '요일을 하나 이상 선택해 주세요.'; $('rfError').hidden = false; return; }
-    var data = { title: title, emoji: $('rfEmoji').value.trim() || '⭐', category: rfCat, days: days.sort(), start: $('rfStart').value, end: $('rfEnd').value, from: $('rfFrom').value || SEASON_START, until: $('rfUntil').value, xp: Math.max(0, Math.min(1000, +$('rfXp').value || 0)), minutes: Math.max(0, Math.min(1440, +$('rfMin').value || 0)), active: $('rfActive').checked };
+    var data = { title: title, emoji: $('rfEmoji').value.trim() || '⭐', category: rfCat, days: days.sort(), start: $('rfStart').value, end: $('rfEnd').value, from: $('rfFrom').value || SEASON_START, until: $('rfUntil').value, xp: Math.max(0, Math.min(1000, +$('rfXp').value || 0)), minutes: Math.max(0, Math.min(1440, +$('rfMin').value || 0)), active: $('rfActive').checked, mini: $('rfMini').value.trim().slice(0, 30) };
     if (editingId) {
       var r = routineById(editingId);
       if (r.active && !data.active) data.inactiveSince = todayStr();
@@ -2139,6 +2206,8 @@ table.rt tr:last-child td { border-bottom:0; }
   $('questList').addEventListener('click', function (e) {
     var sk = e.target.closest('[data-skip]');
     if (sk) { e.stopPropagation(); if (sk.textContent) skipRoutine(sk.getAttribute('data-skip')); return; }
+    var mn = e.target.closest('[data-mini]');
+    if (mn) { e.stopPropagation(); miniRoutine(mn.getAttribute('data-mini'), mn.closest('.quest')); return; }
     var q = e.target.closest('.quest[data-rid]'); if (q) toggleRoutine(q.getAttribute('data-rid'), q);
   });
   $('questList').addEventListener('keydown', function (e) {
@@ -2487,6 +2556,7 @@ table.rt tr:last-child td { border-bottom:0; }
   function normLog(l) {
     l.xp = Number(l.xp) || 0; l.minutes = Number(l.minutes) || 0;
     l.kind = l.kind === 'routine' || l.kind === 'skip' ? l.kind : 'adhoc';
+    if (l.kind === 'routine' && /^미니 버전/.test(l.note || '')) l.mini = true;
     if (!CATS[l.category]) l.category = 'life';
     return l;
   }
