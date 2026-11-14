@@ -518,7 +518,7 @@ table.rt tr:last-child td { border-bottom:0; }
 .scard .mvp { grid-column:1 / -1; display:flex; align-items:center; gap:10px; border-color:rgba(255,207,74,.4) !important; background:linear-gradient(90deg,rgba(255,207,74,.1),transparent) !important; }
 .scard .mvp .e { font-size:26px; }
 .scard .mvp .v { font-size:15px; }
-.scard .acts { display:flex; gap:8px; margin-top:16px; }
+.scard .acts { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
 .scard .acts .btn { flex:1; }
 .rank-bar { height:6px; border-radius:3px; background:var(--surface-3); margin-top:12px; overflow:hidden; }
 .rank-bar span { display:block; height:100%; background:var(--rk); }
@@ -1934,10 +1934,81 @@ table.rt tr:last-child td { border-bottom:0; }
       (s.mvp ? '<div class="mvp"><span class="e">' + esc(s.mvp.r.emoji || '⭐') + '</span><span><div class="k">MVP 루틴</div><div class="v">' + esc(s.mvp.r.title) + ' <small>' + Math.round(s.mvp.rate * 100) + '% · ' + s.mvp.done + '회 · ' + fmtNum(s.mvp.xp) + 'XP</small></div></span></div>' : '') +
       (c ? '<div><div class="k">주력 능력치</div><div class="v" style="color:' + c.color + '">' + c.en + '<small>' + c.name + '</small></div></div>' : '') +
       '<div><div class="k">보호권 사용</div><div class="v">' + s.shieldsUsed + '<small>장</small></div></div>' +
-      '</div><div class="acts">' + (s.live ? '<button class="btn btn-primary" data-x>닫기</button>' : (!(state.retros[month] && state.retros[month].firstSaved) ? '<button class="btn" data-x data-goretro="' + month + '">📝 회고록 쓰기</button>' : '') + '<button class="btn btn-primary" data-x>' + nm + '월 시즌 시작!</button>') + '</div></div>';
+      '</div><div class="acts"><button class="btn" type="button" style="flex-basis:100%" data-share-season="' + month + '">📤 이미지로 공유</button>' + (s.live ? '<button class="btn btn-primary" data-x>닫기</button>' : (!(state.retros[month] && state.retros[month].firstSaved) ? '<button class="btn" data-x data-goretro="' + month + '">📝 회고록 쓰기</button>' : '') + '<button class="btn btn-primary" data-x>' + nm + '월 시즌 시작!</button>') + '</div></div>';
     document.body.appendChild(el);
     if (!s.live) burst(window.innerWidth / 2, window.innerHeight / 3, 30);
-    el.addEventListener('click', function (e) { if (e.target === el || e.target.closest('[data-x]')) el.remove(); });
+    el.addEventListener('click', function (e) {
+      var sb = e.target.closest('[data-share-season]');
+      if (sb) { shareSeason(all, sb.getAttribute('data-share-season'), sb); return; }
+      if (e.target === el || e.target.closest('[data-x]')) el.remove();
+    });
+  }
+  // 시즌 결산 카드를 1080×1350 이미지로 그려 공유 (서버 없이 캔버스로 생성)
+  function seasonImage(all, month) {
+    var s = seasonSummary(all, month), rk = s.rank, W = 1080, H = 1350;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var c = cv.getContext('2d');
+    var KO = '"Pretendard Variable", Pretendard, system-ui, sans-serif', EN = '"Space Grotesk", ' + KO;
+    var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    return ready.then(function () {
+      c.fillStyle = '#050607'; c.fillRect(0, 0, W, H);
+      var g = c.createRadialGradient(W / 2, 330, 40, W / 2, 330, 640); g.addColorStop(0, rk.r.color + '55'); g.addColorStop(1, 'rgba(5,6,7,0)');
+      c.fillStyle = g; c.fillRect(0, 0, W, H);
+      c.strokeStyle = 'rgba(255,255,255,.08)'; c.lineWidth = 2; c.strokeRect(40, 40, W - 80, H - 80);
+      function txt(t, x, y, font, color, align) { c.font = font; c.fillStyle = color; c.textAlign = align || 'left'; c.fillText(t, x, y); }
+      txt('RUNNER QUEST', 90, 128, '700 30px ' + EN, '#c8ff3d');
+      txt(seasonLabel(month) + (s.live ? ' 시즌 중간 결산' : ' 시즌 결산'), W - 90, 128, '600 30px ' + KO, '#a1aaa5', 'right');
+      txt(displayName() + (me().cls ? '  ·  ' + me().cls : ''), W / 2, 230, '700 42px ' + KO, '#f5f7f2', 'center');
+      txt(rk.r.en.toUpperCase(), W / 2, 410, '800 150px ' + EN, rk.r.color, 'center');
+      txt((s.live ? '현재 랭크 ' : '최종 랭크 ') + rk.r.ko + '  ·  시즌 ' + fmtNum(s.xp) + ' XP', W / 2, 475, '600 34px ' + KO, '#f5f7f2', 'center');
+      var cells = [['레벨', 'LV ' + s.lvStart + ' → ' + s.lvEnd], ['루틴 달성률', Math.round(s.rate * 100) + '%'], ['퍼펙트 데이', s.perfect + '일'],
+        ['최장 연속', s.best + '일'], ['보스 격파', s.bossWins + ' / ' + s.bossTotal], ['보호권 사용', s.shieldsUsed + '장']];
+      cells.forEach(function (x, i) {
+        var col = i % 3, row = Math.floor(i / 3), cx = 90 + col * 310, cy = 550 + row * 180;
+        c.fillStyle = 'rgba(255,255,255,.05)'; c.fillRect(cx, cy, 280, 150);
+        txt(x[0], cx + 28, cy + 52, '600 28px ' + KO, '#a1aaa5');
+        txt(x[1], cx + 28, cy + 118, '800 50px ' + EN, '#f5f7f2');
+      });
+      var y = 940;
+      if (s.mvp) {
+        c.fillStyle = 'rgba(200,255,61,.08)'; c.fillRect(90, y, 900, 120);
+        txt((s.mvp.r.emoji || '⭐') + '  MVP 루틴', 120, y + 50, '600 28px ' + KO, '#c8ff3d');
+        txt(s.mvp.r.title + '  ' + Math.round(s.mvp.rate * 100) + '% · ' + s.mvp.done + '회', 120, y + 96, '700 38px ' + KO, '#f5f7f2');
+        y += 150;
+      }
+      var mx = 1; CAT_KEYS.forEach(function (k) { mx = Math.max(mx, (seasonCat(all, month)[k] || 0)); });
+      var cx2 = seasonCat(all, month);
+      CAT_KEYS.forEach(function (k, i) {
+        var bx = 90 + i * 184, v = cx2[k] || 0, h = Math.round(v / mx * 70);
+        c.fillStyle = 'rgba(255,255,255,.07)'; c.fillRect(bx, y, 160, 70);
+        c.fillStyle = CATS[k].color; c.fillRect(bx, y + 70 - h, 160, h);
+        txt(CATS[k].en + ' ' + fmtNum(v), bx + 80, y + 110, '600 24px ' + EN, '#a1aaa5', 'center');
+      });
+      txt('data-learners.com/quest', W / 2, H - 80, '600 28px ' + EN, '#6f7873', 'center');
+      return new Promise(function (res) { cv.toBlob(function (b) { res(b); }, 'image/png'); });
+    });
+  }
+  function seasonCat(all, month) {
+    var o = {}; all.days.forEach(function (x) { if (x.date.slice(0, 7) !== month) return; Object.keys(x.catXp).forEach(function (k) { o[k] = (o[k] || 0) + x.catXp[k]; }); });
+    return o;
+  }
+  function shareSeason(all, month, btn) {
+    if (btn) btn.disabled = true;
+    seasonImage(all, month).then(function (blob) {
+      if (btn) btn.disabled = false;
+      if (!blob) { toast('이미지를 만들지 못했어요.', true); return; }
+      var name = 'runner-quest-' + month + '.png', file = null;
+      try { file = new File([blob], name, { type: 'image/png' }); } catch (e) {}
+      var s = seasonSummary(all, month);
+      var text = seasonLabel(month) + ' 시즌 ' + (s.live ? '진행 중' : '결산') + ': ' + s.rank.r.ko + ' 랭크, ' + fmtNum(s.xp) + 'XP, 퍼펙트 데이 ' + s.perfect + '일 #RunnerQuest';
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: 'Runner Quest 시즌 결산', text: text }).catch(function () {});
+      } else {
+        var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+        document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.parentNode.removeChild(a); }, 1000);
+        toast('시즌 카드 이미지를 저장했어요.');
+      }
+    }, function () { if (btn) btn.disabled = false; toast('이미지를 만들지 못했어요.', true); });
   }
   function checkSeasonEnd(all) {
     var cur = todayStr().slice(0, 7), months = seasonMonths(all);
@@ -3449,7 +3520,7 @@ table.rt tr:last-child td { border-bottom:0; }
   else showView('login');
 
   // 미리보기/테스트용 훅
-  window.__quest = { openInstall: openInstall, state: state, renderAll: renderAll, computeAll: computeAll, showSeasonCard: showSeasonCard, seasonSummary: seasonSummary, showView: showView, DEFAULT_ROUTINES: DEFAULT_ROUTINES };
+  window.__quest = { openInstall: openInstall, state: state, renderAll: renderAll, computeAll: computeAll, showSeasonCard: showSeasonCard, seasonSummary: seasonSummary, seasonImage: seasonImage, showView: showView, DEFAULT_ROUTINES: DEFAULT_ROUTINES };
 })();
 </script>
 </body>
