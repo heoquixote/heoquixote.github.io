@@ -583,6 +583,25 @@ table.rt tr:last-child td { border-bottom:0; }
 .cheer-btn { width:36px; height:36px; border-radius:50%; border:1px solid var(--line); background:var(--surface-2); font-size:17px; display:grid; place-items:center; }
 .cheer-btn:hover { border-color:var(--lime); }
 .fr-grid { display:grid; gap:12px; margin-top:16px; }
+/* 전체 리그 · 친구 신청 */
+.lg-tools { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+.lg-tools .seg { margin-bottom:0; flex:0 0 auto; }
+.lg-tools input { flex:1; min-width:0; height:34px; border-radius:999px; padding:0 14px; font-size:13px; border:1px solid var(--line); background:var(--surface); box-shadow:none; -webkit-appearance:none; appearance:none; }
+.lg-more { text-align:center; color:var(--muted); font-size:12px; padding:4px 0; }
+.fr-req-btn { height:32px; padding:0 12px; border-radius:999px; border:1px solid rgba(200,255,61,.55); background:var(--lime-soft); color:var(--lime); font-weight:700; font-size:12px; white-space:nowrap; }
+.fr-req-btn.sent { border-color:var(--line); background:var(--surface-2); color:var(--muted); }
+.fr-req-btn.recv { background:var(--lime); color:var(--lime-ink); border-color:var(--lime); }
+.fr-req-btn:disabled { opacity:.5; }
+.freq-box { display:grid; gap:8px; margin-bottom:14px; }
+.freq-box .h { font-size:13px; font-weight:700; color:var(--text-2); }
+.freq-item { display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:10px 12px; border-radius:var(--r-md); background:var(--surface); border:1px solid rgba(200,255,61,.45); }
+.freq-item .av { width:40px; height:40px; flex:0 0 40px; }
+.freq-item .av svg { width:40px; height:40px; display:block; }
+.freq-item .t { flex:1 1 160px; min-width:0; font-size:14px; }
+.freq-item .t small { display:block; color:var(--muted); font-size:12px; }
+.privacy-row { display:flex; gap:10px; align-items:flex-start; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); font-size:13px; color:var(--text-2); cursor:pointer; }
+.privacy-row input { margin-top:3px; accent-color:var(--lime); }
+.privacy-row small { display:block; color:var(--muted); font-size:12px; margin-top:2px; }
 @media (min-width:900px) { .fr-grid { grid-template-columns:1fr 1fr; } }
 .code-box { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; border:1px dashed rgba(200,255,61,.5); border-radius:var(--r-md); background:var(--lime-soft); margin:12px 0; }
 .code-box b { font:800 22px/1 var(--font-en); letter-spacing:.18em; color:var(--lime); }
@@ -871,11 +890,19 @@ table.rt tr:last-child td { border-bottom:0; }
     <!-- 회고록 -->
     <section id="tab-friends" data-panel="friends" hidden>
       <div class="sec-head">
-        <div><span class="eyebrow">Friends League</span><h2>친구 랭킹</h2></div>
+        <div><span class="eyebrow">Weekly League</span><h2>리그 랭킹</h2></div>
         <button class="btn btn-sm" id="btnLeagueRefresh">새로고침</button>
       </div>
+      <div id="frReqBox"></div>
       <div id="partyBox"></div>
       <div id="lgHero"></div>
+      <div class="lg-tools">
+        <div class="seg" id="lgScope" role="group" aria-label="리그 범위">
+          <button type="button" data-scope="all" aria-pressed="true">전체</button>
+          <button type="button" data-scope="friends" aria-pressed="false">친구</button>
+        </div>
+        <input type="search" id="lgSearch" maxlength="20" placeholder="닉네임 검색" autocomplete="off" aria-label="닉네임 검색">
+      </div>
       <div class="seg" id="lgSeg" role="group" aria-label="랭킹 기준">
         <button type="button" data-mode="week" aria-pressed="true">주간 XP</button>
         <button type="button" data-mode="season" aria-pressed="false">시즌 XP</button>
@@ -890,13 +917,14 @@ table.rt tr:last-child td { border-bottom:0; }
           <div class="code-box"><div><small style="color:var(--muted);font-size:12px">내 친구 코드</small><br><b id="myCode">--------</b></div><button class="btn btn-sm" id="btnCopyCode">복사</button></div>
           <button class="btn btn-primary" style="width:100%" id="btnShareInvite">초대 링크 보내기</button>
           <div class="fr-add"><input type="text" id="frCode" maxlength="12" placeholder="친구 코드 입력" autocomplete="off" autocapitalize="characters"><button class="btn" id="btnAddFriend">친구 추가</button></div>
+          <label class="privacy-row"><input type="checkbox" id="lgPublic" checked><span>전체 리그에 내 프로필 공개<small>끄면 친구가 아닌 사람의 전체 리그·검색에 보이지 않고, 친구 신청도 받지 않아요. 이미 친구인 사람에게는 그대로 보여요.</small></span></label>
         </div>
         <div class="panel">
           <h3>받은 응원 <small id="cheerCount"></small></h3>
           <div class="cheer-list" id="cheerList"></div>
         </div>
       </div>
-      <p class="foot-note">랭킹은 각자 앱을 열 때 올라가는 기록 요약으로 계산합니다. 주간 리그는 월~일 기준이고, 지난주 1위에게는 👑가 붙습니다. 친구의 루틴 상세 기록은 공유되지 않고 레벨·XP·연속 기록 같은 요약만 보입니다. 파티퀘스트: 파티원(2~5명) 모두가 그날 목표(퍼펙트 또는 80% 이상, 루틴 없는 날은 기록 XP 20 이상)를 채우면 전원에게 30 + 10×(인원−1) XP, 연속 클리어 하루마다 +5(최대 +20)가 들어갑니다. 친구가 늦게 기록해도 7일 안이면 클리어가 소급 처리돼요.</p>
+      <p class="foot-note">랭킹은 각자 앱을 열 때 올라가는 기록 요약으로 계산합니다. 주간 리그는 월~일 기준이고, 지난주 1위에게는 👑가 붙습니다. 「전체」는 프로필을 공개한 모든 러너, 「친구」는 내 친구만 보여 줍니다. 친구 코드를 몰라도 전체 리그에서 「+ 친구」로 신청할 수 있고, 상대가 수락하면 친구가 됩니다. 루틴 상세 기록은 공유되지 않고 레벨·XP·연속 기록 같은 요약만 보입니다. 파티퀘스트: 파티원(2~5명) 모두가 그날 목표(퍼펙트 또는 80% 이상, 루틴 없는 날은 기록 XP 20 이상)를 채우면 전원에게 30 + 10×(인원−1) XP, 연속 클리어 하루마다 +5(최대 +20)가 들어갑니다. 친구가 늦게 기록해도 7일 안이면 클리어가 소급 처리돼요.</p>
     </section>
 
     <section id="tab-retro" data-panel="retro" hidden>
@@ -2787,7 +2815,7 @@ table.rt tr:last-child td { border-bottom:0; }
   function logout(msg) {
     pushOnLogout(state.token);
     state.token = null; store(TOKEN_KEY, null); store(CACHE_KEY, null); state.logs = []; state.routines = []; state.profile = {}; state.retros = {}; lastLevel = null; lastShields = null; lastBossWins = null;
-    state.league = null; state.partyRewards = []; store(PARTY_RW_KEY, null); state.photo = ''; store(PHOTO_KEY, null); lastPushed = ''; clearTimeout(pushTimer); setFriendBadge(0);
+    state.league = null; state.partyRewards = []; store(PARTY_RW_KEY, null); state.photo = ''; store(PHOTO_KEY, null); lastPushed = ''; seenReqKey = ''; clearTimeout(pushTimer); setFriendBadge(0);
     state.outbox = []; store(OUTBOX_KEY, null); renderOutbox();
     showView('login'); if (msg) { $('loginError').textContent = msg; $('loginError').hidden = false; }
   }
@@ -2813,6 +2841,8 @@ table.rt tr:last-child td { border-bottom:0; }
   var CHEER_EMOJIS = [['🔥', '불태워'], ['👏', '박수'], ['💪', '힘내'], ['🏆', '1등감'], ['⚡', '번개'], ['❤️', '하트'], ['🫡', '존경'], ['🐢', '분발해']];
   var LB_MODES = { week: '주간 XP', season: '시즌 XP', streak: '연속 퍼펙트', level: '레벨', today: '오늘 달성' };
   var lastPartyKey = '', lbMode = 'week', lastPushed = '', pushTimer = null, leagueBusy = false, cheerTo = null, cheerEmoji = '🔥';
+  var LG_SCOPE_KEY = 'dl_quest_lg_scope', LG_SHOW = 50;
+  var lgScope = load(LG_SCOPE_KEY) === 'friends' ? 'friends' : 'all', lgQuery = '', freqBusy = false, seenReqKey = '';
   function social(action, payload, noAuth) {
     return post('quest-social', { action: action, token: noAuth ? null : state.token, payload: payload ? JSON.stringify(payload) : null });
   }
@@ -2866,14 +2896,19 @@ table.rt tr:last-child td { border-bottom:0; }
       leagueBusy = false;
       if (!d.ok) { if (!silent) toast(d.error || '랭킹을 불러오지 못했어요.', true); return; }
       var firstLoad = !state.league;
-      state.league = { at: Date.now(), myCode: d.myCode, players: d.players || [], cheers: d.cheers || [], unread: d.unread || 0, party: d.party || null, partyInvites: d.partyInvites || [] };
+      state.league = { at: Date.now(), myCode: d.myCode, players: d.players || [], cheers: d.cheers || [], unread: d.unread || 0, party: d.party || null, partyInvites: d.partyInvites || [],
+        global: d.global || null, requests: d.requests || [], myHidden: !!d.myHidden, myUid: d.myUid || '', sentCount: d.sentCount || 0 };
       applyPartyRewards(d.partyRewards, d.party);
       var pk = JSON.stringify([d.party, d.partyInvites]);
       if (pk !== lastPartyKey) { lastPartyKey = pk; if (state.tab === 'today') renderToday(computeAll()); }
       var meP = state.league.players.filter(function (x) { return x.me; })[0];
       if (meP && !photoBusy) { var sp = okPhoto(meP.photo) ? meP.photo : ''; if (sp !== (state.photo || '')) { state.photo = sp; store(PHOTO_KEY, sp || null); renderAll(); } }
-      setFriendBadge(state.tab === 'friends' ? 0 : state.league.unread);
-      if (firstLoad && state.league.unread && state.tab !== 'friends') {
+      var nReq = state.league.requests.length;
+      setFriendBadge((state.tab === 'friends' ? 0 : state.league.unread) + nReq);
+      var rk = state.league.requests.map(function (r) { return r.id; }).join(',');
+      if (nReq && rk !== seenReqKey && state.tab !== 'friends') toast('🤝 ' + state.league.requests[0].name + '님이 친구 신청을 보냈어요' + (nReq > 1 ? ' 외 ' + (nReq - 1) + '건' : ''));
+      seenReqKey = rk;
+      if (firstLoad && state.league.unread && state.tab !== 'friends' && !nReq) {
         var c = state.league.cheers.filter(function (x) { return !x.seen; })[0];
         if (c) toast(c.from + '님이 ' + c.emoji + ' 응원을 보냈어요' + (state.league.unread > 1 ? ' 외 ' + (state.league.unread - 1) + '개' : ''));
       }
@@ -2882,7 +2917,7 @@ table.rt tr:last-child td { border-bottom:0; }
   }
   function markCheersSeen() {
     var L = state.league; if (!L || !L.unread) return;
-    L.unread = 0; setFriendBadge(0);
+    L.unread = 0; setFriendBadge((L.requests || []).length);
     social('cheers_seen').then(function () { L.cheers.forEach(function (c) { c.seen = true; }); });
   }
   function playerVal(st, mode) {
@@ -2907,7 +2942,13 @@ table.rt tr:last-child td { border-bottom:0; }
     if (!L) { $('lgBoard').innerHTML = '<div class="empty">친구 리그를 불러오는 중…</div>'; $('lgHero').innerHTML = ''; $('partyBox').innerHTML = ''; loadLeague(); return; }
     renderParty(all);
     if (Date.now() - L.at > 60000) loadLeague(true);
-    var players = L.players.map(function (p) { return { pid: p.pid, name: p.name, me: p.me, photo: p.photo || '', st: p.me ? (state.mySnap || buildSnapshot(all)) : p.stats }; });
+    var mySt = state.mySnap || buildSnapshot(all);
+    var friendPhoto = {}; L.players.forEach(function (p) { if (p.pid) friendPhoto[p.pid] = p.photo || ''; });
+    // 전체 리그(구버전 서버면 global이 없으므로 친구 리그로 대체)
+    var scope = L.global ? lgScope : 'friends';
+    var players = scope === 'all'
+      ? L.global.map(function (p) { return { pid: p.pid || (p.me ? '__me' : 'g:' + p.uid), uid: p.uid, name: p.name, me: p.me, friend: p.friend, req: p.req, photo: p.photo || friendPhoto[p.pid] || '', st: p.me ? mySt : p.stats }; })
+      : L.players.map(function (p) { return { pid: p.pid, name: p.name, me: p.me, friend: !p.me, photo: p.photo || '', st: p.me ? mySt : p.stats }; });
     // 지난주 챔피언
     var champ = null;
     players.forEach(function (p) { var x = lastWeekXp(p.st); if (x > 0 && (!champ || x > champ.xp)) champ = { pid: p.pid, name: (p.st && p.st.nick) || p.name, xp: x }; });
@@ -2915,31 +2956,45 @@ table.rt tr:last-child td { border-bottom:0; }
     rows.sort(function (a, b) { return b.val.v - a.val.v || (a.p.me ? -1 : 1); });
     var max = Math.max.apply(null, rows.map(function (r) { return r.val.v; }).concat([1]));
     var rank = 0, prev = null;
-    $('lgBoard').innerHTML = rows.map(function (r, i) {
-      if (prev === null || r.val.v !== prev) rank = i + 1; prev = r.val.v;
+    rows.forEach(function (r, i) { if (prev === null || r.val.v !== prev) rank = i + 1; prev = r.val.v; r.rank = rank; });
+    var q = lgQuery.trim().toLowerCase(), shown = rows, more = 0;
+    if (q) shown = rows.filter(function (r) { return String((r.p.st && r.p.st.nick) || r.p.name || '').toLowerCase().indexOf(q) >= 0; });
+    else if (rows.length > LG_SHOW) {
+      shown = rows.slice(0, LG_SHOW);
+      var meRow = rows.filter(function (r) { return r.p.me; })[0];
+      if (meRow && meRow.rank > LG_SHOW) shown.push(meRow);
+      more = rows.length - shown.length;
+    }
+    $('lgBoard').innerHTML = (shown.length ? '' : '<div class="empty">「' + esc(lgQuery.trim()) + '」 닉네임을 찾지 못했어요. 프로필을 비공개로 둔 러너는 검색되지 않아요.</div>') + shown.map(function (r) {
+      var rank = r.rank;
       var st = r.p.st || {}, nm = st.nick || r.p.name, lvl = st.level || 1;
       var crown = champ && champ.pid === r.p.pid ? ' 👑' : '';
+      var side = '';
+      if (r.p.me) side = '';
+      else if (r.p.friend) side = '<button class="cheer-btn" data-cheer="' + esc(r.p.pid) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님 응원하기">📣</button>';
+      else if (r.p.req && r.p.req.s === 'recv') side = '<button class="fr-req-btn recv" data-faccept="' + esc(r.p.req.id) + '" data-name="' + esc(nm) + '">수락</button>';
+      else if (r.p.req && r.p.req.s === 'sent') side = '<button class="fr-req-btn sent" data-fcancel="' + esc(r.p.req.id) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님에게 보낸 신청 취소">신청됨</button>';
+      else if (r.p.uid) side = '<button class="fr-req-btn" data-freq="' + esc(r.p.uid) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님에게 친구 신청">+ 친구</button>';
       return '<div class="lb-row' + (r.p.me ? ' me' : '') + '">' +
         '<div class="lb-rank r' + rank + '">' + rank + '</div>' +
         '<div class="lb-av">' + avatarSvg(lvl, { avatar: st.avatar || '', color: st.color || '', photo: r.p.me ? state.photo : (r.p.photo || '') }) + '</div>' +
-        '<div class="lb-name"><b>' + esc(nm) + crown + (r.p.me ? ' <span style="color:var(--lime);font-size:12px">나</span>' : '') + '</b>' +
+        '<div class="lb-name"><b>' + esc(nm) + crown + (r.p.me ? ' <span style="color:var(--lime);font-size:12px">나' + (scope === 'all' && L.myHidden ? ' · 비공개' : '') + '</span>' : (scope === 'all' && r.p.friend ? ' <span style="color:var(--cyan,#66dbff);font-size:12px">친구</span>' : '')) + '</b>' +
           '<small>LV ' + lvl + (st.cls ? ' · ' + esc(st.cls) : '') + ' · ' + esc(r.val.sub) + '</small>' +
           '<div class="lb-bar"><i style="width:' + Math.round(Math.max(0, r.val.v) / max * 100) + '%"></i></div></div>' +
-        '<div class="lb-side"><div class="lb-val">' + esc(r.val.label || String(r.val.v)) + '</div>' +
-          (r.p.me ? '' : '<button class="cheer-btn" data-cheer="' + esc(r.p.pid) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님 응원하기">📣</button>') + '</div></div>';
-    }).join('');
+        '<div class="lb-side"><div class="lb-val">' + esc(r.val.label || String(r.val.v)) + '</div>' + side + '</div></div>';
+    }).join('') + (more ? '<div class="lg-more">상위 ' + LG_SHOW + '명만 보여요 · 닉네임 검색으로 다른 러너를 찾을 수 있어요 (' + more + '명 더)</div>' : '');
     // 상단 요약 (주간 리그 기준)
     var wk = players.map(function (p) { return { p: p, v: playerVal(p.st, 'week').v }; }).sort(function (a, b) { return b.v - a.v || (a.p.me ? -1 : 1); });
     var myIdx = 0; wk.forEach(function (x, i) { if (x.p.me) myIdx = i; });
     var dLeft = Math.round((parse(addDays(weekStart(todayStr()), 6)) - parse(todayStr())) / 864e5);
     var head, sub;
-    if (players.length < 2) { head = '친구를 초대해 리그를 열어 보세요'; sub = '아래 초대 링크를 보내면 친구가 가입하는 순간 같은 리그에 들어옵니다.'; }
+    if (players.length < 2) { head = scope === 'all' ? '아직 리그에 다른 러너가 없어요' : '친구를 초대해 리그를 열어 보세요'; sub = scope === 'all' ? '친구를 초대하면 전체 리그에도 함께 올라와요.' : '전체 리그에서 「+ 친구」로 신청하거나, 아래 초대 링크를 보내 보세요.'; }
     else if (!wk[0].v) { head = '이번 주 리그 시작!'; sub = '첫 퀘스트를 완료하면 바로 1위로 올라가요 · 리그 마감 D-' + dLeft; }
     else if (myIdx === 0 && wk[1] && wk[1].v === wk[0].v) { head = '이번 주 공동 1위!'; sub = 'XP 하나만 더 모으면 단독 1위 · 리그 마감 D-' + dLeft; }
     else if (myIdx === 0) { var gap = wk[0].v - (wk[1] ? wk[1].v : 0); head = '이번 주 1위 질주 중!'; sub = '2위와 ' + gap + ' XP 차이 · 리그 마감 D-' + dLeft; }
     else { var top = wk[myIdx - 1]; head = '이번 주 ' + (myIdx + 1) + '위 / ' + wk.length + '명'; sub = ((top.p.st && top.p.st.nick) || top.p.name) + '님까지 ' + (top.v - wk[myIdx].v + 1) + ' XP 더 모으면 역전 · D-' + dLeft; }
     $('lgHero').innerHTML = '<div class="lg-hero">' + (champ ? '<span class="crown" title="지난주 챔피언">👑</span>' : '') +
-      '<span class="k">Weekly League</span><span class="t">' + esc(head) + '</span><span class="s">' + esc(sub) + '</span>' +
+      '<span class="k">Weekly League · ' + (scope === 'all' ? '전체 ' + players.length + '명' : '친구') + '</span><span class="t">' + esc(head) + '</span><span class="s">' + esc(sub) + '</span>' +
       (champ ? '<span class="s">지난주 챔피언: <b>' + esc(champ.name) + '</b> (' + champ.xp + ' XP)</span>' : '') + '</div>';
     $('myCode').textContent = L.myCode || '--------';
     var cs = L.cheers || [];
@@ -2948,8 +3003,57 @@ table.rt tr:last-child td { border-bottom:0; }
       return '<div class="cheer-item' + (c.seen ? '' : ' new') + '"><span class="e">' + esc(c.emoji) + '</span><div><b>' + esc(c.from) + '</b>' + (c.message ? ' · ' + esc(c.message) : '') + '<small>' + esc(String(c.at || '').slice(5, 16).replace('T', ' ')) + '</small></div></div>';
     }).join('') : '<div class="empty" style="padding:18px">아직 받은 응원이 없어요. 먼저 친구에게 📣 응원을 보내 보세요.</div>';
     document.querySelectorAll('#lgSeg [data-mode]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-mode') === lbMode ? 'true' : 'false'); });
+    $('lgScope').hidden = !L.global;
+    document.querySelectorAll('#lgScope [data-scope]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-scope') === scope ? 'true' : 'false'); });
+    $('lgPublic').checked = !L.myHidden; $('lgPublic').closest('.privacy-row').hidden = !L.global;
+    renderFriendRequests();
     if (L.unread) markCheersSeen();
   }
+  function renderFriendRequests() {
+    var L = state.league, box = $('frReqBox'), rs = (L && L.requests) || [];
+    if (!rs.length) { box.innerHTML = ''; return; }
+    box.innerHTML = '<div class="freq-box"><div class="h">받은 친구 신청 ' + rs.length + '건</div>' + rs.map(function (r) {
+      return '<div class="freq-item"><div class="av">' + avatarSvg(r.level || 1, { avatar: r.avatar || '', color: r.color || '', photo: r.photo || '' }) + '</div>' +
+        '<div class="t"><b>' + esc(r.name) + '</b>님이 친구 신청을 보냈어요<small>LV ' + (r.level || 1) + (r.cls ? ' · ' + esc(r.cls) : '') + (r.message ? ' · ' + esc(r.message) : '') + ' · ' + esc(String(r.at || '').slice(5, 10).replace('-', '/')) + '</small></div>' +
+        '<button class="btn btn-sm" data-fdecline="' + esc(r.id) + '" data-name="' + esc(r.name) + '">거절</button><button class="btn btn-sm btn-primary" data-faccept="' + esc(r.id) + '" data-name="' + esc(r.name) + '">수락</button></div>';
+    }).join('') + '</div>';
+  }
+  function friendAction(action, payload, btn) {
+    if (freqBusy) return;
+    freqBusy = true; if (btn) btn.disabled = true;
+    social(action, payload).then(function (d) {
+      freqBusy = false; if (btn) btn.disabled = false;
+      if (!d.ok) { toast(d.error || '처리하지 못했어요.', true); loadLeague(true); return; }
+      var nm = d.name || '';
+      if (d.friended) toast('🤝 ' + nm + '님과 친구가 되었어요!');
+      else if (d.already) toast(nm + '님과 이미 친구예요.');
+      else if (d.sent || d.pending) toast(nm + '님에게 친구 신청을 보냈어요. 수락하면 친구가 돼요.');
+      else if (d.declined) toast('신청을 거절했어요.');
+      else if (action === 'friend_cancel') toast('신청을 취소했어요.');
+      state.league.at = 0; loadLeague(true);
+    }, function () { freqBusy = false; if (btn) btn.disabled = false; toast('네트워크 오류로 처리하지 못했어요.', true); });
+  }
+  function onFriendBtn(e) {
+    var b = e.target.closest('[data-freq],[data-faccept],[data-fdecline],[data-fcancel]'); if (!b) return false;
+    if (b.hasAttribute('data-freq')) friendAction('friend_request', { to: b.getAttribute('data-freq') }, b);
+    else if (b.hasAttribute('data-faccept')) friendAction('friend_respond', { id: b.getAttribute('data-faccept'), accept: true }, b);
+    else if (b.hasAttribute('data-fdecline')) friendAction('friend_respond', { id: b.getAttribute('data-fdecline'), accept: false }, b);
+    else if (confirm(b.getAttribute('data-name') + '님에게 보낸 친구 신청을 취소할까요?')) friendAction('friend_cancel', { id: b.getAttribute('data-fcancel') }, b);
+    return true;
+  }
+  $('frReqBox').addEventListener('click', onFriendBtn);
+  $('lgScope').addEventListener('click', function (e) { var b = e.target.closest('[data-scope]'); if (!b) return; lgScope = b.getAttribute('data-scope'); store(LG_SCOPE_KEY, lgScope); renderFriends(computeAll()); });
+  $('lgSearch').addEventListener('input', function () { lgQuery = $('lgSearch').value; if (state.league) renderFriends(computeAll()); });
+  $('lgPublic').addEventListener('change', function () {
+    var cb = $('lgPublic'), hidden = !cb.checked; cb.disabled = true;
+    social('privacy_set', { hidden: hidden }).then(function (d) {
+      cb.disabled = false;
+      if (!d.ok) { cb.checked = !hidden; toast(d.error || '설정을 바꾸지 못했어요.', true); return; }
+      if (state.league) state.league.myHidden = hidden;
+      toast(hidden ? '전체 리그에서 내 프로필을 숨겼어요. 친구에게는 그대로 보여요.' : '전체 리그에 내 프로필을 공개했어요.');
+      loadLeague(true);
+    }, function () { cb.disabled = false; cb.checked = !hidden; toast('네트워크 오류로 설정을 바꾸지 못했어요.', true); });
+  });
   $('lgSeg').addEventListener('click', function (e) { var b = e.target.closest('[data-mode]'); if (!b) return; lbMode = b.getAttribute('data-mode'); renderFriends(computeAll()); });
   $('btnLeagueRefresh').addEventListener('click', function () { loadLeague(false).then(function () { toast('랭킹을 새로 불러왔어요.'); }); });
   function copyText(t, msg) {
@@ -2979,6 +3083,7 @@ table.rt tr:last-child td { border-bottom:0; }
   function pickEmoji(e) { cheerEmoji = e; document.querySelectorAll('#cheerEmojis [data-emo]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-emo') === e ? 'true' : 'false'); }); }
   $('cheerEmojis').addEventListener('click', function (e) { var b = e.target.closest('[data-emo]'); if (b) pickEmoji(b.getAttribute('data-emo')); });
   $('lgBoard').addEventListener('click', function (e) {
+    if (onFriendBtn(e)) return;
     var b = e.target.closest('[data-cheer]'); if (!b) return;
     cheerTo = b.getAttribute('data-cheer');
     $('cheerSheetTitle').textContent = b.getAttribute('data-name') + '님 응원하기';
