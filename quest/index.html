@@ -375,6 +375,80 @@ table.rt tr:last-child td { border-bottom:0; }
 .levelup .box p { color:var(--text-2); }
 @keyframes fadeIn { from { opacity:0; } }
 @keyframes pop { from { transform:scale(.7); opacity:0; } 60% { transform:scale(1.05); } }
+/* 전직 */
+.job-badge { display:inline-flex; align-items:center; gap:6px; margin-top:8px; padding:5px 10px; border-radius:999px; border:1px solid var(--line-strong); background:var(--surface-2); color:var(--text-2); font:600 12px/1.2 var(--font-ko); cursor:pointer; }
+.job-badge .t { color:var(--muted); font-weight:600; }
+.job-badge b { color:var(--text); }
+.job-badge .sub { color:var(--subtle); font:500 11px/1 var(--font-en); }
+.job-badge.has { --jc:var(--lime); border-color:color-mix(in srgb, var(--jc) 55%, transparent); background:color-mix(in srgb, var(--jc) 10%, var(--surface-2)); }
+.job-badge.has b { color:var(--jc); }
+.job-badge.ready { border-color:var(--lime); background:var(--lime-soft); color:var(--lime); animation:jobPulse 1.6s ease-in-out infinite; }
+.job-badge.ready b { color:var(--lime); }
+@keyframes jobPulse { 50% { box-shadow:0 0 0 6px rgba(200,255,61,.12), 0 0 22px rgba(200,255,61,.35); } }
+.job-nudge { width:100%; display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; text-align:left; margin-bottom:12px; padding:14px 16px; border:1px solid var(--lime); border-radius:var(--r-md); background:linear-gradient(120deg, rgba(200,255,61,.14), rgba(168,150,255,.1)); color:var(--text); font:inherit; cursor:pointer; }
+.job-nudge .e { font-size:26px; }
+.job-nudge b { display:block; font-size:15px; }
+.job-nudge small { color:var(--text-2); font-size:12px; }
+.job-nudge .go { font-weight:700; font-size:13px; color:var(--lime-ink); background:var(--lime); border-radius:999px; padding:7px 12px; white-space:nowrap; }
+.levelup .job-open { margin-top:12px; color:var(--lime); font-weight:700; }
+.job-hero { --jc:var(--lime); display:grid; grid-template-columns:72px 1fr; gap:14px; align-items:center; padding:14px; border:1px solid color-mix(in srgb, var(--jc) 45%, transparent); border-radius:var(--r-md); background:radial-gradient(circle at 0 0, color-mix(in srgb, var(--jc) 18%, transparent), transparent 70%), var(--surface-2); }
+.job-hero .emb { width:72px; height:72px; display:grid; place-items:center; font-size:38px; border-radius:50%; border:2px solid var(--jc); box-shadow:0 0 24px color-mix(in srgb, var(--jc) 40%, transparent); background:var(--surface); }
+.job-hero .eyebrow { color:var(--jc); font:600 11px/1 var(--font-en); letter-spacing:.12em; text-transform:uppercase; }
+.job-hero .nm { font-size:22px; font-weight:800; letter-spacing:-.02em; margin:4px 0 2px; }
+.job-hero p { color:var(--text-2); font-size:13px; margin:0; }
+.job-steps { display:flex; align-items:flex-start; margin:16px 0 6px; }
+.job-steps .st { flex:0 0 auto; width:84px; text-align:center; display:grid; justify-items:center; gap:2px; }
+.job-steps .ln { flex:1; height:2px; margin-top:15px; background:var(--line-strong); }
+.job-steps .dot { width:30px; height:30px; border-radius:50%; display:grid; place-items:center; font:700 13px/1 var(--font-en); border:2px solid var(--line-strong); color:var(--subtle); background:var(--surface); }
+.job-steps b { font-size:13px; }
+.job-steps small { color:var(--muted); font-size:11px; line-height:1.3; }
+.job-steps small.d { color:var(--subtle); font-family:var(--font-en); }
+.job-steps .done .dot { border-color:var(--lime); background:var(--lime); color:var(--lime-ink); }
+.job-steps .ready .dot { border-color:var(--lime); color:var(--lime); animation:jobPulse 1.6s ease-in-out infinite; }
+.job-steps .ready small { color:var(--lime); }
+.job-fx { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+.job-fx li { padding:8px 12px; border-radius:var(--r-sm); background:var(--surface-2); border:1px solid var(--line); font-size:13px; }
+.job-fx li:before { content:"✦ "; color:var(--lime); }
+.job-note { color:var(--muted); font-size:12px; margin:10px 0 0; }
+.job-note b { color:var(--text); }
+.job-opts { display:grid; gap:8px; }
+.job-opt { --jc:var(--lime); display:grid; grid-template-columns:48px 1fr; gap:12px; align-items:start; width:100%; text-align:left; padding:12px; border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface-2); color:var(--text); font:inherit; cursor:pointer; transition:border-color .15s, background .15s, transform .15s; }
+button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 60%, transparent); }
+.job-opt.on { border-color:var(--jc); background:color-mix(in srgb, var(--jc) 12%, var(--surface-2)); box-shadow:0 0 0 1px var(--jc) inset; }
+.job-opt.locked { opacity:.5; cursor:default; }
+.job-opt .emb { width:48px; height:48px; display:grid; place-items:center; font-size:26px; border-radius:12px; background:color-mix(in srgb, var(--jc) 16%, var(--surface)); border:1px solid color-mix(in srgb, var(--jc) 40%, transparent); }
+.job-opt .body { display:grid; gap:3px; min-width:0; }
+.job-opt .top { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.job-opt .top b { font-size:16px; color:var(--jc); }
+.job-opt .en { font:500 11px/1 var(--font-en); color:var(--subtle); }
+.job-opt .rec { font:700 10px/1 var(--font-ko); color:var(--lime-ink); background:var(--lime); border-radius:999px; padding:3px 7px; }
+.job-opt .why { color:var(--text-2); font-size:12px; }
+.job-opt .lore { color:var(--muted); font-size:12px; }
+.job-opt .fx { display:flex; flex-wrap:wrap; gap:4px; margin-top:4px; }
+.job-opt .fx i { font-style:normal; font-size:11px; padding:3px 7px; border-radius:999px; border:1px solid color-mix(in srgb, var(--jc) 35%, transparent); color:var(--text-2); }
+.job-go { width:100%; margin-top:12px; }
+.job-go:disabled { opacity:.45; cursor:not-allowed; }
+.jobup { --jc:var(--lime); position:fixed; inset:0; z-index:95; display:grid; place-items:center; overflow:hidden; background:radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--jc) 22%, #000) 0, rgba(0,0,0,.92) 60%); animation:fadeIn .3s; }
+.jobup .rays { position:absolute; left:50%; top:40%; width:160vmax; height:160vmax; margin:-80vmax 0 0 -80vmax; background:repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--jc) 22%, transparent) 0 6deg, transparent 6deg 18deg); -webkit-mask:radial-gradient(circle, #000 0, transparent 55%); mask:radial-gradient(circle, #000 0, transparent 55%); animation:jobSpin 14s linear infinite, fadeIn 1.2s; opacity:.8; }
+.jobup .pillar { position:absolute; left:50%; top:0; bottom:0; width:140px; margin-left:-70px; background:linear-gradient(90deg, transparent, color-mix(in srgb, var(--jc) 55%, transparent), transparent); filter:blur(8px); transform-origin:50% 0; animation:jobPillar 1.3s var(--ease) forwards; }
+.jobup .box { position:relative; text-align:center; width:min(360px, calc(100% - 32px)); padding:28px 24px 22px; border:1px solid var(--jc); border-radius:var(--r-lg); background:rgba(11,13,14,.86); box-shadow:0 0 90px color-mix(in srgb, var(--jc) 35%, transparent); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); animation:pop .6s .5s var(--ease) both; }
+.jobup .eyebrow { color:var(--jc); font:600 11px/1 var(--font-en); letter-spacing:.2em; text-transform:uppercase; }
+.jobup .emb { width:104px; height:104px; margin:16px auto 10px; display:grid; place-items:center; font-size:56px; border-radius:50%; border:2px solid var(--jc); background:var(--surface); box-shadow:0 0 0 8px color-mix(in srgb, var(--jc) 12%, transparent), 0 0 50px color-mix(in srgb, var(--jc) 60%, transparent); animation:jobEmb 1s .7s var(--ease) both; }
+.jobup .tier { color:var(--text-2); font-size:13px; font-weight:600; animation:fadeIn .4s 1s both; }
+.jobup .nm { font-size:40px; font-weight:800; letter-spacing:-.03em; line-height:1.1; color:var(--jc); text-shadow:0 0 24px color-mix(in srgb, var(--jc) 55%, transparent); animation:jobName .6s 1.05s var(--ease) both; }
+.jobup .en { font:600 13px/1 var(--font-en); letter-spacing:.14em; text-transform:uppercase; color:var(--subtle); margin-top:4px; animation:fadeIn .4s 1.2s both; }
+.jobup .lore { color:var(--text-2); font-size:13px; margin:10px 0 0; animation:fadeIn .4s 1.3s both; }
+.jobup .gain { display:grid; gap:6px; margin:14px 0 6px; text-align:left; }
+.jobup .gain b { font-size:12px; color:var(--muted); animation:fadeIn .4s 1.4s both; }
+.jobup .gain span { padding:8px 12px; border-radius:var(--r-sm); border:1px solid color-mix(in srgb, var(--jc) 40%, transparent); background:color-mix(in srgb, var(--jc) 10%, transparent); font-size:13px; font-weight:600; animation:jobGain .45s var(--ease) both; }
+.jobup .cum { display:block; color:var(--subtle); font-size:11px; animation:fadeIn .4s 2s both; }
+.jobup .btn { width:100%; margin-top:14px; animation:fadeIn .4s 2s both; }
+@keyframes jobSpin { to { transform:rotate(360deg); } }
+@keyframes jobPillar { from { transform:scaleY(0); opacity:1; } 60% { opacity:1; } to { transform:scaleY(1); opacity:.35; } }
+@keyframes jobEmb { from { transform:scale(0) rotate(-200deg); opacity:0; } 70% { transform:scale(1.15) rotate(10deg); opacity:1; } }
+@keyframes jobName { from { transform:translateY(12px) scale(.9); opacity:0; letter-spacing:.2em; } }
+@keyframes jobGain { from { transform:translateX(-14px); opacity:0; } }
+@media (prefers-reduced-motion:reduce) { .jobup *, .job-badge.ready, .job-steps .ready .dot { animation-duration:.01s !important; animation-delay:0s !important; animation-iteration-count:1 !important; } }
 .spark { position:fixed; z-index:91; width:8px; height:8px; pointer-events:none; border-radius:2px; animation:spark .9s ease-out forwards; }
 @keyframes spark { to { transform:translate(var(--dx),var(--dy)) rotate(260deg); opacity:0; } }
 
@@ -761,6 +835,7 @@ table.rt tr:last-child td { border-bottom:0; }
           <div class="char-title" id="charTitle">Rookie Runner</div>
           <div class="char-name"><span id="charName">러너</span><span class="char-class" id="charClass" hidden></span></div>
           <div class="char-motto" id="charMotto" hidden></div>
+          <button type="button" class="job-badge" id="jobBadge"></button>
         </div>
         <div class="xp-row">
           <div class="xp-head"><span>LV <b class="num" id="lvNow">1</b> → <span class="num" id="lvNext">2</span></span><span class="num"><b id="xpIn">0</b> / <span id="xpNeed">100</span> XP</span></div>
@@ -791,6 +866,7 @@ table.rt tr:last-child td { border-bottom:0; }
           <button class="icon-btn" id="dNext" aria-label="다음 날"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         </div>
       </div>
+      <div id="jobNudge"></div>
       <div id="comebackCard"></div>
       <div id="retroNudge"></div>
       <div id="pushNudge"></div>
@@ -1170,6 +1246,14 @@ table.rt tr:last-child td { border-bottom:0; }
   <div class="sheet-actions" style="margin-top:14px"><button type="button" class="btn" data-close>닫기</button></div>
 </div>
 
+<!-- 전직 시트 -->
+<div class="sheet" id="jobSheet" role="dialog" aria-modal="true" aria-labelledby="jobSheetTitle" hidden>
+  <div class="grab"></div>
+  <h3 id="jobSheetTitle">전직</h3>
+  <div id="jobBody"></div>
+  <div class="sheet-actions" style="margin-top:14px"><button type="button" class="btn" data-close>닫기</button></div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -1468,11 +1552,12 @@ table.rt tr:last-child td { border-bottom:0; }
     for (var d = first; d <= today; d = addDays(d, 1)) { var info = dayInfo(d, byDate); days.push(info); dayMap[d] = info; }
 
     // 스트릭 + 보호권 + 복귀 퀘스트 (시간순)
-    var shields = 0, earned = 0, used = 0, perfSeen = 0, run = 0, best = 0;
+    var shields = 0, earned = 0, used = 0, perfSeen = 0, perfSince = 0, run = 0, best = 0;
     var gap = 0, cb = null, comebacks = [];
     var boughtShields = {}; shopData().buys.forEach(function (b) { if (b.kind === 'shield') boughtShields[b.date] = (boughtShields[b.date] || 0) + 1; });
     days.forEach(function (x) {
-      if (boughtShields[x.date]) { x.shieldBought = boughtShields[x.date]; shields = Math.min(SHIELD_MAX, shields + boughtShields[x.date]); }
+      var smax = jobShieldMax(x.date); // 전직 효과로 보호권 최대치·획득 주기가 달라질 수 있음
+      if (boughtShields[x.date]) { x.shieldBought = boughtShields[x.date]; shields = Math.min(smax, shields + boughtShields[x.date]); }
       var logged = x.logs.some(function (l) { return l.kind !== 'skip'; });
       if (gap >= COMEBACK_GAP && (!cb || x.date > cb.end) && (logged || x.date === today)) {
         cb = { start: x.date, end: addDays(x.date, COMEBACK_DAYS - 1), gap: gap, days: 0, shield: false, xp: 0 }; comebacks.push(cb);
@@ -1484,12 +1569,12 @@ table.rt tr:last-child td { border-bottom:0; }
       if (logged) gap = 0; else if (x.denom > 0 && x.date < today) gap++;
       if (x.perfect) {
         run++; perfSeen++;
-        if (perfSeen % SHIELD_EVERY === 0) { earned++; x.shieldEarned = true; if (shields < SHIELD_MAX) shields++; }
+        if (++perfSince >= jobShieldEvery(x.date)) { perfSince = 0; earned++; x.shieldEarned = true; if (shields < smax) shields++; }
       } else if (x.denom > 0 && x.date < today) {
         if (shields > 0) { shields--; used++; x.shielded = true; } else run = 0;
       }
       if (x.comeback && !x.comeback.shield && x.comeback.days >= COMEBACK_SHIELD_AT) {
-        x.comeback.shield = true; x.comebackShield = true; earned++; if (shields < SHIELD_MAX) shields++;
+        x.comeback.shield = true; x.comebackShield = true; earned++; if (shields < smax) shields++;
       }
       if (run > best) best = run;
       x.run = run;
@@ -1539,6 +1624,9 @@ table.rt tr:last-child td { border-bottom:0; }
       if (bonus > 0) { x.comebackXp = bonus; x.xp += bonus; x.comeback.xp += bonus; }
     });
 
+    // 전직 효과 (전직한 날부터)
+    var jobRes = applyJobs(days);
+
     var total = 0, catXp = {}, perfectCount = 0, mins = 0;
     days.forEach(function (x) {
       total += x.xp; mins += x.mins; if (x.perfect) perfectCount++;
@@ -1546,7 +1634,8 @@ table.rt tr:last-child td { border-bottom:0; }
     });
     Object.keys(byDate).forEach(function (d) { if (d > today) { var info = dayInfo(d, byDate); total += info.xp; } });
     var all = { byDate: byDate, days: days, dayMap: dayMap, total: total, catXp: catXp, perfectCount: perfectCount, streak: run, bestStreak: best, mins: mins,
-      shields: shields, shieldsEarned: earned, shieldsUsed: used, comebacks: comebacks, comebackWins: comebacks.filter(function (c) { return c.shield; }).length, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses, bossWins: bosses.filter(function (b) { return b.defeated; }).length,
+      shields: shields, shieldsEarned: earned, shieldsUsed: used, comebacks: comebacks, comebackWins: comebacks.filter(function (c) { return c.shield; }).length, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses,
+      jobXp: jobRes.xp, jobGold: jobRes.gold, shieldMax: jobShieldMax(today), bossWins: bosses.filter(function (b) { return b.defeated; }).length,
       today: dayMap[today] || dayInfo(today, byDate) };
     return all;
   }
@@ -1643,7 +1732,7 @@ table.rt tr:last-child td { border-bottom:0; }
     $('xpFill').style.width = Math.min(100, lv.into / lv.need * 100) + '%';
     $('chipStreak').textContent = all.streak;
     $('chipShield').textContent = all.shields;
-    $('chipStreakWrap').title = '스트릭 보호권 ' + all.shields + '장 (퍼펙트 데이 ' + SHIELD_EVERY + '일마다 1장, 최대 ' + SHIELD_MAX + '장)';
+    $('chipStreakWrap').title = '스트릭 보호권 ' + all.shields + '장 (퍼펙트 데이 ' + jobShieldEvery(todayStr()) + '일마다 1장, 최대 ' + all.shieldMax + '장)';
     var ss = seasonSummary(all, todayStr().slice(0, 7));
     var sc = $('chipSeason'); sc.style.setProperty('--rk', ss.rank.r.color);
     sc.innerHTML = '🏅 <span class="hide-sm-in">' + seasonLabel(ss.month) + ' </span><b>' + ss.rank.r.ko + '</b> · D-' + ss.dLeft;
@@ -1664,6 +1753,8 @@ table.rt tr:last-child td { border-bottom:0; }
         '<span class="bar"><span style="width:' + (max ? xp / max * 100 : 0) + '%;background:' + c.color + '"></span></span>' +
         '<span class="val">Lv <b>' + slv + '</b></span></div>';
     }).join('');
+    renderJobBadge(all, lv.level);
+    if (!$('jobSheet').hidden) renderJobSheet(all);
     if (lastLevel !== null && lv.level > lastLevel) levelUp(lv.level, t);
     lastLevel = lv.level;
   }
@@ -1673,7 +1764,10 @@ table.rt tr:last-child td { border-bottom:0; }
     TITLES.forEach(function (x) { if (!next && x[0] > level) next = x; });
     var msg = prevT[0] !== t[0] ? '새 칭호 획득: <b style="color:var(--lime)">' + esc(t[2]) + '</b>' : (next ? '다음 칭호 「' + esc(next[2]) + '」까지 Lv ' + next[0] : '최고 칭호에 도달했습니다.');
     var el = document.createElement('div'); el.className = 'levelup';
-    el.innerHTML = '<div class="box"><span class="eyebrow">Level Up</span><div class="big">LV ' + level + '</div><p>' + msg + '</p><button class="btn btn-primary" style="margin-top:18px;width:100%">계속하기</button></div>';
+    var jp = jobPending(level);
+    el.innerHTML = '<div class="box"><span class="eyebrow">Level Up</span><div class="big">LV ' + level + '</div><p>' + msg + '</p>' +
+      (jp >= 0 ? '<p class="job-open">✨ ' + JOB_TIER_LABEL[jp] + ' 전직의 문이 열렸어요!</p><button class="btn btn-primary" data-open-job style="margin-top:14px;width:100%">전직하러 가기</button><button class="btn btn-ghost" style="margin-top:8px;width:100%">나중에</button>' :
+      '<button class="btn btn-primary" style="margin-top:18px;width:100%">계속하기</button>') + '</div>';
     document.body.appendChild(el);
     burst(window.innerWidth / 2, window.innerHeight / 2, 28);
     el.addEventListener('click', function () { el.remove(); });
@@ -2043,6 +2137,7 @@ table.rt tr:last-child td { border-bottom:0; }
     ds.push({ label: '보스 보상', data: days.map(function (x) { return x.bossXp || 0; }), backgroundColor: 'rgba(255,122,146,.75)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
     ds.push({ label: '회고 보상', data: days.map(function (x) { return x.retroXp || 0; }), backgroundColor: 'rgba(255,207,74,.8)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
     ds.push({ label: '파티 보너스', data: days.map(function (x) { return x.partyXp || 0; }), backgroundColor: 'rgba(102,219,255,.8)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
+    ds.push({ label: '전직 보너스', data: days.map(function (x) { return x.jobXp || 0; }), backgroundColor: 'rgba(168,150,255,.8)', borderRadius: 2, stack: 's', maxBarThickness: 22 });
     upsertChart('chDaily', {
       type: 'bar', data: { labels: labels, datasets: ds },
       options: { responsive: true, maintainAspectRatio: false, animation: { duration: 300 }, interaction: { mode: 'index', intersect: false },
@@ -2168,7 +2263,7 @@ table.rt tr:last-child td { border-bottom:0; }
       var logs = all.byDate[d].filter(function (l) { return !fv || (fv === '_adhoc' ? l.kind === 'adhoc' : l.category === fv); });
       if (!logs.length) return '';
       var info = dayOf(all, d);
-      return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + (info.shielded ? ' 🛡' : '') + (info.bossXp ? ' ⚔️ 보스 +' + info.bossXp : '') + (info.retroXp ? ' 📝 회고 +' + info.retroXp : '') + (info.partyXp ? ' 🤝 파티 +' + info.partyXp : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
+      return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + (info.shielded ? ' 🛡' : '') + (info.bossXp ? ' ⚔️ 보스 +' + info.bossXp : '') + (info.retroXp ? ' 📝 회고 +' + info.retroXp : '') + (info.partyXp ? ' 🤝 파티 +' + info.partyXp : '') + (info.jobXp ? ' 🎖 전직 +' + info.jobXp : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
         var c = CATS[l.category] || CATS.life, r = routineById(l.routine_id);
         var e = l.kind === 'adhoc' ? c.emoji : (r && r.emoji) || c.emoji;
         var tag = l.kind === 'routine' ? '루틴' : l.kind === 'skip' ? '건너뜀' : '비정기';
@@ -2681,15 +2776,15 @@ table.rt tr:last-child td { border-bottom:0; }
   }
   function goldOf(all) {
     var spent = shopData().buys.reduce(function (s, b) { return s + (+b.price || 0); }, 0);
-    return Math.max(0, Math.round(all.total) - spent);
+    return Math.max(0, Math.round(all.total) + (all.jobGold || 0) - spent);
   }
   function saveShop(sh, msg) { state.profile.shop = sh; return saveProfile(msg); }
   function renderShop(all) {
     all = all || computeAll();
     var g = goldOf(all), sh = shopData(), today = todayStr();
     $('shBal').textContent = fmtNum(g);
-    var full = all.shields >= SHIELD_MAX;
-    $('shSystem').innerHTML = '<div class="shop-item"><span class="e">🛡</span><span class="n">스트릭 보호권 1장<small>' + (full ? '이미 최대 ' + SHIELD_MAX + '장을 갖고 있어요' : '놓친 날 연속 기록을 지켜 줘요 · 보유 ' + all.shields + '/' + SHIELD_MAX) + '</small></span><span class="p">' + fmtNum(SHOP_SHIELD_PRICE) + ' G</span>' +
+    var smax = all.shieldMax || SHIELD_MAX, full = all.shields >= smax;
+    $('shSystem').innerHTML = '<div class="shop-item"><span class="e">🛡</span><span class="n">스트릭 보호권 1장<small>' + (full ? '이미 최대 ' + smax + '장을 갖고 있어요' : '놓친 날 연속 기록을 지켜 줘요 · 보유 ' + all.shields + '/' + smax) + '</small></span><span class="p">' + fmtNum(SHOP_SHIELD_PRICE) + ' G</span>' +
       '<button class="btn btn-sm btn-primary" type="button" data-buy-shield' + (full || g < SHOP_SHIELD_PRICE ? ' disabled' : '') + '>구매</button></div>';
     $('shItems').innerHTML = sh.items.length ? sh.items.map(function (it) {
       var lack = g < it.price;
@@ -3495,6 +3590,260 @@ table.rt tr:last-child td { border-bottom:0; }
     });
   }
 
+  /* ---------- 전직 (1차 LV10 · 2차 LV20 · 3차 LV30) ---------- */
+  // 저장: profile.job = { line: 능력치 키, d1, path: 'A'(집중)|'B'(융합), sub: 융합 보조 능력치, d2, d3 }
+  // 효과는 전직한 날(d1/d2/d3)부터만 적용하고 지난 기록에는 소급하지 않습니다. 차수별 효과는 누적됩니다.
+  // fx: cat=주 능력치 기록 XP %, sub=보조 능력치 기록 XP %, all=모든 기록 XP %, adhoc=비정기 기록 XP %, perfect=퍼펙트 보너스 +XP,
+  //     boss=보스 격파 보상 +XP, retro=회고 XP %, party=파티 보상 %, comeback=복귀 기간 기록 XP +%p, gold=그날 얻은 XP의 % 만큼 골드 추가,
+  //     shieldMax=보호권 최대 보유 +장, shieldEvery=보호권 획득에 필요한 퍼펙트 데이 -일
+  var JOB_TIERS = [10, 20, 30];
+  var JOB_TIER_LABEL = ['1차', '2차', '3차'], JOB_TIER_EN = ['1st', '2nd', '3rd'];
+  var JOB_LINES = {
+    study: {
+      t1: { id: 'scholar', name: '학자', en: 'Scholar', emoji: '📘', lore: '배운 것을 기록하는 사람. 회고에서 더 많은 깨달음을 얻습니다.', fx: { cat: 10, retro: 20 } },
+      A:  { id: 'sage', name: '현자', en: 'Sage', emoji: '🔮', lore: '한 우물을 깊게 판 지식의 탐구자.', fx: { cat: 10, retro: 30 } },
+      B:  { id: 'strategist', name: '전략가', en: 'Strategist', emoji: '♟️', lore: '지식을 다른 능력과 엮어 보스의 약점을 찌릅니다.', fx: { sub: 10, boss: 30 } },
+      A3: { id: 'archsage', name: '대현자', en: 'Archsage', emoji: '🌌', lore: '모든 배움이 하나로 이어진 경지.', fx: { cat: 10, all: 5, perfect: 5 } },
+      B3: { id: 'grandstrategist', name: '대전략가', en: 'Grand Strategist', emoji: '🏰', lore: '한 주의 판 전체를 읽고 움직이는 지휘자.', fx: { sub: 10, boss: 50 } }
+    },
+    health: {
+      t1: { id: 'warrior', name: '전사', en: 'Warrior', emoji: '🗡️', lore: '몸으로 버티는 사람. 연속 기록을 지키는 방패를 하나 더 듭니다.', fx: { cat: 10, shieldMax: 1 } },
+      A:  { id: 'gladiator', name: '검투사', en: 'Gladiator', emoji: '⚔️', lore: '매일의 싸움에서 단련된 투사. 보호권을 더 빨리 얻습니다.', fx: { cat: 10, shieldEvery: 1 } },
+      B:  { id: 'paladin', name: '성기사', en: 'Paladin', emoji: '🛡️', lore: '체력과 다른 능력을 함께 단련한 수호자.', fx: { sub: 10, boss: 30 } },
+      A3: { id: 'warlord', name: '워로드', en: 'Warlord', emoji: '🔥', lore: '무너지지 않는 전장의 지배자.', fx: { cat: 10, shieldMax: 1, perfect: 5 } },
+      B3: { id: 'crusader', name: '성전사', en: 'Crusader', emoji: '✨', lore: '균형 잡힌 힘으로 흐름을 끊기지 않게 지킵니다.', fx: { sub: 10, shieldEvery: 1 } }
+    },
+    work: {
+      t1: { id: 'merchant', name: '상인', en: 'Merchant', emoji: '💰', lore: '노력을 자산으로 바꾸는 사람. 골드가 더 쌓입니다.', fx: { cat: 10, gold: 10 } },
+      A:  { id: 'guildmaster', name: '길드마스터', en: 'Guildmaster', emoji: '🏦', lore: '커리어를 굴려 더 큰 보상을 만드는 운영자.', fx: { cat: 10, gold: 10 } },
+      B:  { id: 'adventurer', name: '모험가', en: 'Adventurer', emoji: '🧭', lore: '루틴 밖의 도전에서 더 많이 얻는 탐험가.', fx: { sub: 10, adhoc: 20 } },
+      A3: { id: 'tycoon', name: '거상', en: 'Tycoon', emoji: '💎', lore: '모든 성장이 복리로 돌아오는 경지.', fx: { cat: 10, gold: 15, all: 5 } },
+      B3: { id: 'pioneer', name: '개척자', en: 'Pioneer', emoji: '🚀', lore: '아무도 가지 않은 길을 기록으로 남기는 사람.', fx: { sub: 10, adhoc: 30 } }
+    },
+    teach: {
+      t1: { id: 'bard', name: '음유시인', en: 'Bard', emoji: '🎻', lore: '함께할 때 강해지는 사람. 파티 보상이 커집니다.', fx: { cat: 10, party: 20 } },
+      A:  { id: 'commander', name: '지휘관', en: 'Commander', emoji: '🚩', lore: '동료를 이끌어 모두를 완주시키는 리더.', fx: { cat: 10, party: 30 } },
+      B:  { id: 'mentor', name: '멘토', en: 'Mentor', emoji: '🕯️', lore: '넘어진 뒤 다시 일어서는 법을 아는 안내자.', fx: { sub: 10, comeback: 25 } },
+      A3: { id: 'sovereign', name: '군주', en: 'Sovereign', emoji: '👑', lore: '영향력이 모두의 성장으로 번지는 경지.', fx: { cat: 10, party: 50, all: 5 } },
+      B3: { id: 'grandmentor', name: '그랜드 멘토', en: 'Grand Mentor', emoji: '🌟', lore: '어떤 공백 뒤에도 흐름을 되살리는 사람.', fx: { sub: 10, comeback: 25, shieldMax: 1 } }
+    },
+    life: {
+      t1: { id: 'monk', name: '수도승', en: 'Monk', emoji: '🧘', lore: '작은 습관을 매일 지키는 사람. 퍼펙트 데이가 더 값집니다.', fx: { cat: 10, perfect: 5 } },
+      A:  { id: 'druid', name: '드루이드', en: 'Druid', emoji: '🌿', lore: '생활의 리듬과 하나가 된 수행자.', fx: { cat: 10, perfect: 10 } },
+      B:  { id: 'alchemist', name: '연금술사', en: 'Alchemist', emoji: '⚗️', lore: '무너진 루틴도 다시 금으로 바꾸는 사람.', fx: { sub: 10, comeback: 25 } },
+      A3: { id: 'archdruid', name: '대드루이드', en: 'Archdruid', emoji: '🌳', lore: '흔들리지 않는 하루를 쌓아 올린 경지.', fx: { cat: 10, perfect: 15, shieldMax: 1 } },
+      B3: { id: 'grandalchemist', name: '대연금술사', en: 'Grand Alchemist', emoji: '🧪', lore: '모든 기록을 조금씩 더 값지게 만듭니다.', fx: { sub: 10, all: 5 } }
+    }
+  };
+  var JOB_FX_KEYS = ['cat', 'sub', 'all', 'adhoc', 'perfect', 'boss', 'retro', 'party', 'comeback', 'gold', 'shieldMax', 'shieldEvery'];
+
+  function jobData() {
+    var j = state.profile && state.profile.job;
+    if (!j || typeof j !== 'object' || !CATS[j.line] || !j.d1) return null;
+    return j;
+  }
+  // 전직 경로: [{tier, def, date}] (전직한 차수만)
+  function jobPath(j) {
+    j = j === undefined ? jobData() : j;
+    if (!j) return [];
+    var L = JOB_LINES[j.line], out = [{ tier: 0, def: L.t1, date: j.d1 }];
+    if (j.d2 && (j.path === 'A' || j.path === 'B')) {
+      out.push({ tier: 1, def: L[j.path], date: j.d2 });
+      if (j.d3) out.push({ tier: 2, def: L[j.path + '3'], date: j.d3 });
+    }
+    return out;
+  }
+  function jobCurrent() { var p = jobPath(); return p.length ? p[p.length - 1] : null; }
+  // date 기준으로 적용 중인 효과 합계
+  function jobFx(date) {
+    var fx = {}; JOB_FX_KEYS.forEach(function (k) { fx[k] = 0; });
+    jobPath().forEach(function (s) { if (date >= s.date) Object.keys(s.def.fx).forEach(function (k) { fx[k] += s.def.fx[k]; }); });
+    return fx;
+  }
+  function jobShieldMax(date) { return SHIELD_MAX + jobFx(date).shieldMax; }
+  function jobShieldEvery(date) { return Math.max(3, SHIELD_EVERY - jobFx(date).shieldEvery); }
+  // 다음에 할 수 있는 전직 차수 (0,1,2), 없으면 -1
+  function jobNextTier(j) { j = j === undefined ? jobData() : j; return !j ? 0 : !j.d2 ? 1 : !j.d3 ? 2 : -1; }
+  function jobPending(level) { var t = jobNextTier(); return t >= 0 && level >= JOB_TIERS[t] ? t : -1; }
+
+  // computeAll 마지막 단계: 전직 효과로 생기는 XP·골드를 날짜별로 더한다
+  function applyJobs(days) {
+    var j = jobData(), gold = 0, jobTotal = 0;
+    if (!j) return { xp: 0, gold: 0 };
+    days.forEach(function (x) {
+      if (x.date < j.d1) return;
+      var fx = jobFx(x.date), raw = 0, adhoc = 0, byCat = {};
+      x.logs.forEach(function (l) {
+        if (l.kind === 'skip') return;
+        raw += l.xp; byCat[l.category] = (byCat[l.category] || 0) + l.xp;
+        if (l.kind === 'adhoc') adhoc += l.xp;
+      });
+      var add = (byCat[j.line] || 0) * fx.cat / 100 + (j.sub ? (byCat[j.sub] || 0) * fx.sub / 100 : 0) +
+        raw * fx.all / 100 + adhoc * fx.adhoc / 100 + (x.perfect ? fx.perfect : 0) +
+        (x.retroXp || 0) * fx.retro / 100 + (x.partyXp || 0) * fx.party / 100 + (x.comeback ? raw * fx.comeback / 100 : 0);
+      add = Math.round(add);
+      if (fx.boss && x.boss) { x.boss.reward += fx.boss; x.bossXp += fx.boss; x.xp += fx.boss; x.jobBoss = fx.boss; }
+      if (add > 0) { x.jobXp = add; x.xp += add; jobTotal += add; }
+      if (fx.gold) { var g = Math.round(x.xp * fx.gold / 100); if (g > 0) { x.jobGold = g; gold += g; } }
+    });
+    return { xp: jobTotal, gold: gold };
+  }
+
+  function jobFxLines(fx, j) {
+    j = j || jobData() || {};
+    var out = [], main = CATS[j.line], sub = CATS[j.sub];
+    if (fx.cat) out.push((main ? main.en + ' ' + main.name : '주 능력치') + ' 기록 XP +' + fx.cat + '%');
+    if (fx.sub) out.push((sub ? sub.en + ' ' + sub.name : '보조 능력치') + ' 기록 XP +' + fx.sub + '%');
+    if (fx.all) out.push('모든 기록 XP +' + fx.all + '%');
+    if (fx.adhoc) out.push('비정기 기록 XP +' + fx.adhoc + '%');
+    if (fx.perfect) out.push('퍼펙트 데이 보너스 +' + fx.perfect + ' XP');
+    if (fx.boss) out.push('주간 보스 격파 보상 +' + fx.boss + ' XP');
+    if (fx.retro) out.push('월간 회고 XP +' + fx.retro + '%');
+    if (fx.party) out.push('파티퀘스트 보상 XP +' + fx.party + '%');
+    if (fx.comeback) out.push('복귀 기간 기록 XP 보너스 +' + fx.comeback + '%p');
+    if (fx.gold) out.push('얻은 XP의 ' + fx.gold + '%를 골드로 추가 적립');
+    if (fx.shieldMax) out.push('스트릭 보호권 최대 보유 +' + fx.shieldMax + '장');
+    if (fx.shieldEvery) out.push('보호권 획득 퍼펙트 데이 ' + fx.shieldEvery + '일 단축');
+    return out;
+  }
+  function fxSum(defs) { var fx = {}; JOB_FX_KEYS.forEach(function (k) { fx[k] = 0; }); defs.forEach(function (d) { Object.keys(d.fx).forEach(function (k) { fx[k] += d.fx[k]; }); }); return fx; }
+
+  // 능력치 분포: 누적 기록 XP 기준 순위
+  function statRank(all) {
+    var tot = 0; CAT_KEYS.forEach(function (k) { tot += all.catXp[k] || 0; });
+    return CAT_KEYS.map(function (k) { return { k: k, xp: all.catXp[k] || 0, share: tot ? (all.catXp[k] || 0) / tot : 0 }; })
+      .sort(function (a, b) { return b.xp - a.xp; });
+  }
+  // 이번 차수의 선택지 [{key, def, line, path, sub, rec, why, locked}]
+  function jobOptions(all, tier) {
+    var rank = statRank(all), j = jobData();
+    if (tier === 0) {
+      return rank.map(function (r, i) {
+        return { line: r.k, def: JOB_LINES[r.k].t1, rec: i === 0, locked: i >= 3,
+          why: CATS[r.k].en + ' ' + CATS[r.k].name + ' 비중 ' + Math.round(r.share * 100) + '%' + (i === 0 ? ' · 가장 높아요' : i >= 3 ? ' · 상위 3개 능력치만 전직할 수 있어요' : '') };
+      });
+    }
+    if (tier === 1) {
+      var main = rank.filter(function (r) { return r.k === j.line; })[0] || { share: 0 };
+      var sub = rank.filter(function (r) { return r.k !== j.line; })[0];
+      var focus = main.share >= 0.3;
+      return [
+        { path: 'A', def: JOB_LINES[j.line].A, rec: focus, why: '집중: ' + CATS[j.line].name + ' 비중 ' + Math.round(main.share * 100) + '%' + (focus ? ' (30% 이상이라 추천)' : '') },
+        { path: 'B', sub: sub.k, def: JOB_LINES[j.line].B, rec: !focus, why: '융합: 두 번째로 높은 ' + CATS[sub.k].en + ' ' + CATS[sub.k].name + '(' + Math.round(sub.share * 100) + '%)을 보조 능력치로' }
+      ];
+    }
+    return [{ def: JOB_LINES[j.line][j.path + '3'], rec: true, why: JOB_LINES[j.line][j.path].name + '의 각성' }];
+  }
+
+  /* ---------- 전직 UI ---------- */
+  function renderJobBadge(all, level) {
+    var b = $('jobBadge'), cur = jobCurrent(), pend = jobPending(level), next = jobNextTier();
+    b.className = 'job-badge' + (pend >= 0 ? ' ready' : '') + (cur ? ' has' : '');
+    if (cur) b.style.setProperty('--jc', CATS[jobData().line].color); else b.style.removeProperty('--jc');
+    if (pend >= 0) b.innerHTML = '✨ <b>' + JOB_TIER_LABEL[pend] + ' 전직 가능!</b>' + (cur ? '<span class="sub">' + cur.def.emoji + ' ' + esc(cur.def.name) + '</span>' : '');
+    else if (cur) b.innerHTML = cur.def.emoji + ' <span class="t">' + JOB_TIER_LABEL[cur.tier] + '</span><b>' + esc(cur.def.name) + '</b><span class="sub">' + esc(cur.def.en) + '</span>';
+    else b.innerHTML = '🔒 <span class="t">1차 전직</span><span class="sub">LV ' + JOB_TIERS[0] + '에 열려요</span>';
+    b.title = next >= 0 ? JOB_TIER_LABEL[next] + ' 전직 LV ' + JOB_TIERS[next] : '3차 전직 완료';
+    var n = $('jobNudge');
+    if (n) n.innerHTML = pend >= 0 ? '<button type="button" class="job-nudge" data-open-job><span class="e">✨</span><span><b>' + JOB_TIER_LABEL[pend] + ' 전직의 문이 열렸어요</b><small>LV ' + JOB_TIERS[pend] + ' 달성! 직업을 고르면 오늘부터 추가 능력이 적용돼요.</small></span><span class="go">전직하기</span></button>' : '';
+  }
+
+  var jobPick = null;
+  function openJobSheet() { jobPick = null; renderJobSheet(); openSheet($('jobSheet')); }
+  function renderJobSheet(all) {
+    all = all || computeAll();
+    var lv = levelFromXp(all.total).level, j = jobData(), path = jobPath(), cur = path[path.length - 1], pend = jobPending(lv), next = jobNextTier();
+    var col = j ? CATS[j.line].color : 'var(--lime)';
+    var h = '';
+    // 현재 직업
+    h += '<div class="job-hero" style="--jc:' + col + '"><div class="emb">' + (cur ? cur.def.emoji : '🥚') + '</div><div>' +
+      '<div class="eyebrow">' + (cur ? JOB_TIER_LABEL[cur.tier] + ' 전직 · ' + esc(cur.def.en) : 'No Class') + '</div>' +
+      '<div class="nm">' + (cur ? esc(cur.def.name) : '아직 전직 전') + '</div>' +
+      '<p>' + (cur ? esc(cur.def.lore) : 'LV ' + JOB_TIERS[0] + '에 1차 전직이 열려요. 지금까지 쌓은 능력치 분포에 따라 고를 수 있는 직업이 달라집니다.') + '</p></div></div>';
+    // 전직 단계
+    h += '<div class="job-steps">' + JOB_TIERS.map(function (L, i) {
+      var done = path[i], st = done ? 'done' : (pend === i ? 'ready' : 'lock');
+      var nm = done ? done.def.emoji + ' ' + esc(done.def.name) : (pend === i ? '선택 대기' : 'LV ' + L);
+      return '<div class="st ' + st + '"><span class="dot">' + (done ? '✓' : i + 1) + '</span><b>' + JOB_TIER_LABEL[i] + '</b><small>' + nm + '</small>' + (done ? '<small class="d">' + md(done.date) + '</small>' : '') + '</div>';
+    }).join('<span class="ln"></span>') + '</div>';
+    // 적용 중인 능력
+    if (cur) {
+      var lines = jobFxLines(jobFx(todayStr()), j);
+      h += '<div class="shop-sec">적용 중인 추가 능력</div><ul class="job-fx">' + lines.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>';
+      h += '<p class="job-note">전직 후 보너스 누적 <b>+' + fmtNum(all.jobXp) + ' XP</b>' + (all.jobGold ? ' · <b>+' + fmtNum(all.jobGold) + ' G</b>' : '') + '. 효과는 전직한 날부터 적용되고 지난 기록에는 소급되지 않아요.</p>';
+    }
+    // 선택지
+    if (pend >= 0) {
+      var opts = jobOptions(all, pend);
+      h += '<div class="shop-sec">' + JOB_TIER_LABEL[pend] + ' 전직 선택' + (pend === 2 ? '' : ' (능력치 분포 기준 추천)') + '</div><div class="job-opts">' + opts.map(function (o, i) {
+        var lineKey = o.line || j.line, c = CATS[lineKey].color;
+        var fxj = { line: lineKey, sub: o.sub || (j && j.sub) };
+        return '<button type="button" class="job-opt' + (o.locked ? ' locked' : '') + (jobPick === i ? ' on' : '') + '" data-jopt="' + i + '"' + (o.locked ? ' disabled' : '') + ' style="--jc:' + c + '">' +
+          '<span class="emb">' + o.def.emoji + '</span><span class="body"><span class="top"><b>' + esc(o.def.name) + '</b><span class="en">' + esc(o.def.en) + '</span>' + (o.rec ? '<span class="rec">추천</span>' : '') + '</span>' +
+          '<small class="why">' + esc(o.why) + '</small><small class="lore">' + esc(o.def.lore) + '</small>' +
+          '<span class="fx">' + jobFxLines(o.def.fx, fxj).map(function (t) { return '<i>' + esc(t) + '</i>'; }).join('') + '</span></span></button>';
+      }).join('') + '</div>';
+      h += '<button type="button" class="btn btn-primary job-go" id="jobGo"' + (jobPick == null ? ' disabled' : '') + '>' + (jobPick == null ? '직업을 골라 주세요' : JOB_TIER_LABEL[pend] + ' 전직하기') + '</button>' +
+        '<p class="job-note">한 번 전직하면 되돌릴 수 없어요. 다음 차수에서 같은 계열 안에서 다시 갈라집니다.</p>';
+    } else if (next >= 0) {
+      h += '<p class="job-note">' + JOB_TIER_LABEL[next] + ' 전직까지 LV ' + JOB_TIERS[next] + ' (지금 LV ' + lv + ')</p>';
+      if (next > 0) {
+        var prev = next === 1 ? ['A', 'B'].map(function (p) { return JOB_LINES[j.line][p]; }) : [JOB_LINES[j.line][j.path + '3']];
+        h += '<div class="shop-sec">다음 전직 미리보기</div><div class="job-opts">' + prev.map(function (d) {
+          return '<div class="job-opt locked" style="--jc:' + col + '"><span class="emb">' + d.emoji + '</span><span class="body"><span class="top"><b>' + esc(d.name) + '</b><span class="en">' + esc(d.en) + '</span></span><span class="fx">' + jobFxLines(d.fx, j).map(function (t) { return '<i>' + esc(t) + '</i>'; }).join('') + '</span></span></div>';
+        }).join('') + '</div>';
+      } else {
+        h += '<div class="shop-sec">1차 직업 계열</div><div class="job-opts">' + statRank(all).map(function (r) {
+          var d = JOB_LINES[r.k].t1;
+          return '<div class="job-opt locked" style="--jc:' + CATS[r.k].color + '"><span class="emb">' + d.emoji + '</span><span class="body"><span class="top"><b>' + esc(d.name) + '</b><span class="en">' + CATS[r.k].en + ' 계열</span></span><span class="fx">' + jobFxLines(d.fx, { line: r.k }).map(function (t) { return '<i>' + esc(t) + '</i>'; }).join('') + '</span></span></div>';
+        }).join('') + '</div>';
+      }
+    } else {
+      h += '<p class="job-note">3차 전직까지 모두 마쳤어요. 최종 직업의 힘이 계속 적용됩니다.</p>';
+    }
+    $('jobBody').innerHTML = h;
+    $('jobBody').__opts = pend >= 0 ? jobOptions(all, pend) : null;
+    $('jobBody').__tier = pend;
+  }
+  function doJobAdvance() {
+    var opts = $('jobBody').__opts, tier = $('jobBody').__tier, o = opts && opts[jobPick];
+    if (!o || o.locked || tier < 0) return;
+    var today = todayStr(), j = jobData() || {};
+    if (tier === 0) j = { line: o.line, d1: today };
+    else if (tier === 1) { j.path = o.path; j.d2 = today; if (o.sub) j.sub = o.sub; else delete j.sub; }
+    else j.d3 = today;
+    j = JSON.parse(JSON.stringify(j));
+    state.profile.job = j;
+    closeSheet();
+    saveProfile();
+    setTimeout(function () { jobCinematic(tier, o.def, j); }, 280);
+  }
+  function jobCinematic(tier, def, j) {
+    var c = CATS[j.line].color, cum = fxSum(jobPath(j).map(function (s) { return s.def; }));
+    var el = document.createElement('div'); el.className = 'jobup'; el.style.setProperty('--jc', c);
+    el.innerHTML = '<div class="rays"></div><div class="pillar"></div><div class="box">' +
+      '<span class="eyebrow">' + JOB_TIER_EN[tier] + ' Job Advancement</span>' +
+      '<div class="emb">' + def.emoji + '</div>' +
+      '<div class="tier">' + JOB_TIER_LABEL[tier] + ' 전직 완료</div>' +
+      '<div class="nm">' + esc(def.name) + '</div><div class="en">' + esc(def.en) + '</div>' +
+      '<p class="lore">' + esc(def.lore) + '</p>' +
+      '<div class="gain"><b>새로 얻은 능력</b>' + jobFxLines(def.fx, j).map(function (t, i) { return '<span style="animation-delay:' + (1.5 + i * 0.18) + 's">+ ' + esc(t) + '</span>'; }).join('') + '</div>' +
+      (tier > 0 ? '<small class="cum">누적 효과 ' + jobFxLines(cum, j).length + '개 적용 중</small>' : '') +
+      '<button class="btn btn-primary" type="button">새 힘 받기</button></div>';
+    document.body.appendChild(el);
+    var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+    setTimeout(function () { burst(cx, cy - 60, 30); }, 700);
+    setTimeout(function () { burst(cx, cy - 60, 40); }, 1100);
+    el.querySelector('.btn').addEventListener('click', function () { el.remove(); toast(def.emoji + ' 전직 완료: ' + def.name + '. 오늘 기록부터 새 능력이 적용돼요.'); });
+  }
+  $('jobBadge').addEventListener('click', openJobSheet);
+  document.addEventListener('click', function (e) { if (e.target.closest('[data-open-job]')) { var lu = e.target.closest('.levelup'); if (lu) lu.remove(); openJobSheet(); } });
+  $('jobSheet').addEventListener('click', function (e) {
+    var t = e.target.closest('[data-jopt]');
+    if (t && !t.disabled) { jobPick = +t.getAttribute('data-jopt'); renderJobSheet(); return; }
+    if (e.target.closest('#jobGo')) doJobAdvance();
+  });
+
   /* ---------- boot ---------- */
   if (window.Chart) chartBase();
   var inviteCode = (location.search.match(/[?&]invite=([A-Za-z0-9]{4,12})/) || [])[1] || '';
@@ -3520,7 +3869,7 @@ table.rt tr:last-child td { border-bottom:0; }
   else showView('login');
 
   // 미리보기/테스트용 훅
-  window.__quest = { openInstall: openInstall, state: state, renderAll: renderAll, computeAll: computeAll, showSeasonCard: showSeasonCard, seasonSummary: seasonSummary, seasonImage: seasonImage, showView: showView, DEFAULT_ROUTINES: DEFAULT_ROUTINES };
+  window.__quest = { openInstall: openInstall, state: state, renderAll: renderAll, computeAll: computeAll, showSeasonCard: showSeasonCard, openJobSheet: openJobSheet, jobCinematic: jobCinematic, seasonSummary: seasonSummary, seasonImage: seasonImage, showView: showView, DEFAULT_ROUTINES: DEFAULT_ROUTINES };
 })();
 </script>
 </body>
