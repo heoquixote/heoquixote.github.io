@@ -607,12 +607,14 @@
     .cert-list b{color:var(--text-2);font-size:clamp(15px,1.3vw,17px);font-weight:500;line-height:1.45;letter-spacing:-.01em}
     .cert-list small{color:var(--subtle);font-size:13px;line-height:1.4}
     @media (max-width:640px){.cert-list{grid-template-columns:1fr;gap:18px}}
-    .ambassadors{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:32px}
-    .ambassador{--amb:var(--lime);position:relative;padding:18px 20px 18px 22px;border:1px solid var(--line);border-radius:var(--r-sm);background:linear-gradient(135deg,color-mix(in srgb,var(--amb) 10%,transparent),transparent 60%),var(--surface);overflow:hidden}
-    .ambassador:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amb)}
-    .ambassador small{display:block;color:var(--amb);font:600 12px/1 var(--font-en);letter-spacing:.12em}
-    .ambassador b{display:block;margin-top:10px;font:700 19px/1.2 var(--font-en);letter-spacing:-.02em}
-    .ambassador p{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6}
+    .ambassadors{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:32px}
+    .ambassador{--amb:var(--lime);position:relative;min-height:132px;padding:20px 22px;border:1px solid var(--line);border-radius:var(--r-md);background:radial-gradient(90% 120% at 100% 0%,color-mix(in srgb,var(--amb) 16%,transparent),transparent 60%),var(--surface);overflow:hidden;isolation:isolate}
+    .amb-mark{position:absolute;right:-16px;bottom:-18px;width:96px;height:96px;color:var(--amb);opacity:.18;z-index:-1}
+    .amb-mark svg{display:block;width:100%;height:100%;fill:currentColor}
+    .ambassador small{display:inline-flex;align-items:center;gap:8px;color:var(--amb);font:600 11.5px/1 var(--font-en);letter-spacing:.14em}
+    .ambassador small:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--amb);box-shadow:0 0 10px var(--amb)}
+    .ambassador b{display:block;margin-top:14px;font:700 21px/1.15 var(--font-en);letter-spacing:-.025em}
+    .ambassador p{margin-top:8px;max-width:calc(100% - 56px);color:var(--muted);font-size:13px;line-height:1.55;word-break:keep-all}
     .amb-tableau{--amb:var(--orange)}.amb-n8n{--amb:var(--rose)}
     .credentials{margin:28px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}
     .credential{display:grid;grid-template-columns:110px 1fr;gap:20px;align-items:center;min-height:62px;padding:12px 0;border-bottom:1px solid var(--line)}
@@ -911,7 +913,7 @@
       .instructor-visual{max-width:560px;width:100%}
       .social-links{grid-template-columns:1fr}
     }
-    @media (max-width:480px){.ambassadors{grid-template-columns:1fr}}
+    @media (max-width:480px){.ambassadors{grid-template-columns:1fr}.ambassador{min-height:0}}
     @media (max-width:640px){
       .logo-mark{width:36px;height:36px;flex-basis:36px}
       .logo small{display:none}
@@ -1120,8 +1122,8 @@
           <h2 class="h2 instructor-title" id="instructor-title">데이터로 생각하는 힘을<br>가르치는 강사 <span class="accent">허진성</span>입니다.</h2>
           <p class="lead">데이터 분석·BI 엔지니어링부터 AI 업무 자동화까지, 현업에서 쌓은 경험을 교육 언어로 구조화합니다. 도구 사용법에 머무르지 않고 문제를 정의하고 분석 기준을 세우며, AI로 일하는 방식을 설계하고 결과를 설득력 있게 전달하는 방법을 가르칩니다.</p>
           <div class="ambassadors">
-            <div class="ambassador amb-tableau"><small>2026 · 2027</small><b>Tableau Ambassador</b><p>한국 Tableau 커뮤니티 발표·Viz Games 참가 등 커뮤니티 활동</p></div>
-            <div class="ambassador amb-n8n"><small>2026 · 2027</small><b>n8n Ambassador</b><p>n8n 자동화·AI Agent 교육 경험을 바탕으로 선정</p></div>
+            <div class="ambassador amb-tableau"><span class="amb-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11.654.174V2.377H9.682v.58h1.972V5.16h.696V2.957h1.97v-.58h-1.97V.174h-.348zm6.03 2.262l-.002 1.623v1.623h-2.957v.927h2.957v3.188H18.725l.011-1.582.02-1.576 1.465-.02 1.46-.01v-.927H18.728V2.436h-.522zm-12.407.06V5.686H2.291v.925H5.277V9.801h.985V6.61h3.013v-.925H6.262V2.496H5.77zm6.086 5.27v3.593H8.06v1.188h3.304v3.596h1.28v-3.596H15.953v-1.188H12.643V7.766h-.637zm9.721 1.55v2.221h-2.012v.811h2.012v2.261h.887v-2.261H24v-.811h-2.029V9.317h-.422zm-19.111.131V11.621H0v.621H1.973v2.194H2.64v-2.194h2v-.62H2.609V9.446h-.318zm15.709 4.516v3.254h-3.016v.927h3.016v3.217h1.072v-3.216H21.74v-.928H18.754v-3.254h-.533zm-12.463.008v3.246H2.262v.928h2.957v3.189H6.32v-3.189h2.955v-.928H6.32V13.97h-.55zm6.316 4.578l.002 1.103v1.1H9.566v.812h1.971v2.262h.928l.012-1.119.017-1.143H14.463v-.812h-2V18.549h-.465z"/></svg></span><small>AMBASSADOR · 2026–27</small><b>Tableau</b><p>한국 Tableau 커뮤니티 발표·Viz Games 참가</p></div>
+            <div class="ambassador amb-n8n"><span class="amb-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21.4737 5.6842c-1.1772 0-2.1663.8051-2.4468 1.8947h-2.8955c-1.235 0-2.289.893-2.492 2.111l-.1038.623a1.263 1.263 0 0 1-1.246 1.0555H11.289c-.2805-1.0896-1.2696-1.8947-2.4468-1.8947s-2.1663.8051-2.4467 1.8947H4.973c-.2805-1.0896-1.2696-1.8947-2.4468-1.8947C1.1311 9.4737 0 10.6047 0 12s1.131 2.5263 2.5263 2.5263c1.1772 0 2.1663-.8051 2.4468-1.8947h1.4223c.2804 1.0896 1.2696 1.8947 2.4467 1.8947 1.1772 0 2.1663-.8051 2.4468-1.8947h1.0008a1.263 1.263 0 0 1 1.2459 1.0555l.1038.623c.203 1.218 1.257 2.111 2.492 2.111h.3692c.2804 1.0895 1.2696 1.8947 2.4468 1.8947 1.3952 0 2.5263-1.131 2.5263-2.5263s-1.131-2.5263-2.5263-2.5263c-1.1772 0-2.1664.805-2.4468 1.8947h-.3692a1.263 1.263 0 0 1-1.246-1.0555l-.1037-.623A2.52 2.52 0 0 0 13.9607 12a2.52 2.52 0 0 0 .821-1.4794l.1038-.623a1.263 1.263 0 0 1 1.2459-1.0555h2.8955c.2805 1.0896 1.2696 1.8947 2.4468 1.8947 1.3952 0 2.5263-1.131 2.5263-2.5263s-1.131-2.5263-2.5263-2.5263m0 1.2632a1.263 1.263 0 0 1 1.2631 1.2631 1.263 1.263 0 0 1-1.2631 1.2632 1.263 1.263 0 0 1-1.2632-1.2632 1.263 1.263 0 0 1 1.2632-1.2631M2.5263 10.7368A1.263 1.263 0 0 1 3.7895 12a1.263 1.263 0 0 1-1.2632 1.2632A1.263 1.263 0 0 1 1.2632 12a1.263 1.263 0 0 1 1.2631-1.2632m6.3158 0A1.263 1.263 0 0 1 10.1053 12a1.263 1.263 0 0 1-1.2632 1.2632A1.263 1.263 0 0 1 7.579 12a1.263 1.263 0 0 1 1.2632-1.2632m10.1053 3.7895a1.263 1.263 0 0 1 1.2631 1.2632 1.263 1.263 0 0 1-1.2631 1.2631 1.263 1.263 0 0 1-1.2632-1.2631 1.263 1.263 0 0 1 1.2632-1.2632"/></svg></span><small>AMBASSADOR · 2026–27</small><b>n8n</b><p>n8n 자동화·AI Agent 교육 경험으로 선정</p></div>
           </div>
           <ul class="credentials">
             <li class="credential"><b>TABLEAU</b><span>EX) Salesforce Tableau Certified Instructor</span></li>
