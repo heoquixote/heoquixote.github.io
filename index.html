@@ -648,14 +648,14 @@
     .shelf-item.is-active .si-title{transform:translateX(8px)}
     .shelf-item.is-active .si-arrow{opacity:1;transform:none}
     .shelf-item:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--book-accent)}
-    .shelf-stage{position:sticky;top:calc(var(--nav-h) + 28px);min-height:560px;padding:clamp(28px,3.4vw,48px);display:grid;grid-template-columns:minmax(150px,42%) minmax(0,1fr);gap:clamp(24px,3vw,40px);align-items:end;border:1px solid var(--line);background:radial-gradient(120% 90% at 0% 100%,color-mix(in srgb,var(--book-accent) 22%,transparent),transparent 60%),linear-gradient(150deg,rgba(255,255,255,.04),transparent 45%),var(--surface);overflow:hidden}
+    .shelf-stage{position:sticky;top:calc(var(--nav-h) + 28px);padding:clamp(28px,3.4vw,48px);display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(24px,2.6vw,34px);align-items:start;border:1px solid var(--line);background:radial-gradient(120% 90% at 0% 100%,color-mix(in srgb,var(--book-accent) 22%,transparent),transparent 60%),linear-gradient(150deg,rgba(255,255,255,.04),transparent 45%),var(--surface);overflow:hidden}
     .motion-ok .shelf-stage{transition:--book-accent .5s ease}
     .shelf-stage:before{content:"";position:absolute;left:0;top:0;width:60%;height:2px;background:linear-gradient(90deg,var(--book-accent),transparent)}
     .stage-num{position:absolute;right:clamp(18px,2.4vw,32px);top:clamp(4px,1vw,12px);color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--book-accent) 55%,transparent);font:700 clamp(110px,13vw,190px)/1 var(--font-en);letter-spacing:-.06em;pointer-events:none;user-select:none}
-    .stage-cover-frame{position:relative;z-index:1;width:100%;aspect-ratio:5/7;align-self:center;background:linear-gradient(155deg,var(--book-accent),#171a18 72%);box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.12)}
+    .stage-cover-frame{position:relative;z-index:1;width:min(360px,68%);aspect-ratio:5/7;background:linear-gradient(155deg,var(--book-accent),#171a18 72%);box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.12)}
     .stage-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;visibility:hidden}
     .stage-cover.is-active{opacity:1;visibility:visible}
-    .stage-info{position:relative;z-index:1;min-width:0;padding-bottom:6px}
+    .stage-info{position:relative;z-index:1;min-width:0}
     .stage-cat{display:flex;flex-wrap:wrap;gap:6px 14px;color:var(--book-accent);font:650 12px/1 var(--font-en);letter-spacing:.14em}
     .stage-count{color:var(--text-2)}
     .stage-title{margin-top:18px;font-size:clamp(24px,2.4vw,34px);line-height:1.25;letter-spacing:-.035em;font-weight:750;word-break:keep-all}
@@ -861,8 +861,7 @@
       .nav-links a:not(.btn),.nav-more-toggle{padding:10px}
       .nav-links .btn-sm{padding:0 12px}
       .course-card{grid-column:span 3}
-      .shelf-stage{grid-template-columns:1fr;align-items:start;min-height:0}
-      .stage-cover-frame{width:min(240px,70%);align-self:start}
+      .stage-cover-frame{width:min(300px,72%)}
       .method-list{grid-template-columns:repeat(2,1fr)}
       .method-step:nth-child(2){border-right:0}
       .method-step:nth-child(3){padding-left:0;border-top:1px solid var(--line)}
@@ -874,8 +873,8 @@
     }
     @media (max-width:900px){
       .shelf{grid-template-columns:1fr;gap:0}
-      .shelf-stage{order:-1;top:calc(var(--nav-h) + 8px);z-index:5;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:18px;min-height:0;padding:18px;background-color:var(--surface)}
-      .stage-cover-frame{width:96px}
+      .shelf-stage{order:-1;top:calc(var(--nav-h) + 8px);z-index:5;grid-template-columns:112px minmax(0,1fr);align-items:center;gap:18px;min-height:0;padding:18px;background-color:var(--surface)}
+      .stage-cover-frame{width:112px}
       .stage-num{font-size:84px;top:6px;right:12px;opacity:.5}
       .stage-title{margin-top:10px;font-size:19px}
       .stage-desc{margin-top:8px;font-size:13px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
