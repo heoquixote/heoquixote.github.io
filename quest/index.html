@@ -453,7 +453,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 @keyframes spark { to { transform:translate(var(--dx),var(--dy)) rotate(260deg); opacity:0; } }
 
 /* Retro */
-@media (max-width:899px) { body[data-tab="retro"] .hero { display:none; } }
+@media (max-width:899px) { body[data-tab="shop"] .hero { display:none; } }
 .retro-nudge { display:flex; align-items:center; gap:12px; margin-bottom:12px; padding:12px 14px; border:1px solid rgba(255,207,74,.45); border-radius:var(--r-md); background:linear-gradient(90deg,rgba(255,207,74,.12),transparent 70%),var(--surface); }
 .retro-nudge .e { font-size:24px; }
 .retro-nudge .t { flex:1; font-size:13px; color:var(--text-2); }
@@ -491,6 +491,28 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 .retro-rule { font-size:12px; color:var(--muted); line-height:1.7; }
 .retro-read { white-space:pre-wrap; color:var(--text-2); font-size:14px; }
 
+.retro-block { margin-top:26px; padding-top:4px; border-top:1px solid var(--line); }
+.retro-block:not(.open) .foot-note { display:none; }
+.shop-page { max-width:760px; }
+.shop-sec small { font-weight:500; color:var(--subtle); letter-spacing:0; margin-left:6px; }
+.shield-inv { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+.shield-inv .si { padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface-2); }
+.shield-inv .si .v { font:800 24px/1 var(--font-en); margin-top:6px; }
+.shield-inv .si .v small { font-size:13px; color:var(--subtle); }
+.shield-inv .si .k { font-weight:700; font-size:14px; }
+.shield-inv .si p { margin:6px 0 0; color:var(--muted); font-size:12px; line-height:1.5; }
+.shield-auto { grid-column:1 / -1; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-2); padding:4px 2px; cursor:pointer; }
+.use-day { border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface-2); padding:12px; display:grid; gap:8px; }
+.use-day .uh { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.use-day .uh b { font-size:14px; }
+.use-day .uh .st { font-size:12px; color:var(--muted); }
+.use-day .uh .st.ok { color:var(--cyan); }
+.use-r { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; padding:8px 10px; border-radius:10px; background:var(--surface); font-size:13px; }
+.use-r small { display:block; color:var(--muted); font-size:12px; }
+.use-r .ok { color:var(--cyan); font-size:12px; font-weight:650; white-space:nowrap; }
+.use-day .btn:disabled { opacity:.45; cursor:not-allowed; }
+.q-streak { color:var(--amber); font-weight:700; }
+.q-streak.prot { color:var(--cyan); }
 /* Season / Boss / Shield */
 .chip.btnlike { cursor:pointer; font:inherit; font-size:12px; }
 .chip.btnlike:hover { border-color:var(--line-strong); }
@@ -657,6 +679,25 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 .cheer-btn { width:36px; height:36px; border-radius:50%; border:1px solid var(--line); background:var(--surface-2); font-size:17px; display:grid; place-items:center; }
 .cheer-btn:hover { border-color:var(--lime); }
 .fr-grid { display:grid; gap:12px; margin-top:16px; }
+/* 전체 리그 · 친구 신청 */
+.lg-tools { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+.lg-tools .seg { margin-bottom:0; flex:0 0 auto; }
+.lg-tools input { flex:1; min-width:0; height:34px; border-radius:999px; padding:0 14px; font-size:13px; border:1px solid var(--line); background:var(--surface); box-shadow:none; -webkit-appearance:none; appearance:none; }
+.lg-more { text-align:center; color:var(--muted); font-size:12px; padding:4px 0; }
+.fr-req-btn { height:32px; padding:0 12px; border-radius:999px; border:1px solid rgba(200,255,61,.55); background:var(--lime-soft); color:var(--lime); font-weight:700; font-size:12px; white-space:nowrap; }
+.fr-req-btn.sent { border-color:var(--line); background:var(--surface-2); color:var(--muted); }
+.fr-req-btn.recv { background:var(--lime); color:var(--lime-ink); border-color:var(--lime); }
+.fr-req-btn:disabled { opacity:.5; }
+.freq-box { display:grid; gap:8px; margin-bottom:14px; }
+.freq-box .h { font-size:13px; font-weight:700; color:var(--text-2); }
+.freq-item { display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:10px 12px; border-radius:var(--r-md); background:var(--surface); border:1px solid rgba(200,255,61,.45); }
+.freq-item .av { width:40px; height:40px; flex:0 0 40px; }
+.freq-item .av svg { width:40px; height:40px; display:block; }
+.freq-item .t { flex:1 1 160px; min-width:0; font-size:14px; }
+.freq-item .t small { display:block; color:var(--muted); font-size:12px; }
+.privacy-row { display:flex; gap:10px; align-items:flex-start; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); font-size:13px; color:var(--text-2); cursor:pointer; }
+.privacy-row input { margin-top:3px; accent-color:var(--lime); }
+.privacy-row small { display:block; color:var(--muted); font-size:12px; margin-top:2px; }
 @media (min-width:900px) { .fr-grid { grid-template-columns:1fr 1fr; } }
 .code-box { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; border:1px dashed rgba(200,255,61,.5); border-radius:var(--r-md); background:var(--lime-soft); margin:12px 0; }
 .code-box b { font:800 22px/1 var(--font-en); letter-spacing:.18em; color:var(--lime); }
@@ -751,7 +792,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       <button role="tab" data-tab="stats" aria-selected="false">통계</button>
       <button role="tab" data-tab="logs" aria-selected="false">기록</button>
       <button role="tab" data-tab="routines" aria-selected="false">루틴 설정</button>
-      <button role="tab" data-tab="retro" aria-selected="false">회고록</button>
+      <button role="tab" data-tab="shop" aria-selected="false">상점</button>
       <button role="tab" data-tab="friends" aria-selected="false" class="tab-dot">친구</button>
     </nav>
     <div class="top-right">
@@ -844,8 +885,8 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         <div class="char-chips">
           <button type="button" class="chip btnlike outbox" id="chipOutbox" hidden title="연결되면 자동으로 저장합니다. 눌러서 지금 다시 시도">⏳ 저장 대기 <b id="chipOutboxN">0</b></button>
           <button type="button" class="chip btnlike season" id="chipSeason"></button>
-          <span class="chip" id="chipStreakWrap">🔥 연속 <b id="chipStreak">0</b>일 · 🛡 <b id="chipShield">0</b></span>
-          <button type="button" class="chip btnlike gold" id="chipGold" title="보상 상점 열기">🪙 <b id="chipGoldN">0</b> G</button>
+          <button type="button" class="chip btnlike" id="chipStreakWrap">🔥 연속 <b id="chipStreak">0</b>일 · 🛡 <b id="chipShield">0</b> · 🧷 <b id="chipRShield">0</b></button>
+          <button type="button" class="chip btnlike gold" id="chipGold" title="보상 상점으로 이동">🪙 <b id="chipGoldN">0</b> G</button>
           <span class="chip">⚡ 오늘 <b id="chipToday">0</b> XP</span>
           <span class="chip hide-sm">🏆 누적 <b id="chipTotal">0</b> XP</span>
         </div>
@@ -876,6 +917,12 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       <div id="partyStrip"></div>
       <div class="sub-head"><span>추가 기록 (비정기 퀘스트)</span><button class="btn btn-sm btn-ghost" id="btnAddInline">+ 기록 추가</button></div>
       <div class="quest-list" id="adhocList"></div>
+      <div class="retro-block" id="retroBlock">
+        <div class="sub-head"><span>📝 월별 회고록</span><button class="btn btn-sm btn-ghost" type="button" id="btnRetroToggle">펼치기</button></div>
+        <div class="retro-months" id="retroMonths"></div>
+        <div id="retroEditor"></div>
+        <p class="foot-note">회고록은 달이 끝난 다음 날(매월 1일)부터 쓸 수 있습니다. 점수: 작성 기본 50 + 질문 5개 각 최대 30(20자 이상 15, 80자 이상 30 · 다음 달 목표는 10자/40자) + 만족도 별점 10 + 다음 달 7일까지 처음 제출하면 기한 보너스 40 = 최대 250XP. XP는 처음 제출한 날에 들어가고, 이후 고쳐 쓰면 점수도 다시 계산됩니다.</p>
+      </div>
     </section>
 
     <!-- 통계 -->
@@ -930,7 +977,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
           <div class="chart"><canvas id="chRadar"></canvas></div>
         </div>
       </div>
-      <p class="foot-note">XP 규칙: 루틴은 설정한 XP, 비정기 기록은 분당 0.4XP(최소 5) 기본값, 그날 예정된 루틴을 모두 끝내면 퍼펙트 데이 보너스 +20XP. 레벨 L→L+1 필요 XP = 100 + 50×(L−1). 주간 보스(월~일)를 격파하면 격파한 날 +150XP. 퍼펙트 데이 7일마다 스트릭 보호권 1장(최대 3장)을 받고, 루틴을 놓친 날 자동으로 1장 써서 연속 기록을 지킵니다. 시즌은 매월 1일 시작하며 시즌 XP로 랭크(브론즈~마스터)가 정해집니다. 캐릭터 레벨은 시즌이 바뀌어도 이어집니다. 월별 회고록을 제출하면 점수만큼(최대 250) 제출한 날 XP로 들어옵니다.</p>
+      <p class="foot-note">XP 규칙: 루틴은 설정한 XP, 비정기 기록은 분당 0.4XP(최소 5) 기본값, 그날 예정된 루틴을 모두 끝내면 퍼펙트 데이 보너스 +20XP. 레벨 L→L+1 필요 XP = 100 + 50×(L−1). 주간 보스(월~일)를 격파하면 격파한 날 +150XP. 퍼펙트 데이 7일마다 하루 보호권 1장(최대 3장)을 받고, 루틴을 놓친 날 자동으로 1장 써서 연속 기록을 지킵니다(상점에서 자동 사용을 끄고 직접 쓸 수도 있어요). 루틴 하나만 지키는 루틴 보호권은 상점에서 사서 직접 씁니다. 시즌은 매월 1일 시작하며 시즌 XP로 랭크(브론즈~마스터)가 정해집니다. 캐릭터 레벨은 시즌이 바뀌어도 이어집니다. 월별 회고록을 제출하면 점수만큼(최대 250) 제출한 날 XP로 들어옵니다.</p>
     </section>
 
     <!-- 기록 -->
@@ -947,11 +994,19 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     <!-- 회고록 -->
     <section id="tab-friends" data-panel="friends" hidden>
       <div class="sec-head">
-        <div><span class="eyebrow">Friends League</span><h2>친구 랭킹</h2></div>
+        <div><span class="eyebrow">Weekly League</span><h2>리그 랭킹</h2></div>
         <button class="btn btn-sm" id="btnLeagueRefresh">새로고침</button>
       </div>
+      <div id="frReqBox"></div>
       <div id="partyBox"></div>
       <div id="lgHero"></div>
+      <div class="lg-tools">
+        <div class="seg" id="lgScope" role="group" aria-label="리그 범위">
+          <button type="button" data-scope="all" aria-pressed="true">전체</button>
+          <button type="button" data-scope="friends" aria-pressed="false">친구</button>
+        </div>
+        <input type="search" id="lgSearch" maxlength="20" placeholder="닉네임 검색" autocomplete="off" aria-label="닉네임 검색">
+      </div>
       <div class="seg" id="lgSeg" role="group" aria-label="랭킹 기준">
         <button type="button" data-mode="week" aria-pressed="true">주간 XP</button>
         <button type="button" data-mode="season" aria-pressed="false">시즌 XP</button>
@@ -966,22 +1021,38 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
           <div class="code-box"><div><small style="color:var(--muted);font-size:12px">내 친구 코드</small><br><b id="myCode">--------</b></div><button class="btn btn-sm" id="btnCopyCode">복사</button></div>
           <button class="btn btn-primary" style="width:100%" id="btnShareInvite">초대 링크 보내기</button>
           <div class="fr-add"><input type="text" id="frCode" maxlength="12" placeholder="친구 코드 입력" autocomplete="off" autocapitalize="characters"><button class="btn" id="btnAddFriend">친구 추가</button></div>
+          <label class="privacy-row"><input type="checkbox" id="lgPublic" checked><span>전체 리그에 내 프로필 공개<small>끄면 친구가 아닌 사람의 전체 리그·검색에 보이지 않고, 친구 신청도 받지 않아요. 이미 친구인 사람에게는 그대로 보여요.</small></span></label>
         </div>
         <div class="panel">
           <h3>받은 응원 <small id="cheerCount"></small></h3>
           <div class="cheer-list" id="cheerList"></div>
         </div>
       </div>
-      <p class="foot-note">랭킹은 각자 앱을 열 때 올라가는 기록 요약으로 계산합니다. 주간 리그는 월~일 기준이고, 지난주 1위에게는 👑가 붙습니다. 친구의 루틴 상세 기록은 공유되지 않고 레벨·XP·연속 기록 같은 요약만 보입니다. 파티퀘스트: 파티원(2~5명) 모두가 그날 목표(퍼펙트 또는 80% 이상, 루틴 없는 날은 기록 XP 20 이상)를 채우면 전원에게 30 + 10×(인원−1) XP, 연속 클리어 하루마다 +5(최대 +20)가 들어갑니다. 친구가 늦게 기록해도 7일 안이면 클리어가 소급 처리돼요.</p>
+      <p class="foot-note">랭킹은 각자 앱을 열 때 올라가는 기록 요약으로 계산합니다. 주간 리그는 월~일 기준이고, 지난주 1위에게는 👑가 붙습니다. 「전체」는 프로필을 공개한 모든 러너, 「친구」는 내 친구만 보여 줍니다. 친구 코드를 몰라도 전체 리그에서 「+ 친구」로 신청할 수 있고, 상대가 수락하면 친구가 됩니다. 루틴 상세 기록은 공유되지 않고 레벨·XP·연속 기록 같은 요약만 보입니다. 파티퀘스트: 파티원(2~5명) 모두가 그날 목표(퍼펙트 또는 80% 이상, 루틴 없는 날은 기록 XP 20 이상)를 채우면 전원에게 30 + 10×(인원−1) XP, 연속 클리어 하루마다 +5(최대 +20)가 들어갑니다. 친구가 늦게 기록해도 7일 안이면 클리어가 소급 처리돼요.</p>
     </section>
 
-    <section id="tab-retro" data-panel="retro" hidden>
-      <div class="sec-head">
-        <div><span class="eyebrow">Monthly Retro</span><h2>월별 회고록</h2></div>
-      </div>
-      <div class="retro-months" id="retroMonths"></div>
-      <div id="retroEditor"></div>
-      <p class="foot-note">회고록은 달이 끝난 다음 날(매월 1일)부터 쓸 수 있습니다. 점수: 작성 기본 50 + 질문 5개 각 최대 30(20자 이상 15, 80자 이상 30 · 다음 달 목표는 10자/40자) + 만족도 별점 10 + 다음 달 7일까지 처음 제출하면 기한 보너스 40 = 최대 250XP. XP는 처음 제출한 날에 들어가고, 이후 고쳐 쓰면 점수도 다시 계산됩니다.</p>
+    <!-- 보상 상점 -->
+    <section id="tab-shop" data-panel="shop" class="shop-page" hidden>
+      <div class="sec-head"><div><span class="eyebrow">Reward Shop</span><h2>보상 상점</h2></div></div>
+      <div class="shop-bal"><div><div class="v">🪙 <span id="shBal">0</span> G</div><small>골드 = 지금까지 얻은 XP − 쓴 골드. 써도 레벨·시즌 랭크는 그대로예요.</small></div></div>
+      <div class="shop-sec">내 보호권</div>
+      <div class="shield-inv" id="shInv"></div>
+      <div class="shop-sec">보호권 쓰기<small>최근 7일 동안 놓친 기록</small></div>
+      <div class="shop-list" id="shUse"></div>
+      <div class="shop-sec">시스템 아이템</div>
+      <div class="shop-list" id="shSystem"></div>
+      <div class="shop-sec">내 보상 (현실에서 나에게 주는 선물)</div>
+      <div class="shop-list" id="shItems"></div>
+      <form class="shop-add" id="shopForm" novalidate>
+        <input type="text" id="shEmoji" maxlength="4" value="🎁" aria-label="아이콘">
+        <input type="text" id="shName" maxlength="30" placeholder="예: 치킨 한 마리" aria-label="보상 이름">
+        <input type="number" id="shPrice" inputmode="numeric" min="10" max="100000" placeholder="가격 G" aria-label="가격">
+        <button type="submit" class="btn btn-sm btn-primary">추가</button>
+      </form>
+      <div class="recent" id="shSuggest" style="margin-top:8px"></div>
+      <div class="shop-sec">최근 교환 내역</div>
+      <div class="shop-list" id="shHist"></div>
+      <p class="foot-note">보호권 규칙: 🛡 하루 보호권(600G, 최대 3장)은 루틴을 놓친 하루 전체를 지켜 퍼펙트 연속 기록과 그날 놓친 모든 루틴의 연속 기록이 이어집니다. 퍼펙트 데이 7일마다 1장을 받고, 자동 사용을 켜 두면 놓친 날 자동으로 1장이 쓰입니다. 🧷 루틴 보호권(250G, 최대 3장)은 놓친 루틴 하나의 연속 기록만 지키며 직접 골라서 씁니다. 그날 놓친 루틴을 모두 루틴 보호권으로 막으면 퍼펙트 연속 기록도 하루 보호권 없이 이어집니다(퍼펙트 보너스 XP는 없음). 보호권은 최근 7일 안의 지난 날에 쓸 수 있고, 쓴 날 안에는 취소할 수 있어요.</p>
     </section>
 
     <!-- 루틴 -->
@@ -1006,7 +1077,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     <button role="tab" data-tab="stats" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>통계</button>
     <button role="tab" data-tab="logs" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>기록</button>
     <button role="tab" data-tab="routines" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>루틴</button>
-    <button role="tab" data-tab="retro" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h7M9 11h5"/></svg>회고</button>
+    <button role="tab" data-tab="shop" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>상점</button>
     <button role="tab" data-tab="friends" aria-selected="false" class="tab-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>친구</button>
   </div>
 </nav>
@@ -1225,26 +1296,6 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   </form>
 </div>
 
-<!-- 보상 상점 시트 -->
-<div class="sheet" id="shopSheet" role="dialog" aria-modal="true" aria-labelledby="shopSheetTitle" hidden>
-  <div class="grab"></div>
-  <h3 id="shopSheetTitle">보상 상점</h3>
-  <div class="shop-bal"><div><div class="v">🪙 <span id="shBal">0</span> G</div><small>골드 = 지금까지 얻은 XP − 쓴 골드. 써도 레벨·시즌 랭크는 그대로예요.</small></div></div>
-  <div class="shop-sec">시스템 아이템</div>
-  <div class="shop-list" id="shSystem"></div>
-  <div class="shop-sec">내 보상 (현실에서 나에게 주는 선물)</div>
-  <div class="shop-list" id="shItems"></div>
-  <form class="shop-add" id="shopForm" novalidate>
-    <input type="text" id="shEmoji" maxlength="4" value="🎁" aria-label="아이콘">
-    <input type="text" id="shName" maxlength="30" placeholder="예: 치킨 한 마리" aria-label="보상 이름">
-    <input type="number" id="shPrice" inputmode="numeric" min="10" max="100000" placeholder="가격 G" aria-label="가격">
-    <button type="submit" class="btn btn-sm btn-primary">추가</button>
-  </form>
-  <div class="recent" id="shSuggest" style="margin-top:8px"></div>
-  <div class="shop-sec">최근 교환 내역</div>
-  <div class="shop-list" id="shHist"></div>
-  <div class="sheet-actions" style="margin-top:14px"><button type="button" class="btn" data-close>닫기</button></div>
-</div>
 
 <!-- 전직 시트 -->
 <div class="sheet" id="jobSheet" role="dialog" aria-modal="true" aria-labelledby="jobSheetTitle" hidden>
@@ -1264,6 +1315,8 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   var SEASON_START = '2026-11-01';
   var PERFECT_BONUS = 20;
   var BOSS_REWARD = 150, SHIELD_EVERY = 7, SHIELD_MAX = 3;
+  // 루틴 보호권: 놓친 루틴 하나의 연속 기록만 지킴. 상점 구매 후 직접 사용. 보호권 직접 사용은 최근 SHIELD_USE_DAYS일 안의 지난 날만
+  var RSHIELD_MAX = 3, SHIELD_USE_DAYS = 7;
   // 복귀 퀘스트: 루틴 있는 날 기록 0건이 COMEBACK_GAP일 이어진 뒤 돌아오면 COMEBACK_DAYS일 동안 XP 보너스, 그중 2일 기록 시 보호권 1장
   // 디스코드 n8n 집계(wq0zIH5Mm2VXYHb1)에 같은 규칙이 복제되어 있으니 함께 수정
   var COMEBACK_GAP = 3, COMEBACK_DAYS = 3, COMEBACK_BONUS = 0.5, COMEBACK_SHIELD_AT = 2, MINI_RATE = 0.5;
@@ -1430,13 +1483,13 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     var sched = scheduledForStats(date);
     var doneIds = {}, skipIds = {};
     logs.forEach(function (l) { if (l.kind === 'routine') doneIds[l.routine_id] = true; else if (l.kind === 'skip') skipIds[l.routine_id] = true; });
-    var denom = 0, done = 0;
-    sched.forEach(function (r) { if (skipIds[r.id] && !doneIds[r.id]) return; denom++; if (doneIds[r.id]) done++; });
+    var denom = 0, done = 0, missed = [], sids = [];
+    sched.forEach(function (r) { sids.push(r.id); if (skipIds[r.id] && !doneIds[r.id]) return; denom++; if (doneIds[r.id]) done++; else missed.push(r.id); });
     var xp = 0, mins = 0, catXp = {};
     logs.forEach(function (l) { if (l.kind === 'skip') return; xp += l.xp; mins += l.minutes; catXp[l.category] = (catXp[l.category] || 0) + l.xp; });
     var perfect = denom > 0 && done === denom;
     if (perfect) xp += PERFECT_BONUS;
-    return { date: date, denom: denom, done: done, rate: denom ? done / denom : null, perfect: perfect, xp: xp, baseXp: xp, bossXp: 0, mins: mins, catXp: catXp, logs: logs };
+    return { date: date, denom: denom, done: done, rate: denom ? done / denom : null, perfect: perfect, xp: xp, baseXp: xp, bossXp: 0, mins: mins, catXp: catXp, logs: logs, sids: sids, doneIds: doneIds, skipIds: skipIds, missed: missed };
   }
 
   /* ---------- season / boss helpers ---------- */
@@ -1554,10 +1607,25 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     // 스트릭 + 보호권 + 복귀 퀘스트 (시간순)
     var shields = 0, earned = 0, used = 0, perfSeen = 0, perfSince = 0, run = 0, best = 0;
     var gap = 0, cb = null, comebacks = [];
-    var boughtShields = {}; shopData().buys.forEach(function (b) { if (b.kind === 'shield') boughtShields[b.date] = (boughtShields[b.date] || 0) + 1; });
+    var sd = shopData(), boughtShields = {}, boughtR = {};
+    sd.buys.forEach(function (b) {
+      if (b.kind === 'shield') boughtShields[b.date] = (boughtShields[b.date] || 0) + 1;
+      else if (b.kind === 'rshield') boughtR[b.date] = (boughtR[b.date] || 0) + 1;
+    });
+    // 직접 쓴 보호권: 대상 날(date)을 지키고, 쓴 날(on)에 보유 수에서 빠짐. 그 사이 기록을 고쳐 더는 놓친 날이 아니면 무효(소모 안 함)
+    var dayUse = {}, rUse = {}, usedOnDay = {}, usedOnR = {};
+    sd.uses.forEach(function (u) {
+      var t = dayMap[u.date]; if (!t || !u.on) return;
+      if (u.kind === 'day' && t.denom > 0 && !t.perfect && !dayUse[u.date]) { dayUse[u.date] = u; usedOnDay[u.on] = (usedOnDay[u.on] || 0) + 1; }
+      else if (u.kind === 'routine' && t.missed.indexOf(u.rid) >= 0 && !rUse[u.date + '|' + u.rid]) { rUse[u.date + '|' + u.rid] = u; usedOnR[u.on] = (usedOnR[u.on] || 0) + 1; }
+    });
+    var rshields = 0, rused = 0;
     days.forEach(function (x) {
       var smax = jobShieldMax(x.date); // 전직 효과로 보호권 최대치·획득 주기가 달라질 수 있음
       if (boughtShields[x.date]) { x.shieldBought = boughtShields[x.date]; shields = Math.min(smax, shields + boughtShields[x.date]); }
+      if (boughtR[x.date]) rshields = Math.min(RSHIELD_MAX, rshields + boughtR[x.date]);
+      if (usedOnDay[x.date]) shields = Math.max(0, shields - usedOnDay[x.date]);
+      if (usedOnR[x.date]) rshields = Math.max(0, rshields - usedOnR[x.date]);
       var logged = x.logs.some(function (l) { return l.kind !== 'skip'; });
       if (gap >= COMEBACK_GAP && (!cb || x.date > cb.end) && (logged || x.date === today)) {
         cb = { start: x.date, end: addDays(x.date, COMEBACK_DAYS - 1), gap: gap, days: 0, shield: false, xp: 0 }; comebacks.push(cb);
@@ -1571,13 +1639,34 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         run++; perfSeen++;
         if (++perfSince >= jobShieldEvery(x.date)) { perfSince = 0; earned++; x.shieldEarned = true; if (shields < smax) shields++; }
       } else if (x.denom > 0 && x.date < today) {
-        if (shields > 0) { shields--; used++; x.shielded = true; } else run = 0;
+        if (dayUse[x.date]) { used++; x.shielded = true; x.shieldManual = dayUse[x.date]; }
+        else if (x.missed.every(function (id) { return rUse[x.date + '|' + id]; })) x.rcovered = true; // 놓친 루틴을 모두 루틴 보호권으로 막음
+        else if (sd.auto && shields > 0) { shields--; used++; x.shielded = true; }
+        else run = 0;
       }
       if (x.comeback && !x.comeback.shield && x.comeback.days >= COMEBACK_SHIELD_AT) {
         x.comeback.shield = true; x.comebackShield = true; earned++; if (shields < smax) shields++;
       }
       if (run > best) best = run;
       x.run = run;
+    });
+
+    // 루틴별 연속 기록: 예정된 날 완료하면 +1, 건너뛰기·오늘은 그대로, 놓치면 0 (하루 보호권 또는 루틴 보호권이 있으면 유지)
+    var rstreak = {};
+    days.forEach(function (x) {
+      x.rBefore = {}; x.rProt = {};
+      x.sids.forEach(function (id) {
+        var st = rstreak[id] || (rstreak[id] = { run: 0, best: 0, prot: 0 });
+        if (x.doneIds[id]) st.run++;
+        else if (x.skipIds[id] || x.date >= today) return;
+        else {
+          x.rBefore[id] = st.run;
+          if (x.shielded) { x.rProt[id] = 'day'; st.prot++; }
+          else if (rUse[x.date + '|' + id]) { x.rProt[id] = 'routine'; x.rUse = x.rUse || {}; x.rUse[id] = rUse[x.date + '|' + id]; st.prot++; rused++; }
+          else st.run = 0;
+        }
+        if (st.run > st.best) st.best = st.run;
+      });
     });
 
     // 주간 보스
@@ -1634,8 +1723,8 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     });
     Object.keys(byDate).forEach(function (d) { if (d > today) { var info = dayInfo(d, byDate); total += info.xp; } });
     var all = { byDate: byDate, days: days, dayMap: dayMap, total: total, catXp: catXp, perfectCount: perfectCount, streak: run, bestStreak: best, mins: mins,
-      shields: shields, shieldsEarned: earned, shieldsUsed: used, comebacks: comebacks, comebackWins: comebacks.filter(function (c) { return c.shield; }).length, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses,
-      jobXp: jobRes.xp, jobGold: jobRes.gold, shieldMax: jobShieldMax(today), bossWins: bosses.filter(function (b) { return b.defeated; }).length,
+      shields: shields, shieldsEarned: earned, shieldsUsed: used, rshields: rshields, rshieldsUsed: rused, rstreak: rstreak, comebacks: comebacks, comebackWins: comebacks.filter(function (c) { return c.shield; }).length, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses, bossWins: bosses.filter(function (b) { return b.defeated; }).length,
+      jobXp: jobRes.xp, jobGold: jobRes.gold, shieldMax: jobShieldMax(today),
       today: dayMap[today] || dayInfo(today, byDate) };
     return all;
   }
@@ -1731,20 +1820,19 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     $('xpIn').textContent = fmtNum(lv.into); $('xpNeed').textContent = fmtNum(lv.need);
     $('xpFill').style.width = Math.min(100, lv.into / lv.need * 100) + '%';
     $('chipStreak').textContent = all.streak;
-    $('chipShield').textContent = all.shields;
-    $('chipStreakWrap').title = '스트릭 보호권 ' + all.shields + '장 (퍼펙트 데이 ' + jobShieldEvery(todayStr()) + '일마다 1장, 최대 ' + all.shieldMax + '장)';
+    $('chipShield').textContent = all.shields; $('chipRShield').textContent = all.rshields;
+    $('chipStreakWrap').title = '하루 보호권 ' + all.shields + '장 (퍼펙트 데이 ' + jobShieldEvery(todayStr()) + '일마다 1장, 최대 ' + all.shieldMax + '장) · 루틴 보호권 ' + all.rshields + '장 · 눌러서 보호권 쓰기';
     var ss = seasonSummary(all, todayStr().slice(0, 7));
     var sc = $('chipSeason'); sc.style.setProperty('--rk', ss.rank.r.color);
     sc.innerHTML = '🏅 <span class="hide-sm-in">' + seasonLabel(ss.month) + ' </span><b>' + ss.rank.r.ko + '</b> · D-' + ss.dLeft;
     sc.title = seasonLabel(ss.month) + ' 시즌 XP ' + fmtNum(ss.xp) + ' · 눌러서 시즌 카드 보기';
-    if (lastShields !== null && all.shieldsEarned > lastShieldsEarned) toast('🛡 스트릭 보호권 획득! (보유 ' + all.shields + '장)');
+    if (lastShields !== null && all.shieldsEarned > lastShieldsEarned) toast('🛡 하루 보호권 획득! (보유 ' + all.shields + '장)');
     lastShields = all.shields; lastShieldsEarned = all.shieldsEarned;
     var wins = {}; all.bosses.forEach(function (b) { if (b.defeated) wins[b.ws] = b; });
     if (lastBossWins) Object.keys(wins).forEach(function (k) { if (!lastBossWins[k]) setTimeout(function () { bossDefeated(wins[k]); }, 350); });
     lastBossWins = wins;
     $('chipToday').textContent = fmtNum(all.today.xp);
     $('chipGoldN').textContent = fmtNum(goldOf(all));
-    if (!$('shopSheet').hidden) renderShop(all);
     $('chipTotal').textContent = fmtNum(all.total);
     var max = 0; CAT_KEYS.forEach(function (k) { max = Math.max(max, all.catXp[k] || 0); });
     $('statList').innerHTML = CAT_KEYS.map(function (k) {
@@ -1797,6 +1885,17 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   }
 
   /* ---------- render: today ---------- */
+  // 루틴 카드의 연속 기록 표시 (오늘 화면에서만, 2회 이상)
+  function streakTag(all, rid, date) {
+    if (date !== todayStr()) { var p = dayOf(all, date).rProt || {}; return p[rid] ? '<span class="q-streak prot">' + (p[rid] === 'day' ? '🛡' : '🧷') + ' 지킴</span>' : ''; }
+    var st = all.rstreak[rid]; return st && st.run >= 2 ? '<span class="q-streak">🔥 ' + st.run + '회 연속</span>' : '';
+  }
+  // 이 날 아직 보호권으로 지킬 수 있는 놓친 기록이 있는지
+  function shieldable(all, date) {
+    var today = todayStr(), x = all.dayMap[date];
+    if (!x || date >= today || date < addDays(today, -SHIELD_USE_DAYS) || !x.denom || x.perfect || x.shielded) return false;
+    return x.missed.some(function (id) { return !x.rProt[id]; }) || !x.rcovered;
+  }
   function renderToday(all) {
     var date = state.viewDate, today = todayStr();
     $('dLabel').innerHTML = fmtDate(date) + '<small>' + (date === today ? '오늘' : date < today ? Math.round((parse(today) - parse(date)) / 864e5) + '일 전' : '') + '</small>';
@@ -1813,11 +1912,14 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     $('questProgress').innerHTML = '<svg class="ring" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#181c1d" stroke-width="5"/><circle cx="22" cy="22" r="18" fill="none" stroke="#c8ff3d" stroke-width="5" stroke-linecap="round" stroke-dasharray="' + (C * pct / 100) + ' ' + C + '" transform="rotate(-90 22 22)"/><text x="22" y="26" text-anchor="middle" font-family="Space Grotesk" font-size="11" font-weight="700" fill="#f5f7f2">' + pct + '%</text></svg>' +
       '<div class="txt"><b>' + info.done + ' / ' + info.denom + ' 루틴 완료' + (info.perfect ? ' · 퍼펙트 데이 ★' : '') + '</b>' +
       (info.perfect ? '보너스 +' + PERFECT_BONUS + 'XP 획득! 이 날 총 ' + info.xp + 'XP' : info.denom ? '모두 끝내면 퍼펙트 데이 보너스 +' + PERFECT_BONUS + 'XP' : '이 날은 예정된 정기 루틴이 없어요. 비정기 기록으로 XP를 모아 보세요.') +
-      (info.shieldEarned ? '<div class="shield-note">🛡 이 날 퍼펙트로 스트릭 보호권 1장 획득</div>' : '') +
+      (info.shieldEarned ? '<div class="shield-note">🛡 이 날 퍼펙트로 하루 보호권 1장 획득</div>' : '') +
+      (info.rcovered ? '<div class="shield-note">🧷 놓친 루틴을 모두 루틴 보호권으로 막아 연속 기록이 이어졌어요.</div>' : '') +
+      (shieldable(all, date) ? '<div class="shield-note">이 날 놓친 연속 기록을 보호권으로 지킬 수 있어요. <button type="button" class="btn btn-sm btn-ghost" data-goshop>보호권 쓰기</button></div>' : '') +
       (info.shielded ? '<div class="shield-note">🛡 보호권 1장을 써서 연속 기록을 지켰습니다.</div>' : (dayOf(all, addDays(date, -1)).shielded && date === today ? '<div class="shield-note">🛡 어제 빠진 날은 보호권 1장으로 연속 기록을 지켰어요. 남은 보호권 ' + all.shields + '장</div>' : '')) + '</div>';
     renderBoss(all, date);
     renderComeback(all, date);
     renderRetroNudge();
+    renderRetro(all);
     renderPartyStrip(all, date);
 
     var byRoutine = {}, inCb = !!info.comeback;
@@ -1828,7 +1930,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       var time = r.start ? r.start + (r.end ? '–' + r.end : '') : '언제든';
       return '<div class="' + cls + '" style="--c:' + c.color + '" data-rid="' + esc(r.id) + '" role="button" tabindex="0" aria-pressed="' + (l && l.kind === 'routine') + '">' +
         '<div class="ico">' + esc(r.emoji || c.emoji) + '</div>' +
-        '<div class="body"><div class="t">' + esc(r.title) + (l && l.mini ? ' <small class="mini-tag">미니</small>' : '') + '</div><div class="s"><span>' + esc(time) + '</span><span>' + c.en + ' ' + c.name + '</span><span class="xp">+' + (l && l.kind === 'routine' ? l.xp : r.xp) + ' XP</span></div>' +
+        '<div class="body"><div class="t">' + esc(r.title) + (l && l.mini ? ' <small class="mini-tag">미니</small>' : '') + '</div><div class="s"><span>' + esc(time) + '</span><span>' + c.en + ' ' + c.name + '</span><span class="xp">+' + (l && l.kind === 'routine' ? l.xp : r.xp) + ' XP</span>' + streakTag(all, r.id, date) + '</div>' +
         (inCb && !l ? '<button class="mini-btn" data-mini="' + esc(r.id) + '" type="button" title="미니 버전으로 완료">⚡ 미니 +' + Math.max(1, Math.round((+r.xp || 0) * MINI_RATE)) + ' · ' + esc(r.mini || '가볍게 맛보기') + '</button>' : '') + '</div>' +
         '<button class="more" data-skip="' + esc(r.id) + '" type="button">' + (l && l.kind === 'skip' ? '건너뛰기 취소' : (l ? '' : '건너뛰기')) + '</button>' +
         '<span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></div>';
@@ -2165,7 +2267,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         else if (a > 0) style = 'background:rgba(200,255,61,' + a + ');color:var(--text)';
       }
       if (info.perfect) cls += ' perfect';
-      else if (info.shielded) cls += ' shielded';
+      else if (info.shielded || info.rcovered) cls += ' shielded';
       if (ds === today) cls += ' today';
       html += '<div class="' + cls + '" style="' + style + '" data-date="' + ds + '" title="' + fmtDate(ds) + ' · ' + info.done + '/' + info.denom + ' · ' + info.xp + 'XP">' + dd + (info.xp && ds <= today ? '<span class="p">' + info.xp + '</span>' : '') + '</div>';
     }
@@ -2210,12 +2312,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   }
 
   function countRoutine(id) { return state.logs.filter(function (l) { return l.routine_id === id && l.kind === 'routine'; }).length; }
-  function maxRoutineStreak(id) {
-    var dates = {}; state.logs.forEach(function (l) { if (l.routine_id === id && l.kind === 'routine') dates[l.log_date] = 1; });
-    var best = 0, run = 0, today = todayStr();
-    for (var d = SEASON_START; d <= today; d = addDays(d, 1)) { if (dates[d]) { run++; best = Math.max(best, run); } else if (d !== today) run = 0; }
-    return best;
-  }
+  function maxRoutineStreak(id, all) { var st = all && all.rstreak && all.rstreak[id]; return st ? st.best : 0; }
   function renderBadges(all) {
     var lv = levelFromXp(all.total).level;
     var adhoc = state.logs.filter(function (l) { return l.kind === 'adhoc'; }).length;
@@ -2224,7 +2321,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       ['🚩', '첫 발걸음', '첫 퀘스트 완료', Math.min(1, state.logs.filter(function (l) { return l.kind !== 'skip'; }).length)],
       ['⭐', '퍼펙트 데이', '퍼펙트 데이 1회', Math.min(1, all.perfectCount)],
       ['🔥', '불타는 일주일', '퍼펙트 7일 연속', Math.min(1, all.bestStreak / 7)],
-      ['🦉', '부엉이의 친구', '듀오링고 30일 연속', Math.min(1, maxRoutineStreak('duolingo') / 30)],
+      ['🦉', '부엉이의 친구', '듀오링고 30일 연속', Math.min(1, maxRoutineStreak('duolingo', all) / 30)],
       ['🏊', '물개', '수영 12회', Math.min(1, countRoutine('swim') / 12)],
       ['🏋️', 'WOD 정복자', '크로스핏 20회', Math.min(1, countRoutine('crossfit') / 20)],
       ['🎓', '11월의 교단', '11월 주말 수업 9회 완주', Math.min(1, teachDays / 9)],
@@ -2236,8 +2333,8 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       ['👑', '보스 슬레이어', '주간 보스 첫 격파', Math.min(1, all.bossWins)],
       ['⚔️', '보스 헌터', '주간 보스 4회 격파', Math.min(1, all.bossWins / 4)],
       ['📖', '보스 도감', '서로 다른 보스 5종 격파', Math.min(1, Object.keys(all.bosses.reduce(function (o, b) { if (b.defeated) o[b.species || b.name] = 1; return o; }, {})).length / 5)],
-      ['🛡', '수호자', '스트릭 보호권 첫 획득', Math.min(1, all.shieldsEarned)],
-      ['🪙', '나에게 주는 선물', '보상 상점에서 첫 교환', Math.min(1, shopData().buys.filter(function (b) { return b.kind !== 'shield'; }).length)],
+      ['🛡', '수호자', '하루 보호권 첫 획득', Math.min(1, all.shieldsEarned)],
+      ['🪙', '나에게 주는 선물', '보상 상점에서 첫 교환', Math.min(1, shopData().buys.filter(function (b) { return b.kind !== 'shield' && b.kind !== 'rshield'; }).length)],
       ['🔄', '다시 일어선 러너', '복귀 퀘스트 성공 (3일 중 2일 기록)', Math.min(1, all.comebackWins)],
       ['📝', '회고하는 러너', '월별 회고록 첫 제출', Math.min(1, Object.keys(state.retros).filter(function (m) { return state.retros[m] && state.retros[m].firstSaved; }).length)],
       ['🏅', 'S급 회고', '회고록 S등급 받기', Object.keys(state.retros).some(function (m) { return retroScore(m, state.retros[m]).grade === 'S'; }) ? 1 : 0],
@@ -2263,7 +2360,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       var logs = all.byDate[d].filter(function (l) { return !fv || (fv === '_adhoc' ? l.kind === 'adhoc' : l.category === fv); });
       if (!logs.length) return '';
       var info = dayOf(all, d);
-      return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + (info.shielded ? ' 🛡' : '') + (info.bossXp ? ' ⚔️ 보스 +' + info.bossXp : '') + (info.retroXp ? ' 📝 회고 +' + info.retroXp : '') + (info.partyXp ? ' 🤝 파티 +' + info.partyXp : '') + (info.jobXp ? ' 🎖 전직 +' + info.jobXp : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
+      return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + (info.shielded ? ' 🛡' : info.rcovered ? ' 🧷' : '') + (info.bossXp ? ' ⚔️ 보스 +' + info.bossXp : '') + (info.retroXp ? ' 📝 회고 +' + info.retroXp : '') + (info.partyXp ? ' 🤝 파티 +' + info.partyXp : '') + (info.jobXp ? ' 🎖 전직 +' + info.jobXp : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
         var c = CATS[l.category] || CATS.life, r = routineById(l.routine_id);
         var e = l.kind === 'adhoc' ? c.emoji : (r && r.emoji) || c.emoji;
         var tag = l.kind === 'routine' ? '루틴' : l.kind === 'skip' ? '건너뜀' : '비정기';
@@ -2294,7 +2391,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     if (state.tab === 'stats') renderStats(all);
     if (state.tab === 'logs') renderLogs(all);
     if (state.tab === 'routines') renderRoutines();
-    if (state.tab === 'retro') renderRetro(all);
+    if (state.tab === 'shop') renderShop(all);
     if (state.tab === 'friends') renderFriends(all);
     checkSeasonEnd(all);
     schedulePush(all);
@@ -2302,13 +2399,14 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 
   /* ---------- tabs ---------- */
   function setTab(tab) {
+    if (tab === 'retro') { tab = 'today'; state.retroOpen = true; state.retroScroll = true; } // 회고록은 퀘스트 화면 아래로 합침
     state.tab = tab; document.body.setAttribute('data-tab', tab);
     document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== tab; });
     document.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
-    $('fab').hidden = tab === 'routines' || tab === 'retro' || tab === 'friends';
+    $('fab').hidden = tab === 'routines' || tab === 'shop' || tab === 'friends';
     try { history.replaceState(null, '', '#' + tab); } catch (e) {}
+    if (!state.retroScroll) window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
     renderAll();
-    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
   }
   document.querySelectorAll('[data-tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.getAttribute('data-tab')); }); });
 
@@ -2481,6 +2579,10 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   function renderRetro(all) {
     var cur = todayStr().slice(0, 7), months = seasonMonths(all).reverse();
     if (!state.retroMonth) state.retroMonth = pendingRetro() || months.filter(function (m) { return m < cur; })[0] || '';
+    var open = !!state.retroOpen;
+    $('retroBlock').classList.toggle('open', open);
+    $('btnRetroToggle').textContent = open ? '접기' : '펼치기';
+    if (!open) months = months.slice(0, 3);
     $('retroMonths').innerHTML = months.map(function (m) {
       var r = state.retros[m], done = r && r.firstSaved, locked = m >= cur, sc = retroScore(m, r);
       var st = locked ? nextMonth(m).slice(5, 7).replace(/^0/, '') + '월 1일부터 작성 가능 · D-' + Math.round((parse(nextMonth(m) + '-01') - parse(todayStr())) / 864e5) :
@@ -2489,8 +2591,10 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         '<span class="m">' + m.replace('-', '.') + '</span><span class="st">' + seasonLabel(m) + ' · ' + st + '</span>' +
         (done ? '<span class="sc" style="color:' + gradeColor(sc.grade) + '">' + sc.grade + '</span>' : locked ? '<span class="sc" style="font-size:18px">🔒</span>' : '<span class="sc" style="font-size:18px">📝</span>') + '</button>';
     }).join('');
-    renderRetroEditor(all);
+    if (open) renderRetroEditor(all); else $('retroEditor').innerHTML = '';
+    if (state.retroScroll) { state.retroScroll = false; setTimeout(function () { $('retroBlock').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80); }
   }
+  $('btnRetroToggle').addEventListener('click', function () { state.retroOpen = !state.retroOpen; renderAll(); });
   var retroDraft = null, retroDraftMonth = null;
   function renderRetroEditor(all) {
     var m = state.retroMonth, el = $('retroEditor');
@@ -2541,7 +2645,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     document.body.appendChild(el); burst(window.innerWidth / 2, window.innerHeight / 2, 30);
     el.addEventListener('click', function () { el.remove(); });
   }
-  $('retroMonths').addEventListener('click', function (e) { var b = e.target.closest('[data-rmonth]'); if (b && !b.disabled) { state.retroMonth = b.getAttribute('data-rmonth'); renderAll(); } });
+  $('retroMonths').addEventListener('click', function (e) { var b = e.target.closest('[data-rmonth]'); if (b && !b.disabled) { state.retroMonth = b.getAttribute('data-rmonth'); state.retroOpen = true; renderAll(); } });
   $('retroEditor').addEventListener('input', function (e) { var t = e.target.closest('[data-rq]'); if (t) { retroDraft.answers[t.getAttribute('data-rq')] = t.value; retroLive(); } });
   $('retroEditor').addEventListener('click', function (e) {
     var st = e.target.closest('[data-star]');
@@ -2767,25 +2871,54 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 
   /* ---------- 보상 상점 (골드) ---------- */
   // 골드는 누적 XP와 1:1로 쌓이고, 쓴 만큼만 빠집니다. 레벨·시즌 랭크·리그는 XP 기준이라 영향 없음. 저장은 profile.shop
-  var SHOP_SHIELD_PRICE = 600;
+  var SHOP_SHIELD_PRICE = 600, SHOP_RSHIELD_PRICE = 250;
   var SHOP_SUGGEST = [['☕', '좋아하는 카페 음료', 300], ['🎮', '게임 2시간', 800], ['🍗', '치킨 한 마리', 1500], ['🎬', '영화 보러 가기', 1200], ['🛍', '갖고 싶던 물건', 5000]];
+  // profile.shop = { items, buys[{kind: reward|shield|rshield}], uses[{uid, kind: day|routine, date(지킨 날), rid, on(쓴 날), at}], auto(하루 보호권 자동 사용, 기본 true) }
   function shopData() {
     var sh = state.profile && state.profile.shop;
     if (!sh || typeof sh !== 'object') sh = {};
-    return { items: Array.isArray(sh.items) ? sh.items : [], buys: Array.isArray(sh.buys) ? sh.buys : [] };
+    return { items: Array.isArray(sh.items) ? sh.items : [], buys: Array.isArray(sh.buys) ? sh.buys : [], uses: Array.isArray(sh.uses) ? sh.uses : [], auto: sh.auto !== false };
   }
   function goldOf(all) {
     var spent = shopData().buys.reduce(function (s, b) { return s + (+b.price || 0); }, 0);
     return Math.max(0, Math.round(all.total) + (all.jobGold || 0) - spent);
   }
   function saveShop(sh, msg) { state.profile.shop = sh; return saveProfile(msg); }
+  function rName(rid) { var r = routineById(rid); return r ? (r.emoji ? r.emoji + ' ' : '') + r.title : '삭제된 루틴'; }
+  function renderShopUse(all) {
+    var today = todayStr(), html = '';
+    for (var i = 1; i <= SHIELD_USE_DAYS; i++) {
+      var d = addDays(today, -i), x = all.dayMap[d];
+      if (!x || !x.denom || x.perfect) continue;
+      var dm = x.shieldManual, st;
+      if (x.shielded) st = '<span class="st ok">🛡 하루 보호권으로 지킴</span>' + (dm && dm.on === today ? ' <button class="btn btn-sm btn-ghost" type="button" data-unuse="' + esc(dm.uid) + '">취소</button>' : '');
+      else if (x.rcovered) st = '<span class="st ok">🧷 루틴 보호권으로 모두 지킴</span>';
+      else st = '<button class="btn btn-sm btn-primary" type="button" data-use-day="' + d + '"' + (all.shields < 1 ? ' disabled' : '') + '>🛡 하루 보호권 쓰기</button>';
+      html += '<div class="use-day"><div class="uh"><div><b>' + fmtDate(d) + '</b><div class="st">' + x.done + ' / ' + x.denom + ' 완료 · 퍼펙트 연속 ' + (x.shielded || x.rcovered ? '유지' : '끊김') + '</div></div><div>' + st + '</div></div>' +
+        x.missed.map(function (rid) {
+          var p = x.rProt[rid], u = x.rUse && x.rUse[rid], before = x.rBefore[rid] || 0, right;
+          if (p === 'day') right = '<span class="ok">🛡 지킴</span>';
+          else if (p === 'routine') right = '<span class="ok">🧷 지킴</span>' + (u && u.on === today ? ' <button class="btn btn-sm btn-ghost" type="button" data-unuse="' + esc(u.uid) + '">취소</button>' : '');
+          else right = '<button class="btn btn-sm" type="button" data-use-r="' + d + '|' + esc(rid) + '"' + (all.rshields < 1 ? ' disabled' : '') + '>🧷 루틴 보호권</button>';
+          return '<div class="use-r"><span>' + esc(rName(rid)) + '<small>' + (p ? '연속 ' + before + '회 기록을 지켰어요' : before ? '연속 ' + before + '회 기록이 여기서 끊겼어요' : '직전 연속 0회 · 앞선 날을 먼저 지키면 이어져요') + '</small></span><span>' + right + '</span></div>';
+        }).join('') + '</div>';
+    }
+    $('shUse').innerHTML = html || '<div class="empty">최근 ' + SHIELD_USE_DAYS + '일 동안 놓친 루틴이 없어요. 👏</div>';
+  }
   function renderShop(all) {
     all = all || computeAll();
     var g = goldOf(all), sh = shopData(), today = todayStr();
     $('shBal').textContent = fmtNum(g);
-    var smax = all.shieldMax || SHIELD_MAX, full = all.shields >= smax;
-    $('shSystem').innerHTML = '<div class="shop-item"><span class="e">🛡</span><span class="n">스트릭 보호권 1장<small>' + (full ? '이미 최대 ' + smax + '장을 갖고 있어요' : '놓친 날 연속 기록을 지켜 줘요 · 보유 ' + all.shields + '/' + smax) + '</small></span><span class="p">' + fmtNum(SHOP_SHIELD_PRICE) + ' G</span>' +
-      '<button class="btn btn-sm btn-primary" type="button" data-buy-shield' + (full || g < SHOP_SHIELD_PRICE ? ' disabled' : '') + '>구매</button></div>';
+    $('shInv').innerHTML =
+      '<div class="si"><div class="k">🛡 하루 보호권</div><div class="v">' + all.shields + '<small> / ' + all.shieldMax + '</small></div><p>놓친 하루 전체를 지켜요. 퍼펙트 연속과 그날 놓친 모든 루틴의 연속 기록이 이어져요.</p></div>' +
+      '<div class="si"><div class="k">🧷 루틴 보호권</div><div class="v">' + all.rshields + '<small> / ' + RSHIELD_MAX + '</small></div><p>놓친 루틴 하나의 연속 기록만 지켜요. 아래에서 날짜와 루틴을 골라 써요.</p></div>' +
+      '<label class="shield-auto"><input type="checkbox" id="shAuto"' + (sh.auto ? ' checked' : '') + '> 루틴을 놓친 날 하루 보호권을 자동으로 쓰기</label>';
+    renderShopUse(all);
+    var smax = all.shieldMax || SHIELD_MAX, full = all.shields >= smax, rfull = all.rshields >= RSHIELD_MAX;
+    $('shSystem').innerHTML = '<div class="shop-item"><span class="e">🛡</span><span class="n">하루 보호권 1장<small>' + (full ? '이미 최대 ' + smax + '장을 갖고 있어요' : '놓친 날 하루 전체의 연속 기록을 지켜 줘요 · 보유 ' + all.shields + '/' + smax) + '</small></span><span class="p">' + fmtNum(SHOP_SHIELD_PRICE) + ' G</span>' +
+      '<button class="btn btn-sm btn-primary" type="button" data-buy-shield' + (full || g < SHOP_SHIELD_PRICE ? ' disabled' : '') + '>구매</button></div>' +
+      '<div class="shop-item"><span class="e">🧷</span><span class="n">루틴 보호권 1장<small>' + (rfull ? '이미 최대 ' + RSHIELD_MAX + '장을 갖고 있어요' : '놓친 루틴 하나의 연속 기록을 지켜 줘요 · 보유 ' + all.rshields + '/' + RSHIELD_MAX) + '</small></span><span class="p">' + fmtNum(SHOP_RSHIELD_PRICE) + ' G</span>' +
+      '<button class="btn btn-sm btn-primary" type="button" data-buy-rshield' + (rfull || g < SHOP_RSHIELD_PRICE ? ' disabled' : '') + '>구매</button></div>';
     $('shItems').innerHTML = sh.items.length ? sh.items.map(function (it) {
       var lack = g < it.price;
       return '<div class="shop-item"><span class="e">' + esc(it.emoji || '🎁') + '</span><span class="n">' + esc(it.name) + (lack ? '<small>' + fmtNum(it.price - g) + ' G 더 모으면 교환 가능</small>' : '<small>지금 교환할 수 있어요</small>') + '</span>' +
@@ -2800,7 +2933,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         (b.date === today ? '<button class="btn btn-sm btn-ghost" type="button" data-undo="' + esc(b.bid) + '">취소</button>' : '<span></span>') + '</div>';
     }).join('') : '<div class="empty">교환 내역이 없습니다.</div>';
   }
-  function openShop() { renderShop(); openSheet($('shopSheet')); }
+  function openShop() { setTab('shop'); }
   function buy(entry) {
     var all = computeAll(), g = goldOf(all);
     if (g < entry.price) { toast('골드가 부족해요.', true); return; }
@@ -2808,13 +2941,48 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     var sh = shopData();
     sh.buys = sh.buys.concat([{ bid: 'b' + Date.now().toString(36), id: entry.id || '', kind: entry.kind || 'reward', name: entry.name, emoji: entry.emoji, price: entry.price, date: todayStr(), at: new Date().toISOString() }]);
     if (sh.buys.length > 300) sh.buys = sh.buys.slice(-300);
-    saveShop(sh, entry.kind === 'shield' ? '🛡 보호권 1장을 샀어요.' : '🎁 교환 완료! ' + entry.name + ', 마음껏 즐기세요.');
+    saveShop(sh, entry.kind === 'shield' ? '🛡 하루 보호권 1장을 샀어요.' : entry.kind === 'rshield' ? '🧷 루틴 보호권 1장을 샀어요. 아래 「보호권 쓰기」에서 바로 쓸 수 있어요.' : '🎁 교환 완료! ' + entry.name + ', 마음껏 즐기세요.');
     var r = $('shBal').getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 10, 24);
   }
+  function useShield(kind, date, rid) {
+    var all = computeAll(), x = all.dayMap[date], today = todayStr();
+    if (!x || date >= today || date < addDays(today, -SHIELD_USE_DAYS)) { toast('보호권은 최근 ' + SHIELD_USE_DAYS + '일 안의 지난 날에만 쓸 수 있어요.', true); return; }
+    var msg;
+    if (kind === 'day') {
+      if (!x.denom || x.perfect || x.shielded || x.rcovered) { toast('이 날은 이미 지켜졌어요.'); return; }
+      if (all.shields < 1) { toast('하루 보호권이 없어요. 상점에서 살 수 있어요.', true); return; }
+      if (!confirm(fmtDate(date) + '에 하루 보호권 1장을 쓸까요?\n퍼펙트 연속과 그날 놓친 루틴 ' + x.missed.length + '개의 연속 기록을 지켜요.')) return;
+      msg = '🛡 ' + fmtDate(date) + '을(를) 하루 보호권으로 지켰어요.';
+    } else {
+      if (x.missed.indexOf(rid) < 0 || x.rProt[rid]) { toast('이 루틴은 이 날 지킬 기록이 없어요.'); return; }
+      if (all.rshields < 1) { toast('루틴 보호권이 없어요. 상점에서 ' + fmtNum(SHOP_RSHIELD_PRICE) + 'G에 살 수 있어요.', true); return; }
+      if (!confirm(fmtDate(date) + ' ' + rName(rid) + '에 루틴 보호권 1장을 쓸까요?')) return;
+      msg = '🧷 ' + rName(rid) + ' 연속 기록을 지켰어요.';
+    }
+    var sh = shopData();
+    sh.uses = sh.uses.concat([{ uid: 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: kind, date: date, rid: rid || '', on: today, at: new Date().toISOString() }]);
+    if (sh.uses.length > 300) sh.uses = sh.uses.slice(-300);
+    saveShop(sh, msg);
+  }
   $('chipGold').addEventListener('click', openShop);
-  $('shopSheet').addEventListener('click', function (e) {
+  $('chipStreakWrap').addEventListener('click', openShop);
+  document.addEventListener('click', function (e) { if (e.target.closest('[data-goshop]')) openShop(); });
+  $('tab-shop').addEventListener('change', function (e) {
+    if (e.target.id !== 'shAuto') return;
+    var sh = shopData(); sh.auto = e.target.checked;
+    saveShop(sh, sh.auto ? '루틴을 놓친 날 하루 보호권을 자동으로 써요.' : '하루 보호권 자동 사용을 껐어요. 놓친 날 직접 골라 쓰세요.');
+  });
+  $('tab-shop').addEventListener('click', function (e) {
     var t;
-    if ((t = e.target.closest('[data-buy-shield]'))) { buy({ kind: 'shield', name: '스트릭 보호권', emoji: '🛡', price: SHOP_SHIELD_PRICE }); return; }
+    if ((t = e.target.closest('[data-buy-shield]'))) { buy({ kind: 'shield', name: '하루 보호권', emoji: '🛡', price: SHOP_SHIELD_PRICE }); return; }
+    if ((t = e.target.closest('[data-buy-rshield]'))) { buy({ kind: 'rshield', name: '루틴 보호권', emoji: '🧷', price: SHOP_RSHIELD_PRICE }); return; }
+    if ((t = e.target.closest('[data-use-day]'))) { useShield('day', t.getAttribute('data-use-day')); return; }
+    if ((t = e.target.closest('[data-use-r]'))) { var pr = t.getAttribute('data-use-r').split('|'); useShield('routine', pr[0], pr.slice(1).join('|')); return; }
+    if ((t = e.target.closest('[data-unuse]'))) {
+      var sh0 = shopData(), uid0 = t.getAttribute('data-unuse');
+      if (!confirm('보호권 사용을 취소하고 1장을 돌려받을까요?')) return;
+      sh0.uses = sh0.uses.filter(function (u) { return u.uid !== uid0; }); saveShop(sh0, '보호권 사용을 취소했어요.'); return;
+    }
     if ((t = e.target.closest('[data-buy]'))) { var it = shopData().items.filter(function (x) { return x.id === t.getAttribute('data-buy'); })[0]; if (it) buy(it); return; }
     if ((t = e.target.closest('[data-rm]'))) {
       var sh = shopData(), id = t.getAttribute('data-rm'), it2 = sh.items.filter(function (x) { return x.id === id; })[0];
@@ -2823,7 +2991,10 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     }
     if ((t = e.target.closest('[data-undo]'))) {
       var sh2 = shopData(), bid = t.getAttribute('data-undo'), b = sh2.buys.filter(function (x) { return x.bid === bid; })[0];
-      if (!b || !confirm(b.name + ' 교환을 취소하고 ' + fmtNum(b.price) + 'G를 돌려받을까요?')) return;
+      if (!b) return;
+      var all2 = computeAll();
+      if ((b.kind === 'shield' && all2.shields < 1) || (b.kind === 'rshield' && all2.rshields < 1)) { toast('이미 쓴 보호권은 구매를 취소할 수 없어요. 사용을 먼저 취소해 주세요.', true); return; }
+      if (!confirm(b.name + ' 교환을 취소하고 ' + fmtNum(b.price) + 'G를 돌려받을까요?')) return;
       sh2.buys = sh2.buys.filter(function (x) { return x.bid !== bid; }); saveShop(sh2, '교환을 취소하고 골드를 돌려받았어요.'); return;
     }
     if ((t = e.target.closest('[data-sug]'))) {
@@ -2855,7 +3026,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   function showView(v) {
     $('viewLogin').hidden = v !== 'login'; $('viewSignup').hidden = v !== 'signup'; $('viewLoading').hidden = v !== 'loading'; $('viewApp').hidden = v !== 'app';
     var app = v === 'app';
-    $('tabbar').hidden = !app; $('topTabs').hidden = !app; $('btnLogout').hidden = !app; $('fab').hidden = !app || state.tab === 'routines' || state.tab === 'retro' || state.tab === 'friends';
+    $('tabbar').hidden = !app; $('topTabs').hidden = !app; $('btnLogout').hidden = !app; $('fab').hidden = !app || state.tab === 'routines' || state.tab === 'shop' || state.tab === 'friends';
     if (v === 'login') setupFaceLogin();
   }
   function sync(silent) {
@@ -2882,7 +3053,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   function logout(msg) {
     pushOnLogout(state.token);
     state.token = null; store(TOKEN_KEY, null); store(CACHE_KEY, null); state.logs = []; state.routines = []; state.profile = {}; state.retros = {}; lastLevel = null; lastShields = null; lastBossWins = null;
-    state.league = null; state.partyRewards = []; store(PARTY_RW_KEY, null); state.photo = ''; store(PHOTO_KEY, null); lastPushed = ''; clearTimeout(pushTimer); setFriendBadge(0);
+    state.league = null; state.partyRewards = []; store(PARTY_RW_KEY, null); state.photo = ''; store(PHOTO_KEY, null); lastPushed = ''; seenReqKey = ''; clearTimeout(pushTimer); setFriendBadge(0);
     state.outbox = []; store(OUTBOX_KEY, null); renderOutbox();
     showView('login'); if (msg) { $('loginError').textContent = msg; $('loginError').hidden = false; }
   }
@@ -2908,6 +3079,8 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   var CHEER_EMOJIS = [['🔥', '불태워'], ['👏', '박수'], ['💪', '힘내'], ['🏆', '1등감'], ['⚡', '번개'], ['❤️', '하트'], ['🫡', '존경'], ['🐢', '분발해']];
   var LB_MODES = { week: '주간 XP', season: '시즌 XP', streak: '연속 퍼펙트', level: '레벨', today: '오늘 달성' };
   var lastPartyKey = '', lbMode = 'week', lastPushed = '', pushTimer = null, leagueBusy = false, cheerTo = null, cheerEmoji = '🔥';
+  var LG_SCOPE_KEY = 'dl_quest_lg_scope', LG_SHOW = 50;
+  var lgScope = load(LG_SCOPE_KEY) === 'friends' ? 'friends' : 'all', lgQuery = '', freqBusy = false, seenReqKey = '';
   function social(action, payload, noAuth) {
     return post('quest-social', { action: action, token: noAuth ? null : state.token, payload: payload ? JSON.stringify(payload) : null });
   }
@@ -2961,14 +3134,19 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       leagueBusy = false;
       if (!d.ok) { if (!silent) toast(d.error || '랭킹을 불러오지 못했어요.', true); return; }
       var firstLoad = !state.league;
-      state.league = { at: Date.now(), myCode: d.myCode, players: d.players || [], cheers: d.cheers || [], unread: d.unread || 0, party: d.party || null, partyInvites: d.partyInvites || [] };
+      state.league = { at: Date.now(), myCode: d.myCode, players: d.players || [], cheers: d.cheers || [], unread: d.unread || 0, party: d.party || null, partyInvites: d.partyInvites || [],
+        global: d.global || null, requests: d.requests || [], myHidden: !!d.myHidden, myUid: d.myUid || '', sentCount: d.sentCount || 0 };
       applyPartyRewards(d.partyRewards, d.party);
       var pk = JSON.stringify([d.party, d.partyInvites]);
       if (pk !== lastPartyKey) { lastPartyKey = pk; if (state.tab === 'today') renderToday(computeAll()); }
       var meP = state.league.players.filter(function (x) { return x.me; })[0];
       if (meP && !photoBusy) { var sp = okPhoto(meP.photo) ? meP.photo : ''; if (sp !== (state.photo || '')) { state.photo = sp; store(PHOTO_KEY, sp || null); renderAll(); } }
-      setFriendBadge(state.tab === 'friends' ? 0 : state.league.unread);
-      if (firstLoad && state.league.unread && state.tab !== 'friends') {
+      var nReq = state.league.requests.length;
+      setFriendBadge((state.tab === 'friends' ? 0 : state.league.unread) + nReq);
+      var rk = state.league.requests.map(function (r) { return r.id; }).join(',');
+      if (nReq && rk !== seenReqKey && state.tab !== 'friends') toast('🤝 ' + state.league.requests[0].name + '님이 친구 신청을 보냈어요' + (nReq > 1 ? ' 외 ' + (nReq - 1) + '건' : ''));
+      seenReqKey = rk;
+      if (firstLoad && state.league.unread && state.tab !== 'friends' && !nReq) {
         var c = state.league.cheers.filter(function (x) { return !x.seen; })[0];
         if (c) toast(c.from + '님이 ' + c.emoji + ' 응원을 보냈어요' + (state.league.unread > 1 ? ' 외 ' + (state.league.unread - 1) + '개' : ''));
       }
@@ -2977,7 +3155,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   }
   function markCheersSeen() {
     var L = state.league; if (!L || !L.unread) return;
-    L.unread = 0; setFriendBadge(0);
+    L.unread = 0; setFriendBadge((L.requests || []).length);
     social('cheers_seen').then(function () { L.cheers.forEach(function (c) { c.seen = true; }); });
   }
   function playerVal(st, mode) {
@@ -3002,7 +3180,13 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     if (!L) { $('lgBoard').innerHTML = '<div class="empty">친구 리그를 불러오는 중…</div>'; $('lgHero').innerHTML = ''; $('partyBox').innerHTML = ''; loadLeague(); return; }
     renderParty(all);
     if (Date.now() - L.at > 60000) loadLeague(true);
-    var players = L.players.map(function (p) { return { pid: p.pid, name: p.name, me: p.me, photo: p.photo || '', st: p.me ? (state.mySnap || buildSnapshot(all)) : p.stats }; });
+    var mySt = state.mySnap || buildSnapshot(all);
+    var friendPhoto = {}; L.players.forEach(function (p) { if (p.pid) friendPhoto[p.pid] = p.photo || ''; });
+    // 전체 리그(구버전 서버면 global이 없으므로 친구 리그로 대체)
+    var scope = L.global ? lgScope : 'friends';
+    var players = scope === 'all'
+      ? L.global.map(function (p) { return { pid: p.pid || (p.me ? '__me' : 'g:' + p.uid), uid: p.uid, name: p.name, me: p.me, friend: p.friend, req: p.req, photo: p.photo || friendPhoto[p.pid] || '', st: p.me ? mySt : p.stats }; })
+      : L.players.map(function (p) { return { pid: p.pid, name: p.name, me: p.me, friend: !p.me, photo: p.photo || '', st: p.me ? mySt : p.stats }; });
     // 지난주 챔피언
     var champ = null;
     players.forEach(function (p) { var x = lastWeekXp(p.st); if (x > 0 && (!champ || x > champ.xp)) champ = { pid: p.pid, name: (p.st && p.st.nick) || p.name, xp: x }; });
@@ -3010,31 +3194,45 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     rows.sort(function (a, b) { return b.val.v - a.val.v || (a.p.me ? -1 : 1); });
     var max = Math.max.apply(null, rows.map(function (r) { return r.val.v; }).concat([1]));
     var rank = 0, prev = null;
-    $('lgBoard').innerHTML = rows.map(function (r, i) {
-      if (prev === null || r.val.v !== prev) rank = i + 1; prev = r.val.v;
+    rows.forEach(function (r, i) { if (prev === null || r.val.v !== prev) rank = i + 1; prev = r.val.v; r.rank = rank; });
+    var q = lgQuery.trim().toLowerCase(), shown = rows, more = 0;
+    if (q) shown = rows.filter(function (r) { return String((r.p.st && r.p.st.nick) || r.p.name || '').toLowerCase().indexOf(q) >= 0; });
+    else if (rows.length > LG_SHOW) {
+      shown = rows.slice(0, LG_SHOW);
+      var meRow = rows.filter(function (r) { return r.p.me; })[0];
+      if (meRow && meRow.rank > LG_SHOW) shown.push(meRow);
+      more = rows.length - shown.length;
+    }
+    $('lgBoard').innerHTML = (shown.length ? '' : '<div class="empty">「' + esc(lgQuery.trim()) + '」 닉네임을 찾지 못했어요. 프로필을 비공개로 둔 러너는 검색되지 않아요.</div>') + shown.map(function (r) {
+      var rank = r.rank;
       var st = r.p.st || {}, nm = st.nick || r.p.name, lvl = st.level || 1;
       var crown = champ && champ.pid === r.p.pid ? ' 👑' : '';
+      var side = '';
+      if (r.p.me) side = '';
+      else if (r.p.friend) side = '<button class="cheer-btn" data-cheer="' + esc(r.p.pid) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님 응원하기">📣</button>';
+      else if (r.p.req && r.p.req.s === 'recv') side = '<button class="fr-req-btn recv" data-faccept="' + esc(r.p.req.id) + '" data-name="' + esc(nm) + '">수락</button>';
+      else if (r.p.req && r.p.req.s === 'sent') side = '<button class="fr-req-btn sent" data-fcancel="' + esc(r.p.req.id) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님에게 보낸 신청 취소">신청됨</button>';
+      else if (r.p.uid) side = '<button class="fr-req-btn" data-freq="' + esc(r.p.uid) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님에게 친구 신청">+ 친구</button>';
       return '<div class="lb-row' + (r.p.me ? ' me' : '') + '">' +
         '<div class="lb-rank r' + rank + '">' + rank + '</div>' +
         '<div class="lb-av">' + avatarSvg(lvl, { avatar: st.avatar || '', color: st.color || '', photo: r.p.me ? state.photo : (r.p.photo || '') }) + '</div>' +
-        '<div class="lb-name"><b>' + esc(nm) + crown + (r.p.me ? ' <span style="color:var(--lime);font-size:12px">나</span>' : '') + '</b>' +
+        '<div class="lb-name"><b>' + esc(nm) + crown + (r.p.me ? ' <span style="color:var(--lime);font-size:12px">나' + (scope === 'all' && L.myHidden ? ' · 비공개' : '') + '</span>' : (scope === 'all' && r.p.friend ? ' <span style="color:var(--cyan,#66dbff);font-size:12px">친구</span>' : '')) + '</b>' +
           '<small>LV ' + lvl + (st.cls ? ' · ' + esc(st.cls) : '') + ' · ' + esc(r.val.sub) + '</small>' +
           '<div class="lb-bar"><i style="width:' + Math.round(Math.max(0, r.val.v) / max * 100) + '%"></i></div></div>' +
-        '<div class="lb-side"><div class="lb-val">' + esc(r.val.label || String(r.val.v)) + '</div>' +
-          (r.p.me ? '' : '<button class="cheer-btn" data-cheer="' + esc(r.p.pid) + '" data-name="' + esc(nm) + '" aria-label="' + esc(nm) + '님 응원하기">📣</button>') + '</div></div>';
-    }).join('');
+        '<div class="lb-side"><div class="lb-val">' + esc(r.val.label || String(r.val.v)) + '</div>' + side + '</div></div>';
+    }).join('') + (more ? '<div class="lg-more">상위 ' + LG_SHOW + '명만 보여요 · 닉네임 검색으로 다른 러너를 찾을 수 있어요 (' + more + '명 더)</div>' : '');
     // 상단 요약 (주간 리그 기준)
     var wk = players.map(function (p) { return { p: p, v: playerVal(p.st, 'week').v }; }).sort(function (a, b) { return b.v - a.v || (a.p.me ? -1 : 1); });
     var myIdx = 0; wk.forEach(function (x, i) { if (x.p.me) myIdx = i; });
     var dLeft = Math.round((parse(addDays(weekStart(todayStr()), 6)) - parse(todayStr())) / 864e5);
     var head, sub;
-    if (players.length < 2) { head = '친구를 초대해 리그를 열어 보세요'; sub = '아래 초대 링크를 보내면 친구가 가입하는 순간 같은 리그에 들어옵니다.'; }
+    if (players.length < 2) { head = scope === 'all' ? '아직 리그에 다른 러너가 없어요' : '친구를 초대해 리그를 열어 보세요'; sub = scope === 'all' ? '친구를 초대하면 전체 리그에도 함께 올라와요.' : '전체 리그에서 「+ 친구」로 신청하거나, 아래 초대 링크를 보내 보세요.'; }
     else if (!wk[0].v) { head = '이번 주 리그 시작!'; sub = '첫 퀘스트를 완료하면 바로 1위로 올라가요 · 리그 마감 D-' + dLeft; }
     else if (myIdx === 0 && wk[1] && wk[1].v === wk[0].v) { head = '이번 주 공동 1위!'; sub = 'XP 하나만 더 모으면 단독 1위 · 리그 마감 D-' + dLeft; }
     else if (myIdx === 0) { var gap = wk[0].v - (wk[1] ? wk[1].v : 0); head = '이번 주 1위 질주 중!'; sub = '2위와 ' + gap + ' XP 차이 · 리그 마감 D-' + dLeft; }
     else { var top = wk[myIdx - 1]; head = '이번 주 ' + (myIdx + 1) + '위 / ' + wk.length + '명'; sub = ((top.p.st && top.p.st.nick) || top.p.name) + '님까지 ' + (top.v - wk[myIdx].v + 1) + ' XP 더 모으면 역전 · D-' + dLeft; }
     $('lgHero').innerHTML = '<div class="lg-hero">' + (champ ? '<span class="crown" title="지난주 챔피언">👑</span>' : '') +
-      '<span class="k">Weekly League</span><span class="t">' + esc(head) + '</span><span class="s">' + esc(sub) + '</span>' +
+      '<span class="k">Weekly League · ' + (scope === 'all' ? '전체 ' + players.length + '명' : '친구') + '</span><span class="t">' + esc(head) + '</span><span class="s">' + esc(sub) + '</span>' +
       (champ ? '<span class="s">지난주 챔피언: <b>' + esc(champ.name) + '</b> (' + champ.xp + ' XP)</span>' : '') + '</div>';
     $('myCode').textContent = L.myCode || '--------';
     var cs = L.cheers || [];
@@ -3043,8 +3241,57 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       return '<div class="cheer-item' + (c.seen ? '' : ' new') + '"><span class="e">' + esc(c.emoji) + '</span><div><b>' + esc(c.from) + '</b>' + (c.message ? ' · ' + esc(c.message) : '') + '<small>' + esc(String(c.at || '').slice(5, 16).replace('T', ' ')) + '</small></div></div>';
     }).join('') : '<div class="empty" style="padding:18px">아직 받은 응원이 없어요. 먼저 친구에게 📣 응원을 보내 보세요.</div>';
     document.querySelectorAll('#lgSeg [data-mode]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-mode') === lbMode ? 'true' : 'false'); });
+    $('lgScope').hidden = !L.global;
+    document.querySelectorAll('#lgScope [data-scope]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-scope') === scope ? 'true' : 'false'); });
+    $('lgPublic').checked = !L.myHidden; $('lgPublic').closest('.privacy-row').hidden = !L.global;
+    renderFriendRequests();
     if (L.unread) markCheersSeen();
   }
+  function renderFriendRequests() {
+    var L = state.league, box = $('frReqBox'), rs = (L && L.requests) || [];
+    if (!rs.length) { box.innerHTML = ''; return; }
+    box.innerHTML = '<div class="freq-box"><div class="h">받은 친구 신청 ' + rs.length + '건</div>' + rs.map(function (r) {
+      return '<div class="freq-item"><div class="av">' + avatarSvg(r.level || 1, { avatar: r.avatar || '', color: r.color || '', photo: r.photo || '' }) + '</div>' +
+        '<div class="t"><b>' + esc(r.name) + '</b>님이 친구 신청을 보냈어요<small>LV ' + (r.level || 1) + (r.cls ? ' · ' + esc(r.cls) : '') + (r.message ? ' · ' + esc(r.message) : '') + ' · ' + esc(String(r.at || '').slice(5, 10).replace('-', '/')) + '</small></div>' +
+        '<button class="btn btn-sm" data-fdecline="' + esc(r.id) + '" data-name="' + esc(r.name) + '">거절</button><button class="btn btn-sm btn-primary" data-faccept="' + esc(r.id) + '" data-name="' + esc(r.name) + '">수락</button></div>';
+    }).join('') + '</div>';
+  }
+  function friendAction(action, payload, btn) {
+    if (freqBusy) return;
+    freqBusy = true; if (btn) btn.disabled = true;
+    social(action, payload).then(function (d) {
+      freqBusy = false; if (btn) btn.disabled = false;
+      if (!d.ok) { toast(d.error || '처리하지 못했어요.', true); loadLeague(true); return; }
+      var nm = d.name || '';
+      if (d.friended) toast('🤝 ' + nm + '님과 친구가 되었어요!');
+      else if (d.already) toast(nm + '님과 이미 친구예요.');
+      else if (d.sent || d.pending) toast(nm + '님에게 친구 신청을 보냈어요. 수락하면 친구가 돼요.');
+      else if (d.declined) toast('신청을 거절했어요.');
+      else if (action === 'friend_cancel') toast('신청을 취소했어요.');
+      state.league.at = 0; loadLeague(true);
+    }, function () { freqBusy = false; if (btn) btn.disabled = false; toast('네트워크 오류로 처리하지 못했어요.', true); });
+  }
+  function onFriendBtn(e) {
+    var b = e.target.closest('[data-freq],[data-faccept],[data-fdecline],[data-fcancel]'); if (!b) return false;
+    if (b.hasAttribute('data-freq')) friendAction('friend_request', { to: b.getAttribute('data-freq') }, b);
+    else if (b.hasAttribute('data-faccept')) friendAction('friend_respond', { id: b.getAttribute('data-faccept'), accept: true }, b);
+    else if (b.hasAttribute('data-fdecline')) friendAction('friend_respond', { id: b.getAttribute('data-fdecline'), accept: false }, b);
+    else if (confirm(b.getAttribute('data-name') + '님에게 보낸 친구 신청을 취소할까요?')) friendAction('friend_cancel', { id: b.getAttribute('data-fcancel') }, b);
+    return true;
+  }
+  $('frReqBox').addEventListener('click', onFriendBtn);
+  $('lgScope').addEventListener('click', function (e) { var b = e.target.closest('[data-scope]'); if (!b) return; lgScope = b.getAttribute('data-scope'); store(LG_SCOPE_KEY, lgScope); renderFriends(computeAll()); });
+  $('lgSearch').addEventListener('input', function () { lgQuery = $('lgSearch').value; if (state.league) renderFriends(computeAll()); });
+  $('lgPublic').addEventListener('change', function () {
+    var cb = $('lgPublic'), hidden = !cb.checked; cb.disabled = true;
+    social('privacy_set', { hidden: hidden }).then(function (d) {
+      cb.disabled = false;
+      if (!d.ok) { cb.checked = !hidden; toast(d.error || '설정을 바꾸지 못했어요.', true); return; }
+      if (state.league) state.league.myHidden = hidden;
+      toast(hidden ? '전체 리그에서 내 프로필을 숨겼어요. 친구에게는 그대로 보여요.' : '전체 리그에 내 프로필을 공개했어요.');
+      loadLeague(true);
+    }, function () { cb.disabled = false; cb.checked = !hidden; toast('네트워크 오류로 설정을 바꾸지 못했어요.', true); });
+  });
   $('lgSeg').addEventListener('click', function (e) { var b = e.target.closest('[data-mode]'); if (!b) return; lbMode = b.getAttribute('data-mode'); renderFriends(computeAll()); });
   $('btnLeagueRefresh').addEventListener('click', function () { loadLeague(false).then(function () { toast('랭킹을 새로 불러왔어요.'); }); });
   function copyText(t, msg) {
@@ -3074,6 +3321,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   function pickEmoji(e) { cheerEmoji = e; document.querySelectorAll('#cheerEmojis [data-emo]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-emo') === e ? 'true' : 'false'); }); }
   $('cheerEmojis').addEventListener('click', function (e) { var b = e.target.closest('[data-emo]'); if (b) pickEmoji(b.getAttribute('data-emo')); });
   $('lgBoard').addEventListener('click', function (e) {
+    if (onFriendBtn(e)) return;
     var b = e.target.closest('[data-cheer]'); if (!b) return;
     cheerTo = b.getAttribute('data-cheer');
     $('cheerSheetTitle').textContent = b.getAttribute('data-name') + '님 응원하기';
@@ -3586,7 +3834,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     navigator.serviceWorker.addEventListener('message', function (e) {
       if (!e.data || e.data.type !== 'rq-open') return;
       var tab = String(e.data.url || '').split('#')[1] || 'today';
-      if (state.token) { state.viewDate = todayStr(); setTab(['today', 'stats', 'logs', 'routines', 'retro', 'friends'].indexOf(tab) >= 0 ? tab : 'today'); sync(true); }
+      if (state.token) { state.viewDate = todayStr(); setTab(['today', 'stats', 'logs', 'routines', 'shop', 'retro', 'friends'].indexOf(tab) >= 0 ? tab : 'today'); sync(true); }
     });
   }
 
@@ -3857,7 +4105,8 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   renderOutbox();
   var initialTab = (location.hash || '').slice(1);
   if (/[?&]source=/.test(location.search) && history.replaceState) history.replaceState(null, '', location.pathname + location.hash);
-  if (['today', 'stats', 'logs', 'routines', 'retro', 'friends'].indexOf(initialTab) >= 0) state.tab = initialTab;
+  if (initialTab === 'retro') { initialTab = 'today'; state.retroOpen = true; state.retroScroll = true; try { history.replaceState(null, '', location.pathname + '#today'); } catch (e) {} }
+  if (['today', 'stats', 'logs', 'routines', 'shop', 'friends'].indexOf(initialTab) >= 0) state.tab = initialTab;
   document.body.setAttribute('data-tab', state.tab);
   document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== state.tab; });
   document.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === state.tab ? 'true' : 'false'); });
