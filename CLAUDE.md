@@ -17,7 +17,8 @@
 | `index.html` | 메인 랜딩 페이지 (약 250KB 단일 파일, HTML·CSS·JS 인라인) | 공개 | 없음 |
 | `analytics.js`, `hero3d.js` | 메인 페이지용 분석 스크립트, 히어로 3D 효과 | 공개 | 없음 |
 | `interview-log/` | 튜터용 면담 로그 앱 | 튜터 전용 | n8n `Data Learners 면담 로그 앱` |
-| `quest/` | Runner Quest 자기육성 루틴 (PWA, `sw.js`, `manifest.webmanifest`) | 소유자·친구 | n8n `[Data Learners] 자기육성 퀘스트 API` (`dl/quest`), data table `quest_logs`, `quest_config` |
+| `quest/` | Runner Quest 자기육성 루틴 (PWA, `sw.js`, `manifest.webmanifest`) | 소유자·친구 | n8n `[Data Learners] 자기육성 퀘스트 API` (`dl/quest`) 등, 데이터는 Supabase Postgres (`supabase/`) |
+| `supabase/` | Runner Quest DB 마이그레이션 SQL (Supabase SQL Editor에서 순서대로 실행) | 저장소만 | 없음 |
 | `kti/` | 한반도 긴장도 지수 대시보드 | 공개 | GitHub Actions 수집 |
 | `privacy/` | 개인정보처리방침 | 공개 | 없음 |
 | `assets/` | 이미지, 로고, 도서 표지, 기업소개서 PDF | 공개 | 없음 |
@@ -36,7 +37,8 @@ n8n API 기본 주소: `https://hote.app.n8n.cloud/webhook/dl/` (각 앱 HTML �
 - 로그인(패스키), 푸시 알림, 친구 기능은 n8n API와 짝을 이룬다. 요청·응답 형식을 바꿀 때는 PR 본문에 n8n 워크플로우 쪽 수정이 필요한지 명시한다.
 
 ### 개인 데이터
-- 소유자 전용 앱의 실제 데이터(면담 기록, 루틴 기록)는 n8n data table에만 있다. 저장소에 데이터, 토큰, 테스트용 실데이터를 커밋하지 않는다.
+- 소유자 전용 앱의 실제 데이터는 n8n data table(면담 기록, 세션·패스키)과 Supabase(Runner Quest 기록·소셜)에만 있다. 저장소에 데이터, 토큰, DB 비밀번호, 테스트용 실데이터를 커밋하지 않는다.
+- Runner Quest 스키마를 바꿀 때는 `supabase/migrations/`에 새 SQL 파일을 추가하고(기존 파일 수정 금지), n8n 쿼리도 같이 고친다. 자세한 규칙은 `supabase/README.md`.
 
 ## 새 페이지를 추가할 때
 
