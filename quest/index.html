@@ -456,6 +456,11 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 @media (prefers-reduced-motion:reduce) { .jobup *, .job-badge.ready, .job-steps .ready .dot { animation-duration:.01s !important; animation-delay:0s !important; animation-iteration-count:1 !important; } }
 .spark { position:fixed; z-index:91; width:8px; height:8px; pointer-events:none; border-radius:2px; animation:spark .9s ease-out forwards; }
 @keyframes spark { to { transform:translate(var(--dx),var(--dy)) rotate(260deg); opacity:0; } }
+.fw-canvas { position:fixed; inset:0; width:100%; height:100%; z-index:92; pointer-events:none; }
+.perfect-banner { position:fixed; left:50%; top:38%; z-index:93; pointer-events:none; text-align:center; transform:translate(-50%,-50%); animation:pbIn 2.8s cubic-bezier(.2,.9,.3,1.2) forwards; }
+.perfect-banner b { display:block; font-size:clamp(30px,10vw,72px); font-weight:900; white-space:nowrap; letter-spacing:.04em; line-height:1; color:var(--lime); text-shadow:0 0 24px rgba(200,255,61,.6),0 4px 0 rgba(0,0,0,.35); }
+.perfect-banner span { display:inline-block; margin-top:10px; padding:6px 14px; border-radius:999px; background:rgba(0,0,0,.55); border:1px solid rgba(200,255,61,.5); font-weight:800; font-size:15px; color:#fff; }
+@keyframes pbIn { 0% { opacity:0; transform:translate(-50%,-50%) scale(.3); } 14% { opacity:1; transform:translate(-50%,-50%) scale(1.12); } 24% { transform:translate(-50%,-50%) scale(1); } 80% { opacity:1; } 100% { opacity:0; transform:translate(-50%,-60%) scale(1); } }
 
 /* Retro */
 @media (max-width:899px) { body[data-tab="shop"] .hero { display:none; } }
@@ -1982,6 +1987,85 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       document.body.appendChild(s); setTimeout(function (el) { el.remove(); }.bind(null, s), 950);
     }
   }
+  // 퍼펙트 데이 폭죽: 캔버스 하나에 여러 발 연속 발사 + 컨페티. 동작 줄이기 설정이면 토스트만 보여 줌
+  var fwState = null;
+  function perfectFireworks(el) {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var W = window.innerWidth, H = window.innerHeight, small = W < 700;
+    var cv = document.createElement('canvas'); cv.className = 'fw-canvas';
+    var dpr = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 2);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    var ctx = cv.getContext('2d'); if (!ctx) return;
+    if (fwState) fwState.stop();
+    ctx.scale(dpr, dpr);
+    document.body.appendChild(cv);
+    var bn = document.createElement('div'); bn.className = 'perfect-banner';
+    bn.innerHTML = '<b>PERFECT DAY</b><span>★ 보너스 +' + PERFECT_BONUS + ' XP</span>';
+    document.body.appendChild(bn); setTimeout(function () { bn.remove(); }, 2900);
+    if (navigator.vibrate) navigator.vibrate([30, 60, 30, 60, 80]);
+    var COLORS = ['#c8ff3d', '#66dbff', '#ffcf4a', '#ff9a51', '#a896ff', '#61db9c', '#ff7a92', '#ffffff'];
+    var CAP = small ? 650 : 1200, scale = Math.min(1.4, Math.max(.8, Math.min(W, H) / 520));
+    var shells = [], parts = [], confetti = [], t0 = performance.now(), last = t0, raf = 0, done = false;
+    // 발사 계획: [지연ms, x비율, 폭발 높이 비율, 크기 배수]
+    var plan = [[0, .5, .3, 1.25], [260, .22, .36, 1], [480, .78, .34, 1], [820, .36, .24, 1.1], [1050, .66, .26, 1.1],
+      [1400, .14, .42, .9], [1600, .86, .42, .9], [2000, .5, .22, 1.5]];
+    if (small) plan = plan.filter(function (_, i) { return i !== 5 && i !== 6; });
+    plan.forEach(function (p) {
+      var x = W * p[1] + (Math.random() - .5) * W * .06, ty = H * p[2] + (Math.random() - .5) * H * .05;
+      shells.push({ at: p[0], x: x, y: H + 10, ty: ty, vy: -Math.sqrt(2 * 1400 * (H + 10 - ty)), size: p[3], color: COLORS[Math.floor(Math.random() * 7)], live: false });
+    });
+    if (el && el.getBoundingClientRect) { var rr = el.getBoundingClientRect(); explode(rr.left + rr.width / 2, rr.top + rr.height / 2, .7, '#c8ff3d'); }
+    for (var c = 0; c < (small ? 70 : 120); c++) {
+      confetti.push({ x: Math.random() * W, y: -20 - Math.random() * H * .6, vx: (Math.random() - .5) * 60, vy: 90 + Math.random() * 110,
+        w: 6 + Math.random() * 6, h: 3 + Math.random() * 4, rot: Math.random() * 6.28, vr: (Math.random() - .5) * 10, ph: Math.random() * 6.28,
+        color: COLORS[c % COLORS.length], delay: 300 + Math.random() * 900 });
+    }
+    function explode(x, y, size, color) {
+      var n = Math.round((small ? 60 : 95) * size), room = CAP - parts.length; if (room <= 0) return; n = Math.min(n, room);
+      var speed = (260 + Math.random() * 80) * size * scale, ring = Math.random() < .35, alt = COLORS[Math.floor(Math.random() * COLORS.length)];
+      for (var i = 0; i < n; i++) {
+        var a = (i / n) * Math.PI * 2 + Math.random() * .2, v = ring ? speed * (.92 + Math.random() * .08) : speed * Math.pow(Math.random(), .45);
+        parts.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, decay: .55 + Math.random() * .35,
+          r: (1.6 + Math.random() * 1.8) * Math.min(1.3, size), color: Math.random() < .7 ? color : alt, tw: Math.random() < .3 });
+      }
+      parts.push({ x: x, y: y, vx: 0, vy: 0, life: 1, decay: 5, r: 46 * size * scale, flash: true });
+    }
+    function frame(now) {
+      if (done) return;
+      var dt = Math.min(.05, (now - last) / 1000), el2 = now - t0; last = now;
+      ctx.globalCompositeOperation = 'destination-out'; ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+      var alive = false;
+      shells.forEach(function (s) {
+        if (s.dead || el2 < s.at) { if (!s.dead) alive = true; return; }
+        alive = true; s.vy += 1400 * dt; s.y += s.vy * dt;
+        ctx.fillStyle = s.color; ctx.fillRect(s.x - 1.5, s.y - 1.5, 3, 7);
+        if (s.vy >= -60 || s.y <= s.ty) { s.dead = true; explode(s.x, s.y, s.size, s.color); }
+      });
+      for (var i = parts.length - 1; i >= 0; i--) {
+        var p = parts[i]; p.life -= p.decay * dt;
+        if (p.life <= 0) { parts.splice(i, 1); continue; }
+        alive = true;
+        if (p.flash) { var fr = p.r * (1.5 - p.life * .5), g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, fr); g.addColorStop(0, 'rgba(255,255,255,' + (p.life * .55) + ')'); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(p.x - fr, p.y - fr, fr * 2, fr * 2); continue; }
+        p.vx *= 1 - 1.6 * dt; p.vy = p.vy * (1 - 1.6 * dt) + 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt;
+        ctx.globalAlpha = p.tw ? p.life * (.4 + .6 * Math.abs(Math.sin(now / 40 + i))) : p.life;
+        ctx.fillStyle = p.color; var r = p.r * (.5 + p.life * .5); ctx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
+      }
+      ctx.globalCompositeOperation = 'source-over';
+      confetti.forEach(function (f) {
+        if (el2 < f.delay || f.y > H + 20) { if (f.y <= H + 20) alive = true; return; }
+        alive = true; f.ph += dt * 4; f.rot += f.vr * dt; f.x += (f.vx + Math.sin(f.ph) * 40) * dt; f.y += f.vy * dt;
+        ctx.globalAlpha = el2 > 4200 ? Math.max(0, 1 - (el2 - 4200) / 800) : 1;
+        ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.rot); ctx.scale(1, Math.cos(f.ph)); ctx.fillStyle = f.color; ctx.fillRect(-f.w / 2, -f.h / 2, f.w, f.h); ctx.restore();
+      });
+      ctx.globalAlpha = 1;
+      if (!alive || el2 > 5200) return stop();
+      raf = requestAnimationFrame(frame);
+    }
+    function stop() { if (done) return; done = true; cancelAnimationFrame(raf); cv.remove(); if (fwState === st) fwState = null; }
+    var st = { stop: stop }; fwState = st;
+    raf = requestAnimationFrame(frame);
+  }
   function floatXp(el, text) {
     var r = el.getBoundingClientRect();
     var f = document.createElement('div'); f.className = 'float-xp'; f.textContent = text;
@@ -2119,7 +2203,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         var after = computeAll();
         if (after.byDate[date] && dayInfo(date, after.byDate).perfect && !dayInfo(date, before.byDate).perfect) {
           toast('퍼펙트 데이! 보너스 +' + PERFECT_BONUS + 'XP ★');
-          if (el) { var rr = el.getBoundingClientRect(); burst(rr.left + rr.width / 2, rr.top, 22); }
+          perfectFireworks(el);
         }
       });
       if (el) { floatXp(el.querySelector('.check') || el, '+' + r.xp + ' XP' + (boostActive() && date >= boostActive().date ? ' ⚡+' + Math.round(r.xp * BOOST_RATE) : '')); if (navigator.vibrate) navigator.vibrate(12); }
