@@ -236,6 +236,11 @@ input:focus,select:focus,textarea:focus { outline:none; border-color:var(--lime)
 .quest.skip { opacity:.55; }
 .quest.skip .t { text-decoration:line-through; }
 .quest .more { position:absolute; right:66px; top:8px; border:0; background:none; color:var(--subtle); font-size:11px; padding:4px 6px; }
+.quest .q-acts { position:absolute; right:66px; top:8px; display:flex; align-items:center; gap:2px; }
+.quest .q-acts .more { position:static; }
+.quest .q-acts .shd { color:var(--cyan); }
+.quest .q-acts .shd.on { font-weight:700; }
+.quest .q-acts span.shd { font-size:11px; padding:4px 6px; }
 .quest .more:hover { color:var(--text); }
 .quest .mini-btn { display:inline-block; margin-top:7px; border:1px solid color-mix(in srgb, var(--cyan) 45%, transparent); border-radius:999px; background:color-mix(in srgb, var(--cyan) 10%, transparent); color:var(--cyan); font-size:11px; padding:3px 9px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .quest .mini-tag { color:var(--cyan); }
@@ -1052,7 +1057,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       <div class="recent" id="shSuggest" style="margin-top:8px"></div>
       <div class="shop-sec">최근 교환 내역</div>
       <div class="shop-list" id="shHist"></div>
-      <p class="foot-note">보호권 규칙: 🛡 하루 보호권(600G, 최대 3장)은 루틴을 놓친 하루 전체를 지켜 퍼펙트 연속 기록과 그날 놓친 모든 루틴의 연속 기록이 이어집니다. 퍼펙트 데이 7일마다 1장을 받고, 자동 사용을 켜 두면 놓친 날 자동으로 1장이 쓰입니다. 🧷 루틴 보호권(250G, 최대 3장)은 놓친 루틴 하나의 연속 기록만 지키며 직접 골라서 씁니다. 그날 놓친 루틴을 모두 루틴 보호권으로 막으면 퍼펙트 연속 기록도 하루 보호권 없이 이어집니다(퍼펙트 보너스 XP는 없음). 보호권은 최근 7일 안의 지난 날에 쓸 수 있고, 쓴 날 안에는 취소할 수 있어요.</p>
+      <p class="foot-note">보호권 규칙: 🛡 하루 보호권(600G, 최대 3장)은 루틴을 놓친 하루 전체를 지켜 퍼펙트 연속 기록과 그날 놓친 모든 루틴의 연속 기록이 이어집니다. 퍼펙트 데이 7일마다 1장을 받고, 자동 사용을 켜 두면 놓친 날 자동으로 1장이 쓰입니다. 🧷 루틴 보호권(250G, 최대 3장)은 놓친 루틴 하나의 연속 기록만 지키며 직접 골라서 씁니다. 그날 놓친 루틴을 모두 루틴 보호권으로 막으면 퍼펙트 연속 기록도 하루 보호권 없이 이어집니다(퍼펙트 보너스 XP는 없음). 보호권은 최근 7일 안의 지난 날에 쓸 수 있고, 쓴 날 안에는 취소할 수 있어요. 퀘스트 카드의 「🧷 보호권」으로 루틴 보호권을 바로 쓸 수도 있고, 오늘 루틴에 미리 써 두면 결국 완료했을 때 보호권은 돌려받습니다.</p>
     </section>
 
     <!-- 루틴 -->
@@ -1723,7 +1728,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     });
     Object.keys(byDate).forEach(function (d) { if (d > today) { var info = dayInfo(d, byDate); total += info.xp; } });
     var all = { byDate: byDate, days: days, dayMap: dayMap, total: total, catXp: catXp, perfectCount: perfectCount, streak: run, bestStreak: best, mins: mins,
-      shields: shields, shieldsEarned: earned, shieldsUsed: used, rshields: rshields, rshieldsUsed: rused, rstreak: rstreak, comebacks: comebacks, comebackWins: comebacks.filter(function (c) { return c.shield; }).length, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses, bossWins: bosses.filter(function (b) { return b.defeated; }).length,
+      shields: shields, shieldsEarned: earned, shieldsUsed: used, rshields: rshields, rshieldsUsed: rused, rstreak: rstreak, rUseMap: rUse, comebacks: comebacks, comebackWins: comebacks.filter(function (c) { return c.shield; }).length, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses, bossWins: bosses.filter(function (b) { return b.defeated; }).length,
       jobXp: jobRes.xp, jobGold: jobRes.gold, shieldMax: jobShieldMax(today),
       today: dayMap[today] || dayInfo(today, byDate) };
     return all;
@@ -1887,8 +1892,18 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   /* ---------- render: today ---------- */
   // 루틴 카드의 연속 기록 표시 (오늘 화면에서만, 2회 이상)
   function streakTag(all, rid, date) {
-    if (date !== todayStr()) { var p = dayOf(all, date).rProt || {}; return p[rid] ? '<span class="q-streak prot">' + (p[rid] === 'day' ? '🛡' : '🧷') + ' 지킴</span>' : ''; }
+    if (date !== todayStr()) { var p = dayOf(all, date).rProt || {}; return p[rid] === 'day' ? '<span class="q-streak prot">🛡 지킴</span>' : ''; } // 🧷는 카드의 「보호 중」 버튼으로 표시
     var st = all.rstreak[rid]; return st && st.run >= 2 ? '<span class="q-streak">🔥 ' + st.run + '회 연속</span>' : '';
+  }
+  // 퀘스트 카드의 🧷 루틴 보호권 버튼: 오늘(미리) 또는 최근 SHIELD_USE_DAYS일 안의 놓친 루틴. 완료·건너뛰기한 루틴엔 없음
+  function cardShield(all, rid, l, date) {
+    var today = todayStr();
+    if (l || date > today || date < addDays(today, -SHIELD_USE_DAYS)) return '';
+    var x = all.dayMap[date]; if (!x || x.missed.indexOf(rid) < 0) return '';
+    if (date < today && x.shielded) return '';
+    var u = all.rUseMap[date + '|' + rid];
+    if (u) return u.on === today ? '<button class="more shd on" type="button" data-unshield="' + esc(u.uid) + '" title="눌러서 보호권 사용 취소">🧷 보호 중</button>' : '<span class="shd on">🧷 보호 중</span>';
+    return '<button class="more shd" type="button" data-rshield="' + esc(rid) + '" title="루틴 보호권으로 이 루틴의 연속 기록 지키기 (보유 ' + all.rshields + '장)">🧷 보호권</button>';
   }
   // 이 날 아직 보호권으로 지킬 수 있는 놓친 기록이 있는지
   function shieldable(all, date) {
@@ -1932,7 +1947,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         '<div class="ico">' + esc(r.emoji || c.emoji) + '</div>' +
         '<div class="body"><div class="t">' + esc(r.title) + (l && l.mini ? ' <small class="mini-tag">미니</small>' : '') + '</div><div class="s"><span>' + esc(time) + '</span><span>' + c.en + ' ' + c.name + '</span><span class="xp">+' + (l && l.kind === 'routine' ? l.xp : r.xp) + ' XP</span>' + streakTag(all, r.id, date) + '</div>' +
         (inCb && !l ? '<button class="mini-btn" data-mini="' + esc(r.id) + '" type="button" title="미니 버전으로 완료">⚡ 미니 +' + Math.max(1, Math.round((+r.xp || 0) * MINI_RATE)) + ' · ' + esc(r.mini || '가볍게 맛보기') + '</button>' : '') + '</div>' +
-        '<button class="more" data-skip="' + esc(r.id) + '" type="button">' + (l && l.kind === 'skip' ? '건너뛰기 취소' : (l ? '' : '건너뛰기')) + '</button>' +
+        '<div class="q-acts">' + cardShield(all, r.id, l, date) + '<button class="more" data-skip="' + esc(r.id) + '" type="button">' + (l && l.kind === 'skip' ? '건너뛰기 취소' : (l ? '' : '건너뛰기')) + '</button></div>' +
         '<span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></div>';
     }).join('') : '<div class="empty">예정된 정기 루틴이 없습니다.</div>';
 
@@ -2515,6 +2530,14 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 
   /* ---------- events ---------- */
   $('questList').addEventListener('click', function (e) {
+    var rs = e.target.closest('[data-rshield]');
+    if (rs) { e.stopPropagation(); cardUseShield(rs.getAttribute('data-rshield')); return; }
+    var us = e.target.closest('[data-unshield]');
+    if (us) {
+      e.stopPropagation();
+      if (!confirm('루틴 보호권 사용을 취소하고 1장을 돌려받을까요?')) return;
+      var shu = shopData(), uidu = us.getAttribute('data-unshield'); shu.uses = shu.uses.filter(function (u) { return u.uid !== uidu; }); saveShop(shu, '보호권 사용을 취소했어요.'); return;
+    }
     var sk = e.target.closest('[data-skip]');
     if (sk) { e.stopPropagation(); if (sk.textContent) skipRoutine(sk.getAttribute('data-skip')); return; }
     var mn = e.target.closest('[data-mini]');
@@ -2944,9 +2967,15 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     saveShop(sh, entry.kind === 'shield' ? '🛡 하루 보호권 1장을 샀어요.' : entry.kind === 'rshield' ? '🧷 루틴 보호권 1장을 샀어요. 아래 「보호권 쓰기」에서 바로 쓸 수 있어요.' : '🎁 교환 완료! ' + entry.name + ', 마음껏 즐기세요.');
     var r = $('shBal').getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 10, 24);
   }
+  function cardUseShield(rid) {
+    var all = computeAll();
+    if (all.rshields < 1) { if (confirm('루틴 보호권이 없어요. 상점에서 ' + fmtNum(SHOP_RSHIELD_PRICE) + 'G에 살까요?')) openShop(); return; }
+    useShield('routine', state.viewDate, rid);
+  }
+  // 루틴 보호권은 오늘에도 미리 쓸 수 있음: 결국 완료하면 놓친 기록이 아니므로 무효(소모 안 됨)
   function useShield(kind, date, rid) {
     var all = computeAll(), x = all.dayMap[date], today = todayStr();
-    if (!x || date >= today || date < addDays(today, -SHIELD_USE_DAYS)) { toast('보호권은 최근 ' + SHIELD_USE_DAYS + '일 안의 지난 날에만 쓸 수 있어요.', true); return; }
+    if (!x || date > today || (date === today && kind === 'day') || date < addDays(today, -SHIELD_USE_DAYS)) { toast('보호권은 최근 ' + SHIELD_USE_DAYS + '일 안의 지난 날에만 쓸 수 있어요.', true); return; }
     var msg;
     if (kind === 'day') {
       if (!x.denom || x.perfect || x.shielded || x.rcovered) { toast('이 날은 이미 지켜졌어요.'); return; }
@@ -2956,7 +2985,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     } else {
       if (x.missed.indexOf(rid) < 0 || x.rProt[rid]) { toast('이 루틴은 이 날 지킬 기록이 없어요.'); return; }
       if (all.rshields < 1) { toast('루틴 보호권이 없어요. 상점에서 ' + fmtNum(SHOP_RSHIELD_PRICE) + 'G에 살 수 있어요.', true); return; }
-      if (!confirm(fmtDate(date) + ' ' + rName(rid) + '에 루틴 보호권 1장을 쓸까요?')) return;
+      if (!confirm(date === today ? '오늘 ' + rName(rid) + '에 루틴 보호권 1장을 미리 쓸까요?\n오늘 못 해도 연속 기록이 이어져요. 나중에 완료하면 보호권은 돌려받아요. (보유 ' + all.rshields + '장)' : fmtDate(date) + ' ' + rName(rid) + '에 루틴 보호권 1장을 쓸까요? (보유 ' + all.rshields + '장)')) return;
       msg = '🧷 ' + rName(rid) + ' 연속 기록을 지켰어요.';
     }
     var sh = shopData();
