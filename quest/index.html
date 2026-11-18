@@ -233,6 +233,14 @@ input:focus,select:focus,textarea:focus { outline:none; border-color:var(--lime)
 .quest.done .check { background:var(--c); border-color:var(--c); }
 .quest.done .check svg { opacity:1; transform:scale(1); }
 .quest.done .t { color:var(--text-2); }
+.quest.shielded { border-color:color-mix(in srgb, var(--cyan) 40%, transparent); border-style:dashed; background:color-mix(in srgb, var(--cyan) 5%, var(--surface)); }
+.quest.shielded .check { position:relative; background:color-mix(in srgb, var(--cyan) 22%, transparent); border-color:var(--cyan); border-style:dashed; }
+.quest.shielded .check svg { opacity:1; transform:scale(1); color:var(--cyan); }
+.quest.shielded .check::after { content:'🧷'; position:absolute; right:-7px; bottom:-7px; font-size:13px; line-height:1; }
+.quest.shielded .t { color:var(--text-2); }
+.quest.shielded .s .xp { color:var(--cyan); }
+.log-item.shielded { border-style:dashed; border-color:color-mix(in srgb, var(--cyan) 40%, transparent); grid-template-columns:32px 1fr auto; }
+.log-item.shielded .x { color:var(--cyan); }
 .quest.skip { opacity:.55; }
 .quest.skip .t { text-decoration:line-through; }
 .quest .more { position:absolute; right:66px; top:8px; border:0; background:none; color:var(--subtle); font-size:11px; padding:4px 6px; }
@@ -2129,11 +2137,12 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     logs.forEach(function (l) { if (l.kind === 'routine' || l.kind === 'skip') byRoutine[l.routine_id] = l; });
     $('questList').innerHTML = sched.length ? sched.map(function (r) {
       var l = byRoutine[r.id], c = CATS[r.category] || CATS.life;
-      var cls = 'quest' + (l && l.kind === 'routine' ? ' done' : '') + (l && l.kind === 'skip' ? ' skip' : '') + (state.pending[r.id + date] ? ' pending' : '');
+      var su = !l && all.rUseMap[date + '|' + r.id]; // 🧷 루틴 보호권을 쓴 루틴: 체크된 것처럼 보이지만 기록·XP·통계에는 들어가지 않음
+      var cls = 'quest' + (l && l.kind === 'routine' ? ' done' : '') + (l && l.kind === 'skip' ? ' skip' : '') + (su ? ' shielded' : '') + (state.pending[r.id + date] ? ' pending' : '');
       var time = r.start ? r.start + (r.end ? '–' + r.end : '') : '언제든';
       return '<div class="' + cls + '" style="--c:' + c.color + '" data-rid="' + esc(r.id) + '" role="button" tabindex="0" aria-pressed="' + (l && l.kind === 'routine') + '">' +
         '<div class="ico">' + esc(r.emoji || c.emoji) + '</div>' +
-        '<div class="body"><div class="t">' + esc(r.title) + (l && l.mini ? ' <small class="mini-tag">미니</small>' : '') + '</div><div class="s"><span>' + esc(time) + '</span><span>' + c.en + ' ' + c.name + '</span><span class="xp">+' + (l && l.kind === 'routine' ? l.xp : r.xp) + ' XP</span>' + streakTag(all, r.id, date) + '</div>' +
+        '<div class="body"><div class="t">' + esc(r.title) + (l && l.mini ? ' <small class="mini-tag">미니</small>' : '') + '</div><div class="s"><span>' + esc(time) + '</span><span>' + c.en + ' ' + c.name + '</span>' + (su ? '<span class="xp">🧷 보호권 · XP 없음</span>' : '<span class="xp">+' + (l && l.kind === 'routine' ? l.xp : r.xp) + ' XP</span>') + streakTag(all, r.id, date) + '</div>' +
         (inCb && !l ? '<button class="mini-btn" data-mini="' + esc(r.id) + '" type="button" title="미니 버전으로 완료">⚡ 미니 +' + Math.max(1, Math.round((+r.xp || 0) * MINI_RATE)) + ' · ' + esc(r.mini || '가볍게 맛보기') + '</button>' : '') + '</div>' +
         '<div class="q-acts">' + cardShield(all, r.id, l, date) + '<button class="more" data-skip="' + esc(r.id) + '" type="button">' + (l && l.kind === 'skip' ? '건너뛰기 취소' : (l ? '' : '건너뛰기')) + '</button></div>' +
         '<span class="check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></div>';
@@ -2564,10 +2573,17 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       f.innerHTML = '<option value="">전체 카테고리</option>' + CAT_KEYS.map(function (k) { return '<option value="' + k + '">' + CATS[k].en + ' ' + CATS[k].name + '</option>'; }).join('') + '<option value="_adhoc">비정기 기록만</option>';
     }
     var fv = f.value;
-    var dates = Object.keys(all.byDate).sort().reverse();
+    // 🧷 루틴 보호권을 쓴 루틴도 그날 기록에 보여 줌 (실제 기록이 아니라 XP·통계에는 없음)
+    var shByDate = {};
+    Object.keys(all.rUseMap).forEach(function (k) {
+      var u = all.rUseMap[k], r = routineById(u.rid); if (!r) return;
+      (shByDate[u.date] = shByDate[u.date] || []).push(r);
+    });
+    var dates = Object.keys(all.byDate).concat(Object.keys(shByDate)).filter(function (d, i, a) { return a.indexOf(d) === i; }).sort().reverse();
     var html = dates.map(function (d) {
-      var logs = all.byDate[d].filter(function (l) { return !fv || (fv === '_adhoc' ? l.kind === 'adhoc' : l.category === fv); });
-      if (!logs.length) return '';
+      var logs = (all.byDate[d] || []).filter(function (l) { return !fv || (fv === '_adhoc' ? l.kind === 'adhoc' : l.category === fv); });
+      var shs = fv === '_adhoc' ? [] : (shByDate[d] || []).filter(function (r) { return !fv || r.category === fv; });
+      if (!logs.length && !shs.length) return '';
       var info = dayOf(all, d);
       return '<div class="log-day"><h4><span>' + fmtDate(d) + (info.perfect ? ' ★' : '') + (info.shielded ? ' 🛡' : info.rcovered ? ' 🧷' : '') + (info.bossXp ? ' ⚔️ 보스 +' + info.bossXp : '') + (info.retroXp ? ' 📝 회고 +' + info.retroXp : '') + (info.partyXp ? ' 🤝 파티 +' + info.partyXp : '') + (info.jobXp ? ' 🎖 전직 +' + info.jobXp : '') + '</span><b>' + info.xp + ' XP</b></h4>' + logs.map(function (l) {
         var c = CATS[l.category] || CATS.life, r = routineById(l.routine_id);
@@ -2576,6 +2592,10 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         return '<div class="log-item"><span class="e">' + esc(e) + '</span><div class="m">' + esc(l.title) + '<span class="tag">' + tag + '</span><small>' + c.en + ' ' + c.name + (l.minutes ? ' · ' + hm(l.minutes) : '') + (l.note && l.kind !== 'skip' ? ' · ' + esc(l.note) : '') + '</small></div>' +
           '<span class="x" style="color:' + c.color + '">' + (l.kind === 'skip' ? '–' : '+' + l.xp) + '</span>' +
           '<button class="del btn-ghost" style="border:0;background:none;color:var(--subtle);padding:6px" data-del="' + esc(l.log_id) + '" aria-label="삭제"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
+      }).join('') + shs.map(function (r) {
+        var c = CATS[r.category] || CATS.life;
+        return '<div class="log-item shielded"><span class="e">' + esc(r.emoji || c.emoji) + '</span><div class="m">' + esc(r.title) + '<span class="tag">🧷 보호권</span><small>' + c.en + ' ' + c.name + ' · 연속 기록만 유지, 달성·XP에는 미포함</small></div>' +
+          '<span class="x">0</span></div>';
       }).join('') + '</div>';
     }).join('');
     $('logList').innerHTML = html || '<div class="empty">아직 기록이 없습니다. 오늘의 퀘스트를 체크해 보세요.</div>';
