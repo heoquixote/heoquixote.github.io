@@ -537,6 +537,20 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 .shop-item .x { border:0; background:none; color:var(--subtle); font-size:16px; padding:4px; cursor:pointer; }
 .shop-item.hist { grid-template-columns:32px 1fr auto; padding:8px 12px; }
 .shop-item.hist .e { font-size:18px; }
+.shop-item .n .live { color:var(--lime); }
+.shop-item .acts { display:flex; gap:6px; align-items:center; }
+.bag-row .n small b { color:var(--text-2); }
+.bag-sub { display:grid; gap:6px; grid-column:1 / -1; }
+.bag-sub .use-r { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:13px; padding:8px 10px; border:1px dashed var(--line); border-radius:var(--r-sm, 10px); }
+.bag-sub .use-r small { display:block; color:var(--muted); font-size:12px; }
+.gift-pick { display:flex; flex-wrap:wrap; gap:6px; }
+.gift-pick button { border:1px solid var(--line); background:var(--surface-2); color:var(--text-2); border-radius:999px; padding:7px 12px; font:inherit; font-size:13px; cursor:pointer; }
+.gift-pick button[aria-pressed="true"] { border-color:var(--lime); color:var(--text); background:rgba(200,255,61,.12); }
+.gift-pick button:disabled { opacity:.45; cursor:not-allowed; }
+.gift-sum { margin:4px 0 0; font-size:13px; color:var(--muted); }
+.item-note { margin-top:6px; font-size:12px; color:var(--amber); }
+.item-note.boost { color:var(--lime); }
+.boss-traits .strike { color:#ffb36b; border-color:#ffb36b; }
 .shop-add { display:grid; grid-template-columns:64px 1fr 96px auto; gap:8px; margin-top:8px; }
 .shop-add input { min-width:0; }
 .shop-add #shEmoji { text-align:center; font-size:18px; }
@@ -570,6 +584,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 .hp-note .hit { color:var(--lime); font-weight:700; }
 .hp-bar:after { content:""; position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent 0 calc(var(--seg) - 2px),rgba(5,6,7,.9) calc(var(--seg) - 2px) var(--seg)); }
 .boss-foot { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:12px; font-size:13px; color:var(--muted); }
+.boss-foot .acts { display:flex; gap:6px; }
 .boss-foot .rw { color:var(--amber); font-weight:700; font-family:var(--font-en); }
 .boss.dead { border-color:rgba(200,255,61,.45); background:radial-gradient(420px 160px at 0% 0%,rgba(200,255,61,.12),transparent 70%),var(--surface); }
 .boss.dead:before { background:repeating-linear-gradient(90deg,var(--lime) 0 14px,transparent 14px 20px); }
@@ -1044,8 +1059,12 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       <div class="shield-inv" id="shInv"></div>
       <div class="shop-sec">보호권 쓰기<small>최근 7일 동안 놓친 기록</small></div>
       <div class="shop-list" id="shUse"></div>
+      <div class="shop-sec">아이템 가방<small>사 둔 아이템을 원할 때 켜요</small></div>
+      <div class="shop-list" id="shBag"></div>
       <div class="shop-sec">시스템 아이템</div>
       <div class="shop-list" id="shSystem"></div>
+      <div class="shop-sec">선물하기<small>골드로 사서 친구에게 바로 보내요</small></div>
+      <div class="shop-list" id="shGift"></div>
       <div class="shop-sec">내 보상 (현실에서 나에게 주는 선물)</div>
       <div class="shop-list" id="shItems"></div>
       <form class="shop-add" id="shopForm" novalidate>
@@ -1058,6 +1077,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       <div class="shop-sec">최근 교환 내역</div>
       <div class="shop-list" id="shHist"></div>
       <p class="foot-note">보호권 규칙: 🛡 하루 보호권(600G, 최대 3장)은 루틴을 놓친 하루 전체를 지켜 퍼펙트 연속 기록과 그날 놓친 모든 루틴의 연속 기록이 이어집니다. 퍼펙트 데이 7일마다 1장을 받고, 자동 사용을 켜 두면 놓친 날 자동으로 1장이 쓰입니다. 🧷 루틴 보호권(250G, 최대 3장)은 놓친 루틴 하나의 연속 기록만 지키며 직접 골라서 씁니다. 그날 놓친 루틴을 모두 루틴 보호권으로 막으면 퍼펙트 연속 기록도 하루 보호권 없이 이어집니다(퍼펙트 보너스 XP는 없음). 보호권은 최근 7일 안의 지난 날에 쓸 수 있고, 쓴 날 안에는 취소할 수 있어요. 퀘스트 카드의 「🧷 보호권」으로 루틴 보호권을 바로 쓸 수도 있고, 오늘 루틴에 미리 써 두면 결국 완료했을 때 보호권은 돌려받습니다.</p>
+      <p class="foot-note">아이템 규칙: ⏰ 시간 연장권(150G)은 그날 마감을 다음 날 새벽 3시까지 늘려, 자정이 지나도 앱의 「오늘」과 체크가 그날로 들어가요. 자정 전에 켜 두면 자정 전까지 취소할 수 있고, 새벽 0~3시에는 어제를 바로 연장해요. ⚡ XP 부스터(300G)는 켠 뒤 24시간 동안 체크한 루틴·비정기 기록 XP를 1.5배로 만들어요(퍼펙트·보스·파티·회고 보상 제외). 부스터로 얻은 XP는 레벨·골드에는 들어가지만 친구 리그·전체 리그 점수에는 들어가지 않아요. 💊 복귀 포션(400G)은 최근 7일 안에 끊긴 퍼펙트 연속 기록의 절반에서 다시 이어 주고, 7일에 한 번 쓸 수 있어요. ⚔ 보스 강타(300G, 주 1회)는 산 날부터 그 주 끝까지 보스 약점 능력치 기록의 피해를 2배로 만들어요. 약점이 없는 보스(기록한 날·퍼펙트·비정기·다양성)에는 쓸 수 없어요. 🎁 선물하기는 하루 보호권·루틴 보호권·연장권·부스터·포션을 골드로 사서 친구에게 보내요(하루 3번까지). 받은 선물은 앱을 열면 가방에 들어오고, 보호권은 최대 보유 수를 넘어도 받아요.</p>
     </section>
 
     <!-- 루틴 -->
@@ -1218,6 +1238,20 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   </div>
 </div>
 
+<!-- 선물하기 시트 -->
+<div class="sheet" id="giftSheet" role="dialog" aria-modal="true" aria-labelledby="giftSheetTitle" hidden>
+  <div class="grab"></div>
+  <h3 id="giftSheetTitle">친구에게 선물하기</h3>
+  <div class="field"><label>받는 친구</label><div class="gift-pick" id="giftFriends"></div></div>
+  <div class="field"><label>선물</label><div class="gift-pick gift-items" id="giftItems"></div></div>
+  <div class="field"><label for="giftMsg">한마디 (선택)</label><input type="text" id="giftMsg" maxlength="40" placeholder="예: 이번 주도 같이 버텨 보자!"></div>
+  <p class="gift-sum" id="giftSum"></p>
+  <div class="sheet-actions">
+    <button type="button" class="btn" data-close>취소</button>
+    <button type="button" class="btn btn-primary" id="btnSendGift">보내기</button>
+  </div>
+</div>
+
 <!-- 파티 만들기 / 설정 시트 -->
 <div class="sheet" id="partySheet" role="dialog" aria-modal="true" aria-labelledby="partySheetTitle" hidden>
   <div class="grab"></div>
@@ -1325,6 +1359,15 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   // 복귀 퀘스트: 루틴 있는 날 기록 0건이 COMEBACK_GAP일 이어진 뒤 돌아오면 COMEBACK_DAYS일 동안 XP 보너스, 그중 2일 기록 시 보호권 1장
   // 디스코드 n8n 집계(wq0zIH5Mm2VXYHb1)에 같은 규칙이 복제되어 있으니 함께 수정
   var COMEBACK_GAP = 3, COMEBACK_DAYS = 3, COMEBACK_BONUS = 0.5, COMEBACK_SHIELD_AT = 2, MINI_RATE = 0.5;
+  // 상점 소모품·부스터. 리그 점수(stats_push 스냅샷)는 부스터 적용 전 XP로 올린다
+  var EXT_HOUR = 3, BOOST_RATE = 0.5, BOOST_HOURS = 24, POTION_RATE = 0.5, POTION_DAYS = 7, GIFT_DAY_MAX = 3;
+  var ITEM_DEFS = {
+    ext: { emoji: '⏰', name: '시간 연장권', price: 150, max: 3, desc: '오늘 마감을 새벽 3시까지 늘려요. 자정이 지나도 3시 전까지는 앱의 「오늘」이 그대로라 체크가 그날 기록으로 들어가요.' },
+    boost: { emoji: '⚡', name: 'XP 부스터', price: 300, max: 3, desc: '켠 뒤 24시간 동안 체크한 루틴·비정기 기록 XP가 1.5배. 리그 점수에는 들어가지 않아요.' },
+    potion: { emoji: '💊', name: '복귀 포션', price: 400, max: 2, desc: '최근 7일 안에 끊긴 퍼펙트 연속 기록의 절반을 되살려요. 7일에 한 번만 쓸 수 있어요.' },
+    strike: { emoji: '⚔', name: '보스 강타', price: 300, desc: '이번 주 보스의 약점 능력치 기록이 주는 피해가 2배. 주 1회, 사는 즉시 적용돼요.' }
+  };
+  var GIFT_KINDS = ['shield', 'rshield', 'ext', 'boost', 'potion'];
   var SEASON_KEY = 'dl_quest_season_seen_';
   var RETRO_QS = [
     { k: 'keep', t: '🏆 이번 달 가장 잘한 것은?', ph: '예: 크로스핏을 한 번도 빠지지 않았다. 아침 루틴이 자리 잡았다.' },
@@ -1406,7 +1449,17 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
   function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
-  function todayStr() { return ymd(new Date()); }
+  // 시간 연장권: 연장한 날(date)의 다음 날 새벽 EXT_HOUR시 전까지는 그날을 「오늘」로 본다
+  function realToday() { return ymd(new Date()); }
+  function extOn(date) {
+    var sh = typeof state !== 'undefined' && state && state.profile && state.profile.shop;
+    return !!(sh && Array.isArray(sh.uses) && sh.uses.some(function (u) { return u && u.kind === 'ext' && u.date === date; }));
+  }
+  function todayStr() {
+    var d = new Date(), t = ymd(d);
+    if (d.getHours() < EXT_HOUR) { var y = addDays(t, -1); if (extOn(y)) return y; }
+    return t;
+  }
   function parse(s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
   function addDays(s, n) { var d = parse(s); d.setDate(d.getDate() + n); return ymd(d); }
   function dow(s) { return parse(s).getDay(); }
@@ -1600,6 +1653,28 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     return 0;
   }
 
+  // 보스 강타가 노리는 능력치: 약점 → 능력치 보스의 능력치 → 루틴 보스의 루틴 능력치. 기록한 날·퍼펙트·비정기·다양성 보스는 없음
+  function strikeCatOf(b) {
+    if (b.weak) return b.weak;
+    if (b.type === 'cat') return b.cat || '';
+    if (b.type === 'routine') return b.cat || (routineById(b.rid) || {}).category || '';
+    return '';
+  }
+  // 강타 추가 피해 = 그날 피해 중 강타 능력치에서 나온 몫만큼 한 번 더
+  function strikeHit(b, x) {
+    var c = b.strikeCat; if (!c) return 0;
+    switch (b.type) {
+      case 'xp': return (b.weak ? 2 : 1) * (x.catXp[c] || 0);
+      case 'cat': return b.cat === c ? x.catXp[c] || 0 : 0;
+      case 'routine': return bossHit(b, x);
+      case 'checks':
+        var seen = {}, n = 0;
+        x.logs.forEach(function (l) { if (l.kind !== 'routine' || seen[l.routine_id]) return; seen[l.routine_id] = 1; if (l.category === c) n += b.weak ? 2 : 1; });
+        return n;
+    }
+    return 0;
+  }
+
   function computeAll() {
     spCache = {};
     var byDate = indexLogs();
@@ -1624,11 +1699,23 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       if (u.kind === 'day' && t.denom > 0 && !t.perfect && !dayUse[u.date]) { dayUse[u.date] = u; usedOnDay[u.on] = (usedOnDay[u.on] || 0) + 1; }
       else if (u.kind === 'routine' && t.missed.indexOf(u.rid) >= 0 && !rUse[u.date + '|' + u.rid]) { rUse[u.date + '|' + u.rid] = u; usedOnR[u.on] = (usedOnR[u.on] || 0) + 1; }
     });
+    // 친구에게 받은 보호권: 받은 날 보유 수에 더함 (선물은 최대치를 넘어도 그대로 받음)
+    var giftS = {}, giftR = {};
+    sd.gifts.forEach(function (g) {
+      if (g.item === 'shield') giftS[g.date] = (giftS[g.date] || 0) + 1;
+      else if (g.item === 'rshield') giftR[g.date] = (giftR[g.date] || 0) + 1;
+    });
+    // 복귀 포션: 끊긴 날(date)에 쓰면 그 직전 연속 기록의 절반에서 이어감. 그날이 더는 끊긴 날이 아니면 무효(소모 안 함)
+    var potionUse = {}, potionUsed = {}, breaks = [];
+    sd.uses.forEach(function (u) { if (u.kind === 'potion' && u.date && u.on && !potionUse[u.date]) potionUse[u.date] = u; });
+    function capAdd(cur, n, max) { return cur >= max ? cur : Math.min(max, cur + n); }
     var rshields = 0, rused = 0;
     days.forEach(function (x) {
       var smax = jobShieldMax(x.date); // 전직 효과로 보호권 최대치·획득 주기가 달라질 수 있음
-      if (boughtShields[x.date]) { x.shieldBought = boughtShields[x.date]; shields = Math.min(smax, shields + boughtShields[x.date]); }
-      if (boughtR[x.date]) rshields = Math.min(RSHIELD_MAX, rshields + boughtR[x.date]);
+      if (boughtShields[x.date]) { x.shieldBought = boughtShields[x.date]; shields = capAdd(shields, boughtShields[x.date], smax); }
+      if (boughtR[x.date]) rshields = capAdd(rshields, boughtR[x.date], RSHIELD_MAX);
+      if (giftS[x.date]) shields += giftS[x.date];
+      if (giftR[x.date]) rshields += giftR[x.date];
       if (usedOnDay[x.date]) shields = Math.max(0, shields - usedOnDay[x.date]);
       if (usedOnR[x.date]) rshields = Math.max(0, rshields - usedOnR[x.date]);
       var logged = x.logs.some(function (l) { return l.kind !== 'skip'; });
@@ -1647,7 +1734,8 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         if (dayUse[x.date]) { used++; x.shielded = true; x.shieldManual = dayUse[x.date]; }
         else if (x.missed.every(function (id) { return rUse[x.date + '|' + id]; })) x.rcovered = true; // 놓친 루틴을 모두 루틴 보호권으로 막음
         else if (sd.auto && shields > 0) { shields--; used++; x.shielded = true; }
-        else run = 0;
+        else if (potionUse[x.date] && run >= 2) { var pu = potionUse[x.date]; x.potion = { before: run, after: Math.floor(run * POTION_RATE), u: pu }; potionUsed[pu.uid] = 1; run = x.potion.after; }
+        else { if (run > 0) { x.broke = run; breaks.push(x.date); } run = 0; }
       }
       if (x.comeback && !x.comeback.shield && x.comeback.days >= COMEBACK_SHIELD_AT) {
         x.comeback.shield = true; x.comebackShield = true; earned++; if (shields < smax) shields++;
@@ -1674,18 +1762,19 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       });
     });
 
-    // 주간 보스
-    var bosses = [];
+    // 주간 보스 (보스 강타: 산 날부터 그 주 끝까지 약점 능력치 피해 2배)
+    var bosses = [], strikeByWs = {};
+    sd.buys.forEach(function (b) { if (b.kind === 'strike' && b.date) { var w = weekStart(b.date); if (!strikeByWs[w] || b.date < strikeByWs[w]) strikeByWs[w] = b.date; } });
     if (days.length) {
       var ws0 = weekStart(days[0].date); if (ws0 < days[0].date) ws0 = addDays(ws0, 7); // 시즌 첫 주가 중간에 시작하면 다음 월요일부터
       for (var ws = ws0; ws <= today; ws = addDays(ws, 7)) {
         var b = bossDef(ws, dayMap), prog = 0, kinds = {};
-        b.end = addDays(ws, 6); b.reward = BOSS_REWARD;
+        b.end = addDays(ws, 6); b.reward = BOSS_REWARD; b.strikeCat = strikeCatOf(b); b.strike = b.strikeCat ? strikeByWs[ws] || '' : ''; b.strikeDmg = 0;
         for (var i = 0; i < 7; i++) {
           var dd = addDays(ws, i), x = dayMap[dd];
           if (!x) continue;
           if (b.type === 'variety') { x.logs.forEach(function (l) { if (l.kind === 'routine' && (routineById(l.routine_id) || {}).category !== 'work') kinds[l.routine_id] = 1; }); prog = Object.keys(kinds).length; }
-          else prog += bossHit(b, x);
+          else { prog += bossHit(b, x); if (b.strike && dd >= b.strike) { var sx = strikeHit(b, x); prog += sx; b.strikeDmg += sx; } }
           if (!b.defeatDate && prog >= b.target) b.defeatDate = dd;
         }
         b.progress = prog; b.defeated = !!b.defeatDate; b.over = b.end < today;
@@ -1721,6 +1810,17 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     // 전직 효과 (전직한 날부터)
     var jobRes = applyJobs(days);
 
+    // XP 부스터: 켠 뒤 24시간 안에 체크한 기록(켠 날 이후 날짜)의 XP +50%. 퍼펙트·보스·파티·회고 보상과 전직 보너스는 제외
+    var boosts = sd.uses.filter(function (u) { return u.kind === 'boost' && u.at && u.date; }), boostTotal = 0;
+    if (boosts.length) state.logs.forEach(function (l) {
+      if (l.kind === 'skip' || !(l.xp > 0) || !l.created_at) return;
+      var t = Date.parse(l.created_at), dx = dayMap[l.log_date];
+      if (!dx || isNaN(t)) return;
+      if (!boosts.some(function (u) { var a = Date.parse(u.at); return t >= a && t < a + BOOST_HOURS * 36e5 && l.log_date >= u.date; })) return;
+      var add = Math.round(l.xp * BOOST_RATE);
+      if (add > 0) { dx.boostXp = (dx.boostXp || 0) + add; dx.xp += add; boostTotal += add; (dx.boostLogs = dx.boostLogs || {})[l.log_id] = add; }
+    });
+
     var total = 0, catXp = {}, perfectCount = 0, mins = 0;
     days.forEach(function (x) {
       total += x.xp; mins += x.mins; if (x.perfect) perfectCount++;
@@ -1729,7 +1829,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     Object.keys(byDate).forEach(function (d) { if (d > today) { var info = dayInfo(d, byDate); total += info.xp; } });
     var all = { byDate: byDate, days: days, dayMap: dayMap, total: total, catXp: catXp, perfectCount: perfectCount, streak: run, bestStreak: best, mins: mins,
       shields: shields, shieldsEarned: earned, shieldsUsed: used, rshields: rshields, rshieldsUsed: rused, rstreak: rstreak, rUseMap: rUse, comebacks: comebacks, comebackWins: comebacks.filter(function (c) { return c.shield; }).length, partyClears: partyClears, bestCombo: bestCombo, bosses: bosses, bossWins: bosses.filter(function (b) { return b.defeated; }).length,
-      jobXp: jobRes.xp, jobGold: jobRes.gold, shieldMax: jobShieldMax(today),
+      jobXp: jobRes.xp, jobGold: jobRes.gold, shieldMax: jobShieldMax(today), boostTotal: boostTotal, potionUsed: potionUsed, breaks: breaks,
       today: dayMap[today] || dayInfo(today, byDate) };
     return all;
   }
@@ -1913,7 +2013,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   }
   function renderToday(all) {
     var date = state.viewDate, today = todayStr();
-    $('dLabel').innerHTML = fmtDate(date) + '<small>' + (date === today ? '오늘' : date < today ? Math.round((parse(today) - parse(date)) / 864e5) + '일 전' : '') + '</small>';
+    $('dLabel').innerHTML = fmtDate(date) + '<small>' + (date === today ? (today !== realToday() ? '오늘 · ⏰ 연장 중' : '오늘') : date < today ? Math.round((parse(today) - parse(date)) / 864e5) + '일 전' : '') + '</small>';
     $('dNext').disabled = date >= today;
     $('todayTitle').textContent = date === today ? '오늘의 퀘스트' : fmtDate(date) + ' 퀘스트';
     var logs = all.byDate[date] || [];
@@ -1930,6 +2030,10 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       (info.shieldEarned ? '<div class="shield-note">🛡 이 날 퍼펙트로 하루 보호권 1장 획득</div>' : '') +
       (info.rcovered ? '<div class="shield-note">🧷 놓친 루틴을 모두 루틴 보호권으로 막아 연속 기록이 이어졌어요.</div>' : '') +
       (shieldable(all, date) ? '<div class="shield-note">이 날 놓친 연속 기록을 보호권으로 지킬 수 있어요. <button type="button" class="btn btn-sm btn-ghost" data-goshop>보호권 쓰기</button></div>' : '') +
+      (date === today && today !== realToday() ? '<div class="item-note">⏰ 시간 연장 중 · 새벽 ' + EXT_HOUR + '시까지 체크가 ' + fmtDate(today) + ' 기록으로 들어가요.</div>' : '') +
+      (date === today && today === realToday() && extOn(today) ? '<div class="item-note">⏰ 오늘 마감이 내일 새벽 ' + EXT_HOUR + '시까지 연장돼 있어요.</div>' : '') +
+      (date === today && boostActive() ? '<div class="item-note boost">⚡ XP 부스터 켜짐 · ' + (ymd(new Date(Date.parse(boostActive().at) + BOOST_HOURS * 36e5)) !== realToday() ? '내일 ' : '') + hhmm(Date.parse(boostActive().at) + BOOST_HOURS * 36e5) + '까지 기록 XP ×1.5' + (info.boostXp ? ' · 이 날 +' + info.boostXp + ' XP' : '') + '</div>' : (info.boostXp ? '<div class="item-note boost">⚡ 부스터 보너스 +' + info.boostXp + ' XP</div>' : '')) +
+      (info.potion ? '<div class="shield-note">💊 복귀 포션으로 퍼펙트 연속 ' + info.potion.before + '일 → ' + info.potion.after + '일로 이어졌어요.</div>' : '') +
       (info.shielded ? '<div class="shield-note">🛡 보호권 1장을 써서 연속 기록을 지켰습니다.</div>' : (dayOf(all, addDays(date, -1)).shielded && date === today ? '<div class="shield-note">🛡 어제 빠진 날은 보호권 1장으로 연속 기록을 지켰어요. 남은 보호권 ' + all.shields + '장</div>' : '')) + '</div>';
     renderBoss(all, date);
     renderComeback(all, date);
@@ -1960,6 +2064,11 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     }).join('') : '<div class="empty">독서, 공부, 운동, 사이드 프로젝트처럼 루틴 밖에서 한 일도 기록하면 경험치가 됩니다.</div>';
   }
 
+  function strikeTag(b) {
+    if (!b.strike) return '';
+    var c = CATS[b.strikeCat] || {};
+    return '<span class="strike">⚔ 강타 ' + md(b.strike) + '~ · ' + (c.emoji || '') + ' ' + (c.name || '') + ' 피해 2배' + (b.strikeDmg ? ' (+' + fmtNum(b.strikeDmg) + b.unit + ')' : '') + '</span>';
+  }
   function bossNote(b, left) {
     var hit = Math.min(b.progress, b.target);
     var what = b.type === 'routine' ? esc((routineById(b.rid) || {}).title || '루틴') + ' ' + fmtNum(b.progress) + '회' : b.type === 'xp' ? '주간 XP ' + fmtNum(b.progress) : b.type === 'cat' ? (CATS[b.cat] || {}).name + ' XP ' + fmtNum(b.progress) : (BOSS_MECH[b.type] || '진행') + ' ' + fmtNum(b.progress) + b.unit;
@@ -1977,7 +2086,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     var seg = b.unit === 'XP' || b.unit === '분' || b.target > 20 ? 10 : b.target;
     var cls = 'boss' + (b.species ? ' sp' : '') + (b.defeated ? ' dead' : b.over ? ' fled' : '');
     var traits = b.species ? '<div class="boss-lore">' + esc(b.lore) + '</div><div class="boss-traits"><span>' + esc(BOSS_MECH[b.type]) + '</span>' +
-      (b.weak ? '<span class="weak">약점 ' + CATS[b.weak].emoji + ' ' + CATS[b.weak].name + ' ×2</span>' : '') + '</div>' : '';
+      (b.weak ? '<span class="weak">약점 ' + CATS[b.weak].emoji + ' ' + CATS[b.weak].name + ' ×2</span>' : '') + strikeTag(b) + '</div>' : (b.strike ? '<div class="boss-traits">' + strikeTag(b) + '</div>' : '');
     var nx = null; if (cur) { var nws = addDays(ws, 7); nx = (state.profile.bosses || {})[nws] ? null : pickSpecies(nws).sp; }
     var when = b.defeated ? md(b.defeatDate) + ' 격파' : b.over ? '도주함' : dLeft === 0 ? '오늘 자정까지' : 'D-' + dLeft;
     $('bossCard').innerHTML = '<div class="' + cls + '"' + (b.species ? ' style="--bc:' + b.color + '"' : '') + '>' +
@@ -1987,9 +2096,10 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       '<div class="hp"><div class="hp-head"><span>보스 HP</span><span><b>' + fmtNum(left) + '</b> / ' + fmtNum(b.target) + ' 남음</span></div><div class="hp-bar" style="--seg:' + (100 / seg) + '%"><div class="hp-fill" style="width:' + (left / b.target * 100) + '%"></div><div class="hp-lost" style="width:' + (100 - left / b.target * 100) + '%"></div></div>' +
       '<div class="hp-note">' + bossNote(b, left) + '</div></div></div></div>' +
       '<div class="boss-foot"><span>' + (b.defeated ? '보상 획득 <span class="rw">+' + b.reward + ' XP</span>' : b.over ? '이번 주는 놓쳤어요. 다음 보스에 도전하세요.' : '격파 보상 <span class="rw">+' + b.reward + ' XP</span> · ' + fmtNum(b.progress) + b.unit + ' 진행') + '</span>' +
-      (cur && !b.defeated ? '<button class="btn btn-sm btn-ghost" type="button" id="btnBossEdit">보스 변경</button>' : '') + '</div>' +
+      (cur && !b.defeated ? '<span class="acts">' + (b.strikeCat && !b.strike ? '<button class="btn btn-sm" type="button" id="btnBossStrike">⚔ 강타 ' + fmtNum(ITEM_DEFS.strike.price) + 'G</button>' : '') + '<button class="btn btn-sm btn-ghost" type="button" id="btnBossEdit">보스 변경</button></span>' : '') + '</div>' +
       (nx ? '<div class="boss-next">다음 주 예고 · <b>' + nx.emoji + ' ' + esc(nx.name) + '</b> (' + esc(BOSS_MECH[nx.mech]) + ')</div>' : '') + '</div>';
     var be = $('btnBossEdit'); if (be) be.addEventListener('click', function () { openBossSheet(b); });
+    var bs = $('btnBossStrike'); if (bs) bs.addEventListener('click', function () { buyItem('strike'); });
   }
 
   function toggleRoutine(rid, el) {
@@ -2012,7 +2122,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
           if (el) { var rr = el.getBoundingClientRect(); burst(rr.left + rr.width / 2, rr.top, 22); }
         }
       });
-      if (el) { floatXp(el.querySelector('.check') || el, '+' + r.xp + ' XP'); if (navigator.vibrate) navigator.vibrate(12); }
+      if (el) { floatXp(el.querySelector('.check') || el, '+' + r.xp + ' XP' + (boostActive() && date >= boostActive().date ? ' ⚡+' + Math.round(r.xp * BOOST_RATE) : '')); if (navigator.vibrate) navigator.vibrate(12); }
     }
   }
   // 복귀 퀘스트 기간: 미니 버전으로 완료 (XP 절반, 완료로 인정)
@@ -2400,6 +2510,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   }
 
   function renderAll() {
+    if (state.viewDate > todayStr()) state.viewDate = todayStr(); // 시간 연장 중이면 실제 날짜보다 「오늘」이 하루 앞
     var all = computeAll();
     renderHeader(all);
     if (state.tab === 'today') renderToday(all);
@@ -2900,7 +3011,20 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   function shopData() {
     var sh = state.profile && state.profile.shop;
     if (!sh || typeof sh !== 'object') sh = {};
-    return { items: Array.isArray(sh.items) ? sh.items : [], buys: Array.isArray(sh.buys) ? sh.buys : [], uses: Array.isArray(sh.uses) ? sh.uses : [], auto: sh.auto !== false };
+    return { items: Array.isArray(sh.items) ? sh.items : [], buys: Array.isArray(sh.buys) ? sh.buys : [], uses: Array.isArray(sh.uses) ? sh.uses : [],
+      gifts: Array.isArray(sh.gifts) ? sh.gifts : [], auto: sh.auto !== false };
+  }
+  // 소모품 보유 수 = 산 것 + 선물 받은 것 − 쓴 것 (포션은 computeAll이 실제로 효과를 낸 것만 소모)
+  function itemStock(kind, all) {
+    var sd = shopData(), n = 0;
+    sd.buys.forEach(function (b) { if (b.kind === kind) n++; });
+    sd.gifts.forEach(function (g) { if (g.item === kind) n++; });
+    sd.uses.forEach(function (u) { if (u.kind !== kind) return; if (kind === 'potion' && all && !all.potionUsed[u.uid]) return; n--; });
+    return Math.max(0, n);
+  }
+  function boostActive(at) {
+    var t = at || Date.now();
+    return shopData().uses.filter(function (u) { return u.kind === 'boost' && u.at && t >= Date.parse(u.at) && t < Date.parse(u.at) + BOOST_HOURS * 36e5; })[0] || null;
   }
   function goldOf(all) {
     var spent = shopData().buys.reduce(function (s, b) { return s + (+b.price || 0); }, 0);
@@ -2937,11 +3061,18 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       '<div class="si"><div class="k">🧷 루틴 보호권</div><div class="v">' + all.rshields + '<small> / ' + RSHIELD_MAX + '</small></div><p>놓친 루틴 하나의 연속 기록만 지켜요. 아래에서 날짜와 루틴을 골라 써요.</p></div>' +
       '<label class="shield-auto"><input type="checkbox" id="shAuto"' + (sh.auto ? ' checked' : '') + '> 루틴을 놓친 날 하루 보호권을 자동으로 쓰기</label>';
     renderShopUse(all);
+    renderBag(all);
+    renderGiftRow(all, g);
     var smax = all.shieldMax || SHIELD_MAX, full = all.shields >= smax, rfull = all.rshields >= RSHIELD_MAX;
     $('shSystem').innerHTML = '<div class="shop-item"><span class="e">🛡</span><span class="n">하루 보호권 1장<small>' + (full ? '이미 최대 ' + smax + '장을 갖고 있어요' : '놓친 날 하루 전체의 연속 기록을 지켜 줘요 · 보유 ' + all.shields + '/' + smax) + '</small></span><span class="p">' + fmtNum(SHOP_SHIELD_PRICE) + ' G</span>' +
       '<button class="btn btn-sm btn-primary" type="button" data-buy-shield' + (full || g < SHOP_SHIELD_PRICE ? ' disabled' : '') + '>구매</button></div>' +
       '<div class="shop-item"><span class="e">🧷</span><span class="n">루틴 보호권 1장<small>' + (rfull ? '이미 최대 ' + RSHIELD_MAX + '장을 갖고 있어요' : '놓친 루틴 하나의 연속 기록을 지켜 줘요 · 보유 ' + all.rshields + '/' + RSHIELD_MAX) + '</small></span><span class="p">' + fmtNum(SHOP_RSHIELD_PRICE) + ' G</span>' +
-      '<button class="btn btn-sm btn-primary" type="button" data-buy-rshield' + (rfull || g < SHOP_RSHIELD_PRICE ? ' disabled' : '') + '>구매</button></div>';
+      '<button class="btn btn-sm btn-primary" type="button" data-buy-rshield' + (rfull || g < SHOP_RSHIELD_PRICE ? ' disabled' : '') + '>구매</button></div>' +
+      ['ext', 'boost', 'potion'].map(function (k) {
+        var d = ITEM_DEFS[k], n = itemStock(k, all), isFull = n >= d.max;
+        return '<div class="shop-item"><span class="e">' + d.emoji + '</span><span class="n">' + d.name + '<small>' + (isFull ? '이미 최대 ' + d.max + '개를 갖고 있어요' : esc(d.desc) + ' · 보유 ' + n + '/' + d.max) + '</small></span><span class="p">' + fmtNum(d.price) + ' G</span>' +
+          '<button class="btn btn-sm btn-primary" type="button" data-buy-item="' + k + '"' + (isFull || g < d.price ? ' disabled' : '') + '>구매</button></div>';
+      }).join('') + strikeRow(all, g);
     $('shItems').innerHTML = sh.items.length ? sh.items.map(function (it) {
       var lack = g < it.price;
       return '<div class="shop-item"><span class="e">' + esc(it.emoji || '🎁') + '</span><span class="n">' + esc(it.name) + (lack ? '<small>' + fmtNum(it.price - g) + ' G 더 모으면 교환 가능</small>' : '<small>지금 교환할 수 있어요</small>') + '</span>' +
@@ -2950,13 +3081,165 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     }).join('') : '<div class="empty">아직 등록한 보상이 없어요. 아래에서 나에게 줄 보상과 가격을 정해 보세요.</div>';
     $('shSuggest').innerHTML = SHOP_SUGGEST.filter(function (x) { return !sh.items.some(function (it) { return it.name === x[1]; }); })
       .map(function (x, i) { return '<button type="button" data-sug="' + i + '">' + x[0] + ' ' + esc(x[1]) + ' · ' + fmtNum(x[2]) + 'G</button>'; }).join('');
-    var hist = sh.buys.slice().reverse().slice(0, 10);
+    var hist = sh.buys.concat(sh.gifts.map(function (x) { var d = itemInfo(x.item); return { recv: true, emoji: '🎁', name: (x.from || '친구') + '님이 보낸 ' + d.emoji + ' ' + d.name + (x.msg ? ' · “' + x.msg + '”' : ''), date: x.date, at: x.at || '' }; }))
+      .sort(function (a, b) { return (a.at || a.date) < (b.at || b.date) ? 1 : -1; }).slice(0, 12);
     $('shHist').innerHTML = hist.length ? hist.map(function (b) {
-      return '<div class="shop-item hist"><span class="e">' + esc(b.emoji || '🎁') + '</span><span class="n">' + esc(b.name) + '<small>' + fmtDate(b.date) + ' · ' + fmtNum(b.price) + ' G</small></span>' +
-        (b.date === today ? '<button class="btn btn-sm btn-ghost" type="button" data-undo="' + esc(b.bid) + '">취소</button>' : '<span></span>') + '</div>';
+      return '<div class="shop-item hist"><span class="e">' + esc(b.emoji || '🎁') + '</span><span class="n">' + esc(b.name) + '<small>' + fmtDate(b.date) + (b.recv ? ' · 선물 받음' : ' · ' + fmtNum(b.price) + ' G') + '</small></span>' +
+        (!b.recv && b.kind !== 'gift' && b.date === today ? '<button class="btn btn-sm btn-ghost" type="button" data-undo="' + esc(b.bid) + '">취소</button>' : '<span></span>') + '</div>';
     }).join('') : '<div class="empty">교환 내역이 없습니다.</div>';
   }
   function openShop() { setTab('shop'); }
+
+  /* ---------- 상점 아이템: 시간 연장권 · XP 부스터 · 복귀 포션 · 보스 강타 · 선물하기 ---------- */
+  function itemInfo(k) {
+    if (k === 'shield') return { emoji: '🛡', name: '하루 보호권', price: SHOP_SHIELD_PRICE };
+    if (k === 'rshield') return { emoji: '🧷', name: '루틴 보호권', price: SHOP_RSHIELD_PRICE };
+    return ITEM_DEFS[k] || { emoji: '🎁', name: '아이템', price: 0 };
+  }
+  function hhmm(ms) { var d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+  function newUid(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  // 연장 대상 날: 새벽 0~3시면 어제, 그 외에는 오늘
+  function extTarget() { var r = realToday(); return new Date().getHours() < EXT_HOUR ? addDays(r, -1) : r; }
+  function curBoss(all) { var ws = weekStart(todayStr()), b = null; all.bosses.forEach(function (x) { if (x.ws === ws) b = x; }); return b; }
+  function strikeRow(all, g) {
+    var d = ITEM_DEFS.strike, b = curBoss(all), why = '';
+    if (!b) why = '이번 주 보스가 아직 없어요';
+    else if (b.defeated) why = '이번 주 보스는 이미 격파했어요';
+    else if (b.strike) why = '이번 주 강타 사용 중 · 추가 피해 ' + fmtNum(b.strikeDmg) + b.unit;
+    else if (!b.strikeCat) why = esc(b.name) + '에게는 약점이 없어 쓸 수 없어요';
+    var cat = b && b.strikeCat ? CATS[b.strikeCat] : null;
+    return '<div class="shop-item"><span class="e">' + d.emoji + '</span><span class="n">' + d.name + '<small>' + (why || esc(b.name) + '의 약점 ' + cat.emoji + ' ' + cat.name + ' 기록 피해 2배 · 이번 주 끝까지') + '</small></span><span class="p">' + fmtNum(d.price) + ' G</span>' +
+      '<button class="btn btn-sm btn-primary" type="button" data-buy-strike' + (why || g < d.price ? ' disabled' : '') + '>구매</button></div>';
+  }
+  function renderBag(all) {
+    var sh = shopData(), today = todayStr(), real = realToday(), html = '';
+    // ⏰ 시간 연장권
+    var nExt = itemStock('ext', all), et = extTarget(), eu = sh.uses.filter(function (u) { return u.kind === 'ext' && u.date === et; })[0], st, btn;
+    if (eu && et !== real) { st = '<span class="live">지금 ' + fmtDate(et) + '을(를) 이어서 기록 중 · 새벽 ' + EXT_HOUR + '시까지</span>'; btn = '<span></span>'; }
+    else if (eu) { st = '<span class="live">오늘 밤 새벽 ' + EXT_HOUR + '시까지 연장 예약됨</span> · 자정 전까지 취소 가능'; btn = '<button class="btn btn-sm btn-ghost" type="button" data-unuse="' + esc(eu.uid) + '">취소</button>'; }
+    else { st = '보유 <b>' + nExt + '</b>개 · ' + (et !== real ? '지금 켜면 ' + fmtDate(et) + ' 기록을 새벽 ' + EXT_HOUR + '시까지 이어서 해요' : '오늘 마감을 내일 새벽 ' + EXT_HOUR + '시까지 늘려요'); btn = '<button class="btn btn-sm btn-primary" type="button" data-use-ext' + (nExt < 1 ? ' disabled' : '') + '>' + (et !== real ? '어제 이어 하기' : '오늘 밤 연장') + '</button>'; }
+    html += '<div class="shop-item bag-row"><span class="e">⏰</span><span class="n">시간 연장권<small>' + st + '</small></span><span></span>' + btn + '</div>';
+    // ⚡ XP 부스터
+    var nB = itemStock('boost', all), bu = boostActive();
+    if (bu) {
+      var got = 0, a = Date.parse(bu.at); all.days.forEach(function (x) { if (x.boostLogs) state.logs.forEach(function (l) { if (x.boostLogs[l.log_id] && Date.parse(l.created_at) >= a) got += x.boostLogs[l.log_id]; }); });
+      st = '<span class="live">켜짐 · ' + (ymd(new Date(a + BOOST_HOURS * 36e5)) !== realToday() ? '내일 ' : '') + hhmm(a + BOOST_HOURS * 36e5) + '까지</span> · 보너스 +' + fmtNum(got) + ' XP';
+      btn = !got && bu.on === real ? '<button class="btn btn-sm btn-ghost" type="button" data-unuse="' + esc(bu.uid) + '">취소</button>' : '<span></span>';
+    } else { st = '보유 <b>' + nB + '</b>개 · 켠 뒤 ' + BOOST_HOURS + '시간 동안 기록 XP ×1.5'; btn = '<button class="btn btn-sm btn-primary" type="button" data-use-boost' + (nB < 1 ? ' disabled' : '') + '>지금 켜기</button>'; }
+    html += '<div class="shop-item bag-row"><span class="e">⚡</span><span class="n">XP 부스터<small>' + st + '</small></span><span></span>' + btn + '</div>';
+    // 💊 복귀 포션
+    var nP = itemStock('potion', all), from = addDays(today, -POTION_DAYS), sub = '';
+    var lastP = sh.uses.filter(function (u) { return u.kind === 'potion' && all.potionUsed[u.uid]; }).map(function (u) { return u.on; }).sort().pop() || '';
+    var cool = lastP && addDays(lastP, POTION_DAYS) > real ? addDays(lastP, POTION_DAYS) : '';
+    all.days.forEach(function (x) {
+      if (x.date < from || x.date >= today) return;
+      if (x.potion) sub += '<div class="use-r"><span>💊 ' + fmtDate(x.date) + '<small>퍼펙트 연속 ' + x.potion.before + '일 → ' + x.potion.after + '일로 이어졌어요</small></span>' +
+        (x.potion.u.on === real ? '<button class="btn btn-sm btn-ghost" type="button" data-unuse="' + esc(x.potion.u.uid) + '">취소</button>' : '<span class="ok">되살림</span>') + '</div>';
+      else if (x.broke >= 2) sub += '<div class="use-r"><span>' + fmtDate(x.date) + '<small>퍼펙트 연속 ' + x.broke + '일이 끊겼어요 · 포션을 쓰면 ' + Math.floor(x.broke * POTION_RATE) + '일부터 이어가요</small></span>' +
+        '<button class="btn btn-sm" type="button" data-use-potion="' + x.date + '"' + (nP < 1 || cool ? ' disabled' : '') + '>💊 되살리기</button></div>';
+    });
+    st = '보유 <b>' + nP + '</b>개 · ' + (cool ? '다음 포션은 ' + fmtDate(cool) + '부터 쓸 수 있어요' : '최근 ' + POTION_DAYS + '일 안에 끊긴 퍼펙트 연속 기록의 절반을 되살려요');
+    html += '<div class="shop-item bag-row"><span class="e">💊</span><span class="n">복귀 포션<small>' + st + '</small></span><span></span><span></span>' +
+      (sub ? '<div class="bag-sub">' + sub + '</div>' : '') + '</div>';
+    $('shBag').innerHTML = html;
+  }
+  function useItem(kind, date) {
+    var all = computeAll(), real = realToday(), sh = shopData(), msg, u = { uid: newUid('u'), kind: kind, date: date || '', rid: '', on: real, at: new Date().toISOString() };
+    if (itemStock(kind, all) < 1) { toast(itemInfo(kind).name + '이(가) 없어요. 상점에서 살 수 있어요.', true); return; }
+    if (kind === 'ext') {
+      u.date = extTarget();
+      if (extOn(u.date)) { toast('이미 연장했어요.'); return; }
+      if (!confirm(u.date !== real ? fmtDate(u.date) + ' 기록을 새벽 ' + EXT_HOUR + '시까지 이어서 할까요?\n그동안 앱의 「오늘」이 ' + fmtDate(u.date) + '로 돌아가요.' : '오늘(' + fmtDate(real) + ') 마감을 내일 새벽 ' + EXT_HOUR + '시까지 늘릴까요?\n자정이 지나도 3시 전까지는 체크가 오늘 기록으로 들어가요.')) return;
+      msg = u.date !== real ? '⏰ 새벽 ' + EXT_HOUR + '시까지 ' + fmtDate(u.date) + ' 기록을 이어서 해요.' : '⏰ 오늘 마감을 새벽 ' + EXT_HOUR + '시까지 늘렸어요.';
+      if (u.date !== real) state.viewDate = u.date;
+    } else if (kind === 'boost') {
+      if (boostActive()) { toast('이미 XP 부스터가 켜져 있어요.'); return; }
+      if (!confirm('XP 부스터를 켤까요?\n지금부터 ' + BOOST_HOURS + '시간 동안 체크한 기록 XP가 1.5배가 돼요. (리그 점수에는 미반영)')) return;
+      u.date = todayStr(); msg = '⚡ XP 부스터를 켰어요. ' + hhmm(Date.now() + BOOST_HOURS * 36e5) + '까지 XP 1.5배!';
+    } else if (kind === 'potion') {
+      var x = all.dayMap[date];
+      if (!x || !(x.broke >= 2) || date < addDays(todayStr(), -POTION_DAYS)) { toast('최근 ' + POTION_DAYS + '일 안에 끊긴 연속 기록에만 쓸 수 있어요.', true); return; }
+      if (!confirm(fmtDate(date) + '에 끊긴 퍼펙트 연속 ' + x.broke + '일을 ' + Math.floor(x.broke * POTION_RATE) + '일로 되살릴까요?')) return;
+      msg = '💊 퍼펙트 연속 기록을 ' + Math.floor(x.broke * POTION_RATE) + '일로 되살렸어요.';
+    }
+    sh.uses = sh.uses.concat([u]);
+    if (sh.uses.length > 300) sh.uses = sh.uses.slice(-300);
+    saveShop(sh, msg);
+  }
+  function buyItem(kind) {
+    var all = computeAll(), d = ITEM_DEFS[kind];
+    if (kind !== 'strike' && itemStock(kind, all) >= d.max) { toast(d.name + '은(는) ' + d.max + '개까지 가질 수 있어요.', true); return; }
+    if (kind === 'strike') {
+      var b = curBoss(all);
+      if (!b || b.defeated || b.strike || !b.strikeCat) { toast('이번 주에는 보스 강타를 쓸 수 없어요.', true); return; }
+    }
+    buy({ kind: kind, name: d.name, emoji: d.emoji, price: d.price });
+  }
+
+  // 선물하기: 골드로 사서 친구에게 보냄. 서버(quest_gifts)에 먼저 남기고 성공하면 내 구매 내역에 기록
+  var giftTo = '', giftItem = 'shield', giftBusy = false, claimBusy = false;
+  function giftFriends() { return ((state.league && state.league.players) || []).filter(function (p) { return !p.me && p.pid; }); }
+  function giftsSentToday() { var t = todayStr(); return shopData().buys.filter(function (b) { return b.kind === 'gift' && b.date === t; }).length; }
+  function renderGiftRow(all, g) {
+    var fr = giftFriends(), left = GIFT_DAY_MAX - giftsSentToday();
+    $('shGift').innerHTML = '<div class="shop-item"><span class="e">🎁</span><span class="n">친구에게 선물<small>' +
+      (!state.league ? '친구 목록을 불러오는 중이에요' : !fr.length ? '친구를 추가하면 보호권·아이템을 선물할 수 있어요' : '보호권·연장권·부스터·포션 · 오늘 ' + Math.max(0, left) + '번 더 보낼 수 있어요') +
+      '</small></span><span></span><button class="btn btn-sm btn-primary" type="button" data-gift' + (!fr.length || left < 1 ? ' disabled' : '') + '>선물하기</button></div>';
+  }
+  function renderGiftSheet() {
+    var g = goldOf(computeAll()), fr = giftFriends(), it = itemInfo(giftItem);
+    $('giftFriends').innerHTML = fr.map(function (p) { var nm = (p.stats && p.stats.nick) || p.name; return '<button type="button" data-gto="' + esc(p.pid) + '" aria-pressed="' + (giftTo === p.pid) + '">' + esc(nm) + '</button>'; }).join('');
+    $('giftItems').innerHTML = GIFT_KINDS.map(function (k) { var d = itemInfo(k); return '<button type="button" data-gitem="' + k + '" aria-pressed="' + (giftItem === k) + '"' + (g < d.price ? ' disabled' : '') + '>' + d.emoji + ' ' + d.name + ' · ' + fmtNum(d.price) + 'G</button>'; }).join('');
+    var p = fr.filter(function (x) { return x.pid === giftTo; })[0];
+    $('giftSum').textContent = p ? ((p.stats && p.stats.nick) || p.name) + '님에게 ' + it.emoji + ' ' + it.name + '을(를) 보내요 · ' + fmtNum(it.price) + 'G (보유 ' + fmtNum(g) + 'G)' : '받을 친구를 골라 주세요.';
+    $('btnSendGift').disabled = !p || g < it.price || giftBusy;
+  }
+  function openGiftSheet() {
+    var fr = giftFriends();
+    if (!fr.length) { toast('친구 탭에서 친구를 먼저 추가해 주세요.', true); return; }
+    if (giftsSentToday() >= GIFT_DAY_MAX) { toast('선물은 하루 ' + GIFT_DAY_MAX + '번까지 보낼 수 있어요.', true); return; }
+    if (!fr.some(function (p) { return p.pid === giftTo; })) giftTo = fr.length === 1 ? fr[0].pid : '';
+    $('giftMsg').value = ''; renderGiftSheet(); openSheet($('giftSheet'));
+  }
+  $('giftSheet').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-gto]'); if (b) { giftTo = b.getAttribute('data-gto'); renderGiftSheet(); return; }
+    b = e.target.closest('[data-gitem]'); if (b && !b.disabled) { giftItem = b.getAttribute('data-gitem'); renderGiftSheet(); }
+  });
+  $('btnSendGift').addEventListener('click', function () {
+    var it = itemInfo(giftItem), fr = giftFriends().filter(function (x) { return x.pid === giftTo; })[0];
+    if (!fr || giftBusy) return;
+    if (goldOf(computeAll()) < it.price) { toast('골드가 부족해요.', true); return; }
+    if (giftsSentToday() >= GIFT_DAY_MAX) { toast('선물은 하루 ' + GIFT_DAY_MAX + '번까지 보낼 수 있어요.', true); return; }
+    var nm = (fr.stats && fr.stats.nick) || fr.name, gid = newUid('g'), item = giftItem;
+    giftBusy = true; renderGiftSheet();
+    social('gift_send', { to: fr.pid, item: item, message: $('giftMsg').value.trim(), gid: gid }).then(function (d) {
+      giftBusy = false;
+      if (!d.ok) { renderGiftSheet(); toast(d.error || '선물을 보내지 못했어요.', true); return; }
+      var sh = shopData();
+      sh.buys = sh.buys.concat([{ bid: 'b' + Date.now().toString(36), id: gid, kind: 'gift', item: item, to: nm, name: '선물: ' + it.name + ' → ' + nm, emoji: it.emoji, price: it.price, date: todayStr(), at: new Date().toISOString() }]);
+      closeSheet(); saveShop(sh, '🎁 ' + nm + '님에게 ' + it.name + '을(를) 선물했어요!');
+      var r = $('shBal').getBoundingClientRect(); burst(r.left + r.width / 2, r.top + 10, 24);
+    });
+  });
+  // 받은 선물: 가방(profile.shop.gifts)에 먼저 저장하고, 저장에 성공하면 서버에 받음 처리
+  function claimGifts(list) {
+    if (claimBusy || !Array.isArray(list) || !list.length) return;
+    var sh = shopData(), have = {};
+    sh.gifts.forEach(function (x) { have[x.gid] = 1; });
+    var ids = list.map(function (x) { return x.id; }).filter(Boolean);
+    var fresh = list.filter(function (x) { return x && x.id && GIFT_KINDS.indexOf(x.item) >= 0 && !have[x.id]; });
+    var done = function () { social('gifts_claim', { ids: ids.slice(0, 50) }); };
+    if (!fresh.length) { done(); return; }
+    var now = new Date().toISOString(), t = todayStr();
+    sh.gifts = sh.gifts.concat(fresh.map(function (x) { return { gid: x.id, item: x.item, from: String(x.from || '친구').slice(0, 30), msg: String(x.message || '').slice(0, 40), date: t, at: now }; }));
+    state.profile.shop = sh; saveCache(); renderAll();
+    claimBusy = true;
+    api('config_save', { key: 'profile', value: state.profile }).then(function () {
+      claimBusy = false; done();
+      var f = fresh[0], d = itemInfo(f.item);
+      toast('🎁 ' + (f.from || '친구') + '님이 ' + d.emoji + ' ' + d.name + '을(를) 선물했어요' + (fresh.length > 1 ? ' 외 ' + (fresh.length - 1) + '개' : '') + (f.message ? ' · “' + f.message + '”' : ''));
+    }, function () { claimBusy = false; });
+  }
   function buy(entry) {
     var all = computeAll(), g = goldOf(all);
     if (g < entry.price) { toast('골드가 부족해요.', true); return; }
@@ -3005,11 +3288,19 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     var t;
     if ((t = e.target.closest('[data-buy-shield]'))) { buy({ kind: 'shield', name: '하루 보호권', emoji: '🛡', price: SHOP_SHIELD_PRICE }); return; }
     if ((t = e.target.closest('[data-buy-rshield]'))) { buy({ kind: 'rshield', name: '루틴 보호권', emoji: '🧷', price: SHOP_RSHIELD_PRICE }); return; }
+    if ((t = e.target.closest('[data-buy-item]'))) { buyItem(t.getAttribute('data-buy-item')); return; }
+    if ((t = e.target.closest('[data-buy-strike]'))) { buyItem('strike'); return; }
+    if ((t = e.target.closest('[data-use-ext]'))) { useItem('ext'); return; }
+    if ((t = e.target.closest('[data-use-boost]'))) { useItem('boost'); return; }
+    if ((t = e.target.closest('[data-use-potion]'))) { useItem('potion', t.getAttribute('data-use-potion')); return; }
+    if ((t = e.target.closest('[data-gift]'))) { openGiftSheet(); return; }
     if ((t = e.target.closest('[data-use-day]'))) { useShield('day', t.getAttribute('data-use-day')); return; }
     if ((t = e.target.closest('[data-use-r]'))) { var pr = t.getAttribute('data-use-r').split('|'); useShield('routine', pr[0], pr.slice(1).join('|')); return; }
     if ((t = e.target.closest('[data-unuse]'))) {
       var sh0 = shopData(), uid0 = t.getAttribute('data-unuse');
-      if (!confirm('보호권 사용을 취소하고 1장을 돌려받을까요?')) return;
+      var u0 = sh0.uses.filter(function (u) { return u.uid === uid0; })[0], k0 = u0 ? u0.kind : '';
+      if (!confirm(k0 === 'ext' || k0 === 'boost' || k0 === 'potion' ? itemInfo(k0).name + ' 사용을 취소하고 돌려받을까요?' : '보호권 사용을 취소하고 1장을 돌려받을까요?')) return;
+      if (k0 === 'ext' && u0.date !== realToday()) { toast('이미 시작된 연장은 취소할 수 없어요.', true); return; }
       sh0.uses = sh0.uses.filter(function (u) { return u.uid !== uid0; }); saveShop(sh0, '보호권 사용을 취소했어요.'); return;
     }
     if ((t = e.target.closest('[data-buy]'))) { var it = shopData().items.filter(function (x) { return x.id === t.getAttribute('data-buy'); })[0]; if (it) buy(it); return; }
@@ -3023,6 +3314,9 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       if (!b) return;
       var all2 = computeAll();
       if ((b.kind === 'shield' && all2.shields < 1) || (b.kind === 'rshield' && all2.rshields < 1)) { toast('이미 쓴 보호권은 구매를 취소할 수 없어요. 사용을 먼저 취소해 주세요.', true); return; }
+      if (ITEM_DEFS[b.kind] && b.kind !== 'strike' && itemStock(b.kind, all2) < 1) { toast('이미 쓴 아이템은 구매를 취소할 수 없어요. 사용을 먼저 취소해 주세요.', true); return; }
+      if (b.kind === 'gift') { toast('보낸 선물은 취소할 수 없어요.', true); return; }
+      if (b.kind === 'strike' && all2.bosses.some(function (x) { return x.strike === b.date && x.strikeDmg > 0; })) { toast('이미 강타 피해를 준 뒤에는 취소할 수 없어요.', true); return; }
       if (!confirm(b.name + ' 교환을 취소하고 ' + fmtNum(b.price) + 'G를 돌려받을까요?')) return;
       sh2.buys = sh2.buys.filter(function (x) { return x.bid !== bid; }); saveShop(sh2, '교환을 취소하고 골드를 돌려받았어요.'); return;
     }
@@ -3116,15 +3410,18 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   function inviteUrl(code) { return location.origin + '/quest/?invite=' + encodeURIComponent(code); }
   function buildSnapshot(all) {
     var t = todayStr(), ws = weekStart(t), we = addDays(ws, 6), pws = addDays(ws, -7), month = t.slice(0, 7);
-    var wxp = 0, pwxp = 0, wperf = 0;
+    // 리그 점수는 XP 부스터 적용 전 값 (골드로 순위를 사지 못하게)
+    var wxp = 0, pwxp = 0, wperf = 0, sboost = 0;
     all.days.forEach(function (x) {
-      if (x.date >= ws && x.date <= we) { wxp += x.xp; if (x.perfect) wperf++; }
-      else if (x.date >= pws && x.date < ws) pwxp += x.xp;
+      var b = x.boostXp || 0;
+      if (x.date >= ws && x.date <= we) { wxp += x.xp - b; if (x.perfect) wperf++; }
+      else if (x.date >= pws && x.date < ws) pwxp += x.xp - b;
+      if (x.date.slice(0, 7) === month) sboost += b;
     });
-    var ss = seasonSummary(all, month), m = me(), td = all.today || {};
+    var ss = seasonSummary(all, month), m = me(), td = all.today || {}, base = all.total - (all.boostTotal || 0);
     return { v: 1, nick: displayName(), avatar: m.avatar || '', color: m.color || '', cls: m.cls || '', motto: String(m.motto || '').slice(0, 60),
-      level: levelFromXp(all.total).level, total_xp: all.total, week_key: ws, week_xp: wxp, last_week_key: pws, last_week_xp: pwxp, week_perfect: wperf,
-      season_key: month, season_xp: ss.xp, rank: ss.rank.r.ko, streak: all.streak, best_streak: all.bestStreak,
+      level: levelFromXp(base).level, total_xp: base, week_key: ws, week_xp: wxp, last_week_key: pws, last_week_xp: pwxp, week_perfect: wperf,
+      season_key: month, season_xp: ss.xp - sboost, rank: rankFor(ss.xp - sboost).r.ko, streak: all.streak, best_streak: all.bestStreak,
       today_key: t, today_done: td.done || 0, today_total: td.denom || 0, boss_wins: all.bossWins, days: recentDays(all, 7) };
   }
   // 파티 판정용 최근 N일 요약: [날짜, 완료 루틴, 예정 루틴, 기록 XP(보너스 제외)]
@@ -3166,6 +3463,8 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       state.league = { at: Date.now(), myCode: d.myCode, players: d.players || [], cheers: d.cheers || [], unread: d.unread || 0, party: d.party || null, partyInvites: d.partyInvites || [],
         global: d.global || null, requests: d.requests || [], myHidden: !!d.myHidden, myUid: d.myUid || '', sentCount: d.sentCount || 0 };
       applyPartyRewards(d.partyRewards, d.party);
+      if (Array.isArray(d.gifts) && d.gifts.length) claimGifts(d.gifts);
+      if (state.tab === 'shop') renderGiftRow(computeAll(), 0);
       var pk = JSON.stringify([d.party, d.partyInvites]);
       if (pk !== lastPartyKey) { lastPartyKey = pk; if (state.tab === 'today') renderToday(computeAll()); }
       var meP = state.league.players.filter(function (x) { return x.me; })[0];

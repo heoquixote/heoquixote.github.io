@@ -11,6 +11,7 @@ Supabase 대시보드 SQL Editor에서 파일 이름 순서대로 실행한다. 
 | `20261118000100_quest_social.sql` | 회원·친구·스냅샷·응원·친구 신청·파티 테이블, 랭킹 뷰 `quest_league_board`, 함수 `quest_global_league`, `quest_social_ctx` |
 | `20261118000200_quest_core_rls.sql` | `quest_logs`, `quest_config`, 역할 `n8n_quest`, anon/authenticated 차단, 명령별 RLS 정책 |
 | `20261118000300_quest_import.sql` | n8n data table에서 옮겨 오는 일회성 함수(`quest_import` 스키마). 이관 확인 후 `drop schema quest_import cascade;` |
+| `20261118000400_quest_gifts.sql` | 친구 선물 `quest_gifts` (친구 사이·하루 3번 RLS, 받음 처리만 UPDATE) |
 
 ## 접근 제어 요약
 
