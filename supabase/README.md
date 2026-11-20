@@ -1,6 +1,6 @@
-# Runner Quest Supabase 스키마
+# Learners Quest Supabase 스키마
 
-Runner Quest(`quest/`)의 데이터 저장소. 프론트는 지금처럼 n8n 웹훅만 호출하고, n8n이 전용 DB 역할 `n8n_quest`로 Supabase Postgres에 접속한다. 인증(`dl_sessions`, 패스키)과 푸시 구독(`quest_push_subs`)은 n8n data table에 남아 있다.
+Learners Quest(`quest/`)의 데이터 저장소. 프론트는 지금처럼 n8n 웹훅만 호출하고, n8n이 전용 DB 역할 `n8n_quest`로 Supabase Postgres에 접속한다. 인증(`dl_sessions`, 패스키)과 푸시 구독(`quest_push_subs`)은 n8n data table에 남아 있다.
 
 ## 마이그레이션
 

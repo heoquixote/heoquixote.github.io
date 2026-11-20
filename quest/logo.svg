@@ -9,9 +9,9 @@
     <path d="M24 50 H36"/><path d="M20 62 H33" opacity=".6"/><path d="M22 74 H30" opacity=".3"/>
   </g>
   <g transform="translate(64 68) skewX(-13) translate(-64 -68)" fill="none" stroke-linejoin="miter" stroke-miterlimit="8">
-    <path d="M50 97 V38 H73 Q91 38 91 55 Q91 72 73 72 H50 M65 72 L85 97" stroke="#050607" stroke-width="23"/>
-    <path d="M50 97 V38 H73 Q91 38 91 55 Q91 72 73 72 H50 M65 72 L85 97" transform="translate(3.5 3.5)" stroke="#5f8a00" stroke-width="13"/>
-    <path d="M50 97 V38 H73 Q91 38 91 55 Q91 72 73 72 H50 M65 72 L85 97" stroke="url(#rq-lm)" stroke-width="13"/>
+    <path d="M54 38 V95 H89" stroke="#050607" stroke-width="25"/>
+    <path d="M54 38 V95 H89" transform="translate(3.5 3.5)" stroke="#5f8a00" stroke-width="15"/>
+    <path d="M54 38 V95 H89" stroke="url(#rq-lm)" stroke-width="15"/>
   </g>
   <path d="M99 26 L102.2 36.8 L113 40 L102.2 43.2 L99 54 L95.8 43.2 L85 40 L95.8 36.8 Z" fill="#fff"/>
 </svg>
