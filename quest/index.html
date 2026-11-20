@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Runner Quest | 데이터 러너즈</title>
+<title>Learners Quest | 데이터 러너즈</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="매일의 루틴을 퀘스트로 체크하고 경험치와 레벨로 나를 육성하는 자기육성 대시보드">
 <meta name="theme-color" content="#050607">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Runner Quest">
+<meta name="apple-mobile-web-app-title" content="Learners Quest">
 <link rel="manifest" href="/quest/manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="/quest/logo.svg">
 <link rel="icon" type="image/png" href="/quest/icon-192.png">
@@ -816,9 +816,9 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 
 <header class="topbar">
   <div class="shell topbar-in">
-    <a class="brand" href="/quest/" aria-label="Runner Quest">
+    <a class="brand" href="/quest/" aria-label="Learners Quest">
       <img class="brand-mark" src="/quest/logo.svg" alt="" width="34" height="34">
-      <span>Runner Quest<small>데이터 러너즈 · 자기육성</small></span>
+      <span>Learners Quest<small>데이터 러너즈 · 자기육성</small></span>
     </a>
     <nav class="top-tabs" id="topTabs" role="tablist" hidden>
       <button role="tab" data-tab="today" aria-selected="true">오늘의 퀘스트</button>
@@ -843,7 +843,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 <!-- 로그인 -->
 <section class="login-wrap" id="viewLogin" hidden>
   <form class="login-card" id="loginForm" novalidate>
-    <img class="login-logo" src="/quest/logo.svg" alt="Runner Quest 로고" width="88" height="88">
+    <img class="login-logo" src="/quest/logo.svg" alt="Learners Quest 로고" width="88" height="88">
     <span class="eyebrow">Player Login</span>
     <h1>오늘도 레벨업하러 오셨군요</h1>
     <p>데이터 러너즈 계정으로 로그인하세요. 퀘스트 기록은 계정 소유자만 볼 수 있도록 DB에 저장됩니다.</p>
@@ -866,7 +866,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 <!-- 친구 초대 가입 -->
 <section class="login-wrap" id="viewSignup" hidden>
   <form class="login-card" id="signupForm" novalidate>
-    <img class="login-logo" src="/quest/logo.svg" alt="Runner Quest 로고" width="88" height="88">
+    <img class="login-logo" src="/quest/logo.svg" alt="Learners Quest 로고" width="88" height="88">
     <span class="eyebrow">New Player</span>
     <h1>같이 레벨업해요</h1>
     <div class="signup-hero" id="signupHero"><span class="e">🤝</span><span id="signupHeroText">친구에게 받은 초대 코드로 가입하면 바로 친구 리그에 들어갑니다.</span></div>
@@ -1308,7 +1308,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
 <!-- 앱 설치 안내 시트 -->
 <div class="sheet" id="installSheet" role="dialog" aria-modal="true" aria-labelledby="installSheetTitle" hidden>
   <div class="grab"></div>
-  <h3 id="installSheetTitle">Runner Quest 앱 설치</h3>
+  <h3 id="installSheetTitle">Learners Quest 앱 설치</h3>
   <div class="install-hero"><img src="/quest/icon-192.png" alt=""><p>홈 화면에 아이콘이 생기고, 주소창 없이 전체 화면 앱으로 열립니다. 로그인은 그대로 유지됩니다.</p></div>
   <ol class="install-steps" id="installSteps"></ol>
   <p class="install-note" id="installNote"></p>
@@ -2370,7 +2370,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       c.fillStyle = g; c.fillRect(0, 0, W, H);
       c.strokeStyle = 'rgba(255,255,255,.08)'; c.lineWidth = 2; c.strokeRect(40, 40, W - 80, H - 80);
       function txt(t, x, y, font, color, align) { c.font = font; c.fillStyle = color; c.textAlign = align || 'left'; c.fillText(t, x, y); }
-      txt('RUNNER QUEST', 90, 128, '700 30px ' + EN, '#c8ff3d');
+      txt('LEARNERS QUEST', 90, 128, '700 30px ' + EN, '#c8ff3d');
       txt(seasonLabel(month) + (s.live ? ' 시즌 중간 결산' : ' 시즌 결산'), W - 90, 128, '600 30px ' + KO, '#a1aaa5', 'right');
       txt(displayName() + (me().cls ? '  ·  ' + me().cls : ''), W / 2, 230, '700 42px ' + KO, '#f5f7f2', 'center');
       txt(rk.r.en.toUpperCase(), W / 2, 410, '800 150px ' + EN, rk.r.color, 'center');
@@ -2411,12 +2411,12 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     seasonImage(all, month).then(function (blob) {
       if (btn) btn.disabled = false;
       if (!blob) { toast('이미지를 만들지 못했어요.', true); return; }
-      var name = 'runner-quest-' + month + '.png', file = null;
+      var name = 'learners-quest-' + month + '.png', file = null;
       try { file = new File([blob], name, { type: 'image/png' }); } catch (e) {}
       var s = seasonSummary(all, month);
-      var text = seasonLabel(month) + ' 시즌 ' + (s.live ? '진행 중' : '결산') + ': ' + s.rank.r.ko + ' 랭크, ' + fmtNum(s.xp) + 'XP, 퍼펙트 데이 ' + s.perfect + '일 #RunnerQuest';
+      var text = seasonLabel(month) + ' 시즌 ' + (s.live ? '진행 중' : '결산') + ': ' + s.rank.r.ko + ' 랭크, ' + fmtNum(s.xp) + 'XP, 퍼펙트 데이 ' + s.perfect + '일 #LearnersQuest';
       if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({ files: [file], title: 'Runner Quest 시즌 결산', text: text }).catch(function () {});
+        navigator.share({ files: [file], title: 'Learners Quest 시즌 결산', text: text }).catch(function () {});
       } else {
         var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
         document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.parentNode.removeChild(a); }, 1000);
@@ -2780,7 +2780,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       return [l.log_date, DOW[dow(l.log_date)], l.kind, l.routine_id, l.title, l.category, (CATS[l.category] || {}).en || '', l.xp, l.minutes, l.note, l.created_at];
     });
     var csv = '﻿' + [cols].concat(rows).map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
-    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = 'runner-quest-' + todayStr() + '.csv'; a.click();
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = 'learners-quest-' + todayStr() + '.csv'; a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   });
   // 자정 넘김·앱 복귀 시 날짜 갱신 + 최신 데이터 동기화
@@ -3734,8 +3734,8 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   $('btnCopyCode').addEventListener('click', function () { var c = state.league && state.league.myCode; if (c) copyText(c, '친구 코드를 복사했어요.'); });
   $('btnShareInvite').addEventListener('click', function () {
     var c = state.league && state.league.myCode; if (!c) { loadLeague(); return; }
-    var url = inviteUrl(c), text = displayName() + '님이 Runner Quest 친구 리그에 초대했어요. 같이 루틴으로 레벨업해요!';
-    if (navigator.share) navigator.share({ title: 'Runner Quest 초대', text: text, url: url }).catch(function () {});
+    var url = inviteUrl(c), text = displayName() + '님이 Learners Quest 친구 리그에 초대했어요. 같이 루틴으로 레벨업해요!';
+    if (navigator.share) navigator.share({ title: 'Learners Quest 초대', text: text, url: url }).catch(function () {});
     else copyText(text + '\n' + url, '초대 링크를 복사했어요. 친구에게 붙여넣어 보내 주세요.');
   });
   function addFriend(code, quiet) {
@@ -3974,7 +3974,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     showView('signup');
     var c = $('suCode').value.trim();
     if (c) social('invite_info', { code: c }, true).then(function (d) {
-      $('signupHeroText').innerHTML = d.ok ? '<b>' + esc(d.inviter) + '</b>님이 Runner Quest 친구 리그에 초대했어요. 가입하면 바로 친구가 됩니다.' : esc(d.error || '초대 코드를 확인해 주세요.');
+      $('signupHeroText').innerHTML = d.ok ? '<b>' + esc(d.inviter) + '</b>님이 Learners Quest 친구 리그에 초대했어요. 가입하면 바로 친구가 됩니다.' : esc(d.error || '초대 코드를 확인해 주세요.');
     });
   }
   $('goSignup').addEventListener('click', function () { openSignup(sessionStorage.getItem(INVITE_KEY) || ''); });
@@ -4031,7 +4031,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     return pkTake('reg').then(function (o) {
       if (!o.ok) throw new Error(o.error || '등록을 시작할 수 없습니다.');
       return navigator.credentials.create({ publicKey: {
-        challenge: b64uToBuf(o.challenge), rp: { id: pkRpId(), name: 'Runner Quest' },
+        challenge: b64uToBuf(o.challenge), rp: { id: pkRpId(), name: 'Learners Quest' },
         user: { id: b64uToBuf(o.user.id), name: o.user.name, displayName: o.user.displayName },
         pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
         authenticatorSelection: { authenticatorAttachment: 'platform', residentKey: 'required', requireResidentKey: true, userVerification: 'required' },
@@ -4106,7 +4106,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   if (isStandalone()) document.documentElement.classList.add('standalone');
   function refreshInstallBtn() { $('btnInstall').hidden = isStandalone() || !(installEvt || isIOS || isAndroid); }
   window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvt = e; refreshInstallBtn(); });
-  window.addEventListener('appinstalled', function () { installEvt = null; closeSheet(); refreshInstallBtn(); toast('앱이 설치됐어요! 홈 화면의 Runner Quest 아이콘으로 열어 보세요.'); });
+  window.addEventListener('appinstalled', function () { installEvt = null; closeSheet(); refreshInstallBtn(); toast('앱이 설치됐어요! 홈 화면의 Learners Quest 아이콘으로 열어 보세요.'); });
   var SHARE_ICON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v13"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
   function openInstall() {
     var steps, note = '';
@@ -4182,7 +4182,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     var st = pushStatus();
     if (st === 'install') { openPushInstall(); return Promise.resolve(); }
     if (st === 'unsupported') { toast('이 브라우저는 알림을 지원하지 않아요. Chrome이나 삼성 인터넷으로 열어 주세요.', true); return Promise.resolve(); }
-    if (st === 'denied') { toast('알림이 차단돼 있어요. 휴대폰 설정 → 알림에서 Runner Quest(또는 브라우저)를 허용해 주세요.', true); return Promise.resolve(); }
+    if (st === 'denied') { toast('알림이 차단돼 있어요. 휴대폰 설정 → 알림에서 Learners Quest(또는 브라우저)를 허용해 주세요.', true); return Promise.resolve(); }
     pushBusy = true; pushRenderAll();
     // 권한 요청은 반드시 버튼 탭(사용자 동작) 직후에 호출해야 iOS에서 동작합니다.
     return Promise.resolve(Notification.requestPermission()).then(function (perm) {
@@ -4235,7 +4235,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   }
   function openPushInstall() {
     openInstall();
-    $('installNote').textContent = '아이폰은 iOS 16.4 이상에서, 홈 화면에 추가한 Runner Quest 앱으로 열어야 알림을 받을 수 있어요. 설치 후 앱에서 「알림 켜기」를 눌러 주세요.';
+    $('installNote').textContent = '아이폰은 iOS 16.4 이상에서, 홈 화면에 추가한 Learners Quest 앱으로 열어야 알림을 받을 수 있어요. 설치 후 앱에서 「알림 켜기」를 눌러 주세요.';
     $('installNote').hidden = false;
   }
   function pushRenderProfile() {

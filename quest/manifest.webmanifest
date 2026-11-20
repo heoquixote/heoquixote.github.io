@@ -1,7 +1,7 @@
 {
   "id": "/quest/",
-  "name": "Runner Quest · 데이터 러너즈",
-  "short_name": "Runner Quest",
+  "name": "Learners Quest · 데이터 러너즈",
+  "short_name": "Learners Quest",
   "description": "매일의 루틴을 퀘스트로 체크하고 경험치와 레벨로 나를 육성하는 자기육성 앱",
   "lang": "ko",
   "dir": "ltr",
