@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; upgrade-insecure-requests">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>웹 대시보드 | 데이터 러너즈</title>
+  <meta name="description" content="데이터 러너즈가 운영하는 웹 대시보드 모음: KDT 모니터링, 한반도 긴장도 지수를 한 화면에서 전환해 볼 수 있습니다.">
+  <link rel="canonical" href="https://www.data-learners.com/dashboard/">
+  <meta property="og:title" content="웹 대시보드 | 데이터 러너즈">
+  <meta property="og:description" content="KDT 모니터링, 한반도 긴장도 지수를 한 화면에서 전환해 보는 대시보드 모음">
+  <meta property="og:image" content="https://www.data-learners.com/og-image.png">
+  <meta name="theme-color" content="#050607">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <script src="/analytics.js?v=5" defer></script>
+  <style>
+    :root{
+      --bg:#050607;--surface:#0b0d0e;--surface-2:#121516;--surface-3:#181c1d;
+      --text:#f5f7f2;--text-2:#c9cfcb;--muted:#a1aaa5;
+      --line:rgba(255,255,255,.11);--line-strong:rgba(255,255,255,.22);--lime:#c8ff3d;
+      --font-en:"Space Grotesk","Pretendard Variable",sans-serif;
+      --font-ko:"Pretendard Variable","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+      --bar-h:60px;--gutter:clamp(16px,3vw,32px);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ko);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;word-break:keep-all;display:flex;flex-direction:column;min-height:100dvh}
+    a{color:inherit;text-decoration:none}
+    .bar{position:sticky;top:0;z-index:10;flex:0 0 auto;background:rgba(5,6,7,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .bar-in{height:var(--bar-h);padding:0 var(--gutter);display:flex;align-items:center;gap:20px}
+    .brand{display:flex;align-items:center;gap:12px;flex:0 0 auto;white-space:nowrap}
+    .brand .home{font-family:var(--font-en);font-weight:700;letter-spacing:-.01em;color:var(--text)}
+    .brand .home b{color:var(--lime)}
+    .brand .sep{width:1px;height:18px;background:var(--line-strong)}
+    .brand .page{color:var(--muted);font-size:14px;font-weight:600}
+    .tabs{display:flex;gap:4px;padding:4px;margin:0 auto;background:var(--surface-2);border:1px solid var(--line);border-radius:999px}
+    .tab{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;color:var(--text-2);font-size:14px;font-weight:600;white-space:nowrap;transition:background .15s,color .15s}
+    .tab:hover{color:var(--text);background:var(--surface-3)}
+    .tab[aria-selected="true"]{background:var(--lime);color:#0b0d0e}
+    .tab .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55}
+    .tab[aria-selected="true"] .dot{opacity:1}
+    .open{flex:0 0 auto;font-size:13px;color:var(--muted);white-space:nowrap;padding:6px 10px;border:1px solid var(--line);border-radius:8px}
+    .open:hover{color:var(--text);border-color:var(--line-strong)}
+    .stage{position:relative;flex:1 1 auto;min-height:0}
+    .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:var(--bg)}
+    .stage iframe[hidden]{display:none}
+    .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;pointer-events:none}
+    .loading[hidden]{display:none}
+    .loading::before{content:"";width:16px;height:16px;margin-right:10px;border:2px solid var(--line-strong);border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media (prefers-reduced-motion:reduce){.loading::before{animation:none}}
+    .tab:focus-visible,.open:focus-visible,.home:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+    @media (max-width:760px){
+      .bar-in{height:auto;flex-wrap:wrap;gap:10px;padding-top:10px;padding-bottom:10px}
+      .brand{flex:1 1 auto}
+      .tabs{order:3;flex:1 0 100%;margin:0}
+      .tab{flex:1 1 0;justify-content:center;padding:8px 10px;font-size:13.5px}
+      .tab .dot{display:none}
+    }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <div class="bar-in">
+      <div class="brand">
+        <a class="home" href="/" aria-label="데이터 러너즈 홈으로">DATA <b>LEARNERS</b></a>
+        <span class="sep" aria-hidden="true"></span>
+        <span class="page">웹 대시보드</span>
+      </div>
+      <nav class="tabs" role="tablist" aria-label="대시보드 선택">
+        <a class="tab" role="tab" id="tab-kdt" href="#kdt" data-key="kdt" aria-controls="panel-kdt"><span class="dot" aria-hidden="true"></span>KDT 모니터링</a>
+        <a class="tab" role="tab" id="tab-kti" href="#kti" data-key="kti" aria-controls="panel-kti"><span class="dot" aria-hidden="true"></span>한반도 긴장도 지수</a>
+      </nav>
+      <a class="open" id="openNew" href="/kdt-monitoring/" target="_blank" rel="noopener">새 창으로 열기 ↗</a>
+    </div>
+  </header>
+  <main class="stage" id="stage">
+    <div class="loading" id="loading">불러오는 중</div>
+  </main>
+  <script>
+    (function(){
+      var BOARDS = {
+        kdt:{src:'/kdt-monitoring/',label:'KDT 모니터링'},
+        kti:{src:'/kti/',label:'한반도 긴장도 지수'}
+      };
+      var stage = document.getElementById('stage');
+      var loading = document.getElementById('loading');
+      var openNew = document.getElementById('openNew');
+      var tabs = document.querySelectorAll('.tab');
+      var frames = {};
+
+      function keyFromHash(){
+        var k = (location.hash || '').replace('#','');
+        return BOARDS[k] ? k : 'kdt';
+      }
+
+      function show(key){
+        var board = BOARDS[key];
+        tabs.forEach(function(t){
+          var on = t.dataset.key === key;
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+          t.tabIndex = on ? 0 : -1;
+        });
+        // 처음 여는 대시보드만 iframe을 만들고, 이후에는 숨김만 전환해 스크롤·필터 상태를 유지한다
+        if(!frames[key]){
+          var f = document.createElement('iframe');
+          f.id = 'panel-' + key;
+          f.title = board.label;
+          f.setAttribute('role','tabpanel');
+          f.setAttribute('aria-labelledby','tab-' + key);
+          f.src = board.src;
+          loading.hidden = false;
+          f.addEventListener('load', function(){ if(!f.hidden) loading.hidden = true; f.dataset.loaded = '1'; });
+          stage.appendChild(f);
+          frames[key] = f;
+        } else {
+          loading.hidden = !!frames[key].dataset.loaded;
+        }
+        Object.keys(frames).forEach(function(k){ frames[k].hidden = k !== key; });
+        openNew.href = board.src;
+        document.title = board.label + ' | 웹 대시보드 | 데이터 러너즈';
+      }
+
+      tabs.forEach(function(t, i){
+        t.addEventListener('keydown', function(e){
+          if(e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+          e.preventDefault();
+          var next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+          next.focus(); next.click();
+        });
+      });
+      window.addEventListener('hashchange', function(){ show(keyFromHash()); });
+      show(keyFromHash());
+    })();
+  </script>
+</body>
+</html>
