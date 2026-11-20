@@ -10,6 +10,7 @@ SQL, Python, Tableau, 통계, AI 자동화를 실무 프로젝트로 배우는 �
 |---|---|---|
 | 위키독스 | https://data-learners.wikidocs.net/ | 외부 |
 | 러너즈빌드업 | https://www.data-learners.com/runners-buildup/ | `heoquixote/runners-buildup` 저장소의 Pages |
+| 웹 대시보드 | https://www.data-learners.com/dashboard/ | 이 저장소의 `dashboard/` (상단 탭으로 KDT 모니터링, 한반도 긴장도 지수를 iframe으로 전환. `#kdt`, `#kti`로 바로 열기) |
 | KDT 모니터링 | https://www.data-learners.com/kdt-monitoring/ | `heoquixote/kdt-monitoring` 저장소의 Pages |
 | 기업소개서 | `/assets/data-learners-brochure.pdf` | 이 저장소 |
 | 면담 로그 | https://www.data-learners.com/interview-log/ | 이 저장소의 `interview-log/` (튜터 전용, API는 n8n 워크플로우 `Data Learners 면담 로그 앱`) |
