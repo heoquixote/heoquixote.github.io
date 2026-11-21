@@ -1,6 +1,6 @@
 /* Learners Quest 서비스 워커: 앱 껍데기만 캐시하고, 기록 API(n8n)는 항상 네트워크로 보냅니다.
    푸시 알림(저녁 9시 남은 퀘스트 등)도 여기서 받아 표시합니다. */
-var VERSION = 'rq-v18';
+var VERSION = 'rq-v19';
 var SHELL = [
   '/quest/',
   '/quest/manifest.webmanifest',
@@ -38,12 +38,24 @@ self.addEventListener('fetch', function (e) {
   var url = new URL(req.url);
   if (url.hostname.indexOf('n8n.cloud') >= 0) return;
 
-  // 페이지 이동: 네트워크 우선(항상 최신 버전), 오프라인이면 캐시된 앱 화면
+  // 페이지 이동: 네트워크 우선(최신 버전)이지만, 캐시된 앱 화면이 있으면 1.2초 넘게 기다리지 않습니다.
+  // 늦게 온 새 버전은 뒤에서 캐시에 넣어 두었다가 다음 실행 때 보여 줍니다.
   if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).then(function (res) {
-      if (res.ok && url.pathname === '/quest/') { var copy = res.clone(); caches.open(VERSION).then(function (c) { c.put('/quest/', copy); }); }
+    var isApp = url.pathname === '/quest/' || url.pathname === '/quest/index.html';
+    var net = fetch(req).then(function (res) {
+      if (res.ok && isApp) { var copy = res.clone(); caches.open(VERSION).then(function (c) { c.put('/quest/', copy); }); }
       return res;
-    }).catch(function () { return caches.match('/quest/'); }));
+    });
+    e.waitUntil(net.catch(function () {}));
+    if (!isApp) { e.respondWith(net.catch(function () { return caches.match('/quest/'); })); return; }
+    e.respondWith(caches.match('/quest/').then(function (hit) {
+      if (!hit) return net;
+      return new Promise(function (resolve) {
+        var settled = false, finish = function (r) { if (!settled) { settled = true; resolve(r); } };
+        var timer = setTimeout(function () { finish(hit); }, 1200);
+        net.then(function (res) { clearTimeout(timer); finish(res.ok ? res : hit); }, function () { clearTimeout(timer); finish(hit); });
+      });
+    }));
     return;
   }
 

@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js" integrity="sha384-FcQlsUOd0TJjROrBxhJdUhXTUgNJQxTMcxZe6nHbaEfFL1zjQ+bq/uRoBQxb0KMo" crossorigin="anonymous"></script>
+<script defer onload="window.__rqChart && window.__rqChart()" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js" integrity="sha384-FcQlsUOd0TJjROrBxhJdUhXTUgNJQxTMcxZe6nHbaEfFL1zjQ+bq/uRoBQxb0KMo" crossorigin="anonymous"></script>
 <style>
 /* 데이터러너즈 브랜드 토큰 (다크 단일 테마) */
 :root {
@@ -188,6 +188,10 @@ input:focus,select:focus,textarea:focus { outline:none; border-color:var(--lime)
 .xp-fill { height:100%; width:0; background:repeating-linear-gradient(90deg,var(--lime) 0 10px,#b3ec2a 10px 12px); transition:width .6s var(--ease); box-shadow:0 0 18px rgba(200,255,61,.35); }
 .char-chips { grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px; }
 .chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid var(--line); border-radius:999px; background:var(--surface-2); font-size:12px; color:var(--text-2); }
+.chip.sync { color:var(--text-3, #7d8782); }
+.chip.sync::before { content:''; width:9px; height:9px; border-radius:50%; border:1.5px solid currentColor; border-right-color:transparent; animation:rq-spin .8s linear infinite; }
+@keyframes rq-spin { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .chip.sync::before { animation:none; } }
 .chip b { color:var(--text); font-family:var(--font-en); }
 
 .stat-card { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:18px 20px; display:grid; gap:12px; }
@@ -916,6 +920,7 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
           <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
         </div>
         <div class="char-chips">
+          <span class="chip sync" id="chipSync" hidden role="status" title="저장된 기록을 먼저 보여 주고, 서버의 최신 기록을 뒤에서 불러오는 중이에요">동기화 중</span>
           <button type="button" class="chip btnlike outbox" id="chipOutbox" hidden title="연결되면 자동으로 저장합니다. 눌러서 지금 다시 시도">⏳ 저장 대기 <b id="chipOutboxN">0</b></button>
           <button type="button" class="chip btnlike season" id="chipSeason"></button>
           <button type="button" class="chip btnlike" id="chipStreakWrap">🔥 연속 <b id="chipStreak">0</b>일 · 🛡 <b id="chipShield">0</b> · 🧷 <b id="chipRShield">0</b></button>
@@ -1502,11 +1507,22 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       });
     }, function () { return { ok: false, error: '네트워크에 연결할 수 없습니다.', _status: 0 }; });
   }
+  // 동기화(load) 응답을 기다리는 동안 보낸 변경. 응답이 그보다 먼저 읽힌 서버 스냅샷일 수 있어서,
+  // 응답을 반영할 때 이 변경을 다시 얹어야 방금 한 체크가 잠깐 사라지거나 지운 기록이 되살아나지 않습니다.
+  var syncEdits = null;
+  function trackEdit(action, payload) {
+    if (!syncEdits || !payload) return null;
+    var e = action === 'log_add' ? { op: 'add', log: payload } : action === 'log_delete' ? { op: 'del', log_id: payload.log_id } : action === 'config_save' ? { op: 'cfg', key: payload.key } : null;
+    if (e) syncEdits.push(e);
+    return e;
+  }
+  function untrackEdit(e) { if (e && syncEdits) syncEdits = syncEdits.filter(function (x) { return x !== e; }); }
   function api(action, payload) {
+    var edit = trackEdit(action, payload);
     return post('quest', { token: state.token, action: action, payload: payload ? JSON.stringify(payload) : null }).then(function (d) {
-      if (d._status === 401) { logout('로그인이 만료되었습니다. 다시 로그인해 주세요.'); throw new Error(d.error); }
-      if (d._status === 0) { var ne = new Error(d.error); ne.offline = true; throw ne; }
-      if (!d.ok) throw new Error(d.error || '요청이 실패했습니다.');
+      if (d._status === 401) { untrackEdit(edit); logout('로그인이 만료되었습니다. 다시 로그인해 주세요.'); throw new Error(d.error); }
+      if (d._status === 0) { untrackEdit(edit); var ne = new Error(d.error); ne.offline = true; throw ne; }
+      if (!d.ok) { untrackEdit(edit); throw new Error(d.error || '요청이 실패했습니다.'); }
       return d;
     });
   }
@@ -3456,21 +3472,41 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     $('tabbar').hidden = !app; $('topTabs').hidden = !app; $('btnLogout').hidden = !app; $('fab').hidden = !app || state.tab === 'routines' || state.tab === 'shop' || state.tab === 'friends';
     if (v === 'login') setupFaceLogin();
   }
+  var syncing = null;
+  var syncChipTimer = null;
+  function setSyncing(on) { // 금방 끝나면 깜빡이지 않도록 0.8초 넘을 때만 표시
+    clearTimeout(syncChipTimer);
+    if (on) syncChipTimer = setTimeout(function () { $('chipSync').hidden = false; }, 800);
+    else $('chipSync').hidden = true;
+  }
   function sync(silent) {
-    return api('load').then(function (d) {
+    if (syncing) return syncing; // 앱 열기·복귀·알림 탭이 겹쳐도 load는 한 번만
+    syncEdits = []; setSyncing(true);
+    var done = function () { syncing = null; syncEdits = null; setSyncing(false); };
+    syncing = api('load').then(function (d) {
+      var edits = syncEdits || [];
+      var cfgEdited = {}; edits.forEach(function (e) { if (e.op === 'cfg') cfgEdited[e.key] = true; });
       state.name = d.name || state.name; store(NAME_KEY, state.name);
       state.isOwner = d.isOwner !== false;
       var cfg = d.config || {};
-      var needSeed = !Array.isArray(cfg.routines);
-      state.routines = needSeed ? (state.isOwner ? JSON.parse(JSON.stringify(DEFAULT_ROUTINES)) : starterRoutines()) : cfg.routines;
-      state.profile = cfg.profile && typeof cfg.profile === 'object' && !Array.isArray(cfg.profile) ? cfg.profile : {};
-      state.retros = cfg.retros && typeof cfg.retros === 'object' && !Array.isArray(cfg.retros) ? cfg.retros : {};
-      var pendingLogs = state.logs.filter(function (l) { return Object.keys(state.pending).length && !d.logs.some(function (x) { return x.log_id === l.log_id; }); });
-      state.logs = applyOutbox((d.logs || []).map(normLog).concat(Object.keys(state.pending).length ? pendingLogs : []));
+      var needSeed = !Array.isArray(cfg.routines) && !cfgEdited.routines;
+      if (!cfgEdited.routines) state.routines = needSeed ? (state.isOwner ? JSON.parse(JSON.stringify(DEFAULT_ROUTINES)) : starterRoutines()) : cfg.routines;
+      if (!cfgEdited.profile) state.profile = cfg.profile && typeof cfg.profile === 'object' && !Array.isArray(cfg.profile) ? cfg.profile : {};
+      if (!cfgEdited.retros) state.retros = cfg.retros && typeof cfg.retros === 'object' && !Array.isArray(cfg.retros) ? cfg.retros : {};
+      var srv = d.logs || [];
+      var pendingLogs = state.logs.filter(function (l) { return Object.keys(state.pending).length && !srv.some(function (x) { return x.log_id === l.log_id; }); });
+      var logs = srv.map(normLog).concat(Object.keys(state.pending).length ? pendingLogs : []);
+      edits.forEach(function (e) {
+        if (e.op === 'add' && !logs.some(function (l) { return l.log_id === e.log.log_id; })) logs.push(normLog(JSON.parse(JSON.stringify(e.log))));
+        if (e.op === 'del') logs = logs.filter(function (l) { return l.log_id !== e.log_id; });
+      });
+      state.logs = applyOutbox(logs);
+      done();
       saveCache(); showView('app'); renderAll(); runQuickDo(); flushOutbox();
       if (needSeed) api('config_save', { key: 'routines', value: state.routines }).catch(function () {});
       loadLeague(true); pushAfterSync();
-    }, function (e) { if (!silent && state.token) { showView('app'); renderAll(); toast(e.message || '동기화 실패 · 저장된 데이터로 표시합니다.', true); } });
+    }, function (e) { done(); if (!silent && state.token) { showView('app'); renderAll(); toast(e.message || '동기화 실패 · 저장된 데이터로 표시합니다.', true); } });
+    return syncing;
   }
   function enter() {
     var cache = null; try { cache = JSON.parse(load(CACHE_KEY) || 'null'); } catch (e) {}
@@ -4525,7 +4561,9 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
   });
 
   /* ---------- boot ---------- */
+  // Chart.js는 defer로 받아서 첫 화면(오늘 퀘스트)을 막지 않습니다. 도착하면 통계 화면만 다시 그립니다.
   if (window.Chart) chartBase();
+  else window.__rqChart = function () { window.__rqChart = null; chartBase(); if (state.tab === 'stats' && !$('viewApp').hidden) renderAll(); };
   var inviteCode = (location.search.match(/[?&]invite=([A-Za-z0-9]{4,12})/) || [])[1] || '';
   if (inviteCode) {
     inviteCode = inviteCode.toUpperCase();
