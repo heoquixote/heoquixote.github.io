@@ -20,6 +20,7 @@
 | `quest/` | Learners Quest 자기육성 루틴 (PWA, `sw.js`, `manifest.webmanifest`) | 소유자·친구 | n8n `[Data Learners] 자기육성 퀘스트 API` (`dl/quest`) 등, 데이터는 Supabase Postgres (`supabase/`) |
 | `supabase/` | Learners Quest DB 마이그레이션 SQL (Supabase SQL Editor에서 순서대로 실행) | 저장소만 | 없음 |
 | `kti/` | 한반도 긴장도 지수 대시보드 | 공개 | GitHub Actions 수집 |
+| `monitor.js`, `tests/smoke/` | 방문자 에러 수집기, Playwright 스모크 테스트 | 공개 / 저장소만 | n8n `[Data Learners] 사이트 에러 모니터` (`dl/site-error`) |
 | `privacy/` | 개인정보처리방침 | 공개 | 없음 |
 | `assets/` | 이미지, 로고, 도서 표지, 기업소개서 PDF | 공개 | 없음 |
 | `llms.txt`, `sitemap.xml`, `robots.txt` | 검색·LLM 크롤러용 메타 | 공개 | 없음 |
@@ -36,16 +37,23 @@ n8n API 기본 주소: `https://hote.app.n8n.cloud/webhook/dl/` (각 앱 HTML �
 - 서비스워커(`sw.js`)가 캐시를 잡으므로 정적 파일을 바꾸면 `sw.js`의 `VERSION` 상수도 함께 올린다. 안 올리면 설치된 앱에 이전 파일이 계속 뜬다.
 - 로그인(패스키), 푸시 알림, 친구 기능은 n8n API와 짝을 이룬다. 요청·응답 형식을 바꿀 때는 PR 본문에 n8n 워크플로우 쪽 수정이 필요한지 명시한다.
 
+### 사이트 모니터링
+- PR마다 `사이트 스모크 테스트` 워크플로우가 돈다. 실패하면 머지하지 않는다. 테스트 기준(`tests/smoke/pages.mjs`)을 느슨하게 바꿔서 통과시키지 않는다.
+- 섹션 구조를 바꾸면 `tests/smoke/pages.mjs`의 `expect`와 각 페이지 `monitor.js` 태그의 `data-expect`를 같이 고친다.
+- 새 공개 페이지에는 `<head>`의 CSP meta 바로 아래에 `<script src="/monitor.js?v=1" data-expect="핵심 선택자"></script>`를 넣고 `pages.mjs`에 추가한다. `monitor.js`를 바꾸면 모든 페이지의 `?v=`를 올린다.
+- 이슈 라벨: `bug:site-error`(모든 사이트 에러), `source:smoke`/`source:visitor`(출처), `claude-fix`(붙이면 Claude 자동 수정 실행).
+
 ### 개인 데이터
 - 소유자 전용 앱의 실제 데이터는 n8n data table(면담 기록, 세션·패스키)과 Supabase(Learners Quest 기록·소셜)에만 있다. 저장소에 데이터, 토큰, DB 비밀번호, 테스트용 실데이터를 커밋하지 않는다.
 - Learners Quest 스키마를 바꿀 때는 `supabase/migrations/`에 새 SQL 파일을 추가하고(기존 파일 수정 금지), n8n 쿼리도 같이 고친다. 자세한 규칙은 `supabase/README.md`.
 
 ## 새 페이지를 추가할 때
 
-1. 하위 폴더에 `index.html` 생성 (`<title>`은 `<페이지명> | 데이터 러너즈` 형식)
+1. 하위 폴더에 `index.html` 생성 (`<title>`은 `<페이지명> | 데이터 러너즈` 형식), `monitor.js` 태그 추가
 2. 메인 `index.html` 상단 바로가기 메뉴에 링크 추가 (공개 페이지인 경우)
 3. 공개 페이지면 `sitemap.xml` 갱신
 4. `README.md`의 연결된 사이트 표에 한 줄 추가
+5. `tests/smoke/pages.mjs`에 페이지와 기대 요소 추가
 
 ## 관련 저장소
 
