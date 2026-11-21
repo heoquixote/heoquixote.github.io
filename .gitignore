@@ -1,0 +1,4 @@
+node_modules/
+test-results/
+.issue.md
+.claude-report.md

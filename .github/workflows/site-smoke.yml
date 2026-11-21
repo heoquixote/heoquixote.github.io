@@ -1,0 +1,135 @@
+name: 사이트 스모크 테스트
+
+# PR: 저장소 파일을 로컬 서버로 띄워 검사해 머지 전에 깨진 페이지를 막는다
+# 정기·배포 후: 실제 도메인을 검사하고, 실패하면 GitHub 이슈(bug:site-error, claude-fix)를 만들어 Claude 자동 수정으로 넘긴다
+on:
+  pull_request:
+    paths-ignore:
+      - "kti/data/kti.json"
+      - "**.md"
+  page_build:
+  schedule:
+    - cron: "23 */3 * * *" # 3시간마다 (KST 00:23, 03:23, ...)
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "검사 대상"
+        type: choice
+        options: [live, local]
+        default: live
+
+permissions:
+  contents: read
+  issues: write
+  actions: write
+
+concurrency:
+  group: site-smoke-${{ github.event_name == 'pull_request' && github.head_ref || 'live' }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      LIVE: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || inputs.target == 'live') }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 패키지 매니저 파일을 저장소에 두지 않는다 (CLAUDE.md). CI에서만 일회성 설치
+      - name: Playwright 설치
+        run: |
+          npm install --no-save --no-package-lock playwright@1.49.1
+          npx playwright install --with-deps chromium
+
+      - name: 로컬 서버 실행
+        if: env.LIVE != 'true'
+        run: |
+          python3 -m http.server 8080 >/dev/null 2>&1 &
+          for i in $(seq 1 20); do curl -fs http://localhost:8080/ >/dev/null && break; sleep 0.5; done
+
+      - name: 스모크 테스트
+        id: test
+        run: |
+          if [ "$LIVE" = "true" ]; then
+            # 배포 직후 CDN 캐시 반영을 기다린다
+            if [ "${{ github.event_name }}" = "page_build" ]; then sleep 90; fi
+            export BASE_URL=https://www.data-learners.com
+          else
+            export BASE_URL=http://localhost:8080
+          fi
+          # 실제 사이트는 일시적 네트워크 오류로 실패할 수 있어 한 번 더 확인한다
+          node tests/smoke/smoke.mjs || { [ "$LIVE" = "true" ] && sleep 60 && node tests/smoke/smoke.mjs; }
+
+      - name: 결과 요약
+        if: always()
+        run: test -f test-results/summary.md && cat test-results/summary.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: 스크린샷·결과 업로드
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-${{ github.run_id }}
+          path: test-results/
+          retention-days: 14
+
+      # 실제 사이트 실패: 열린 이슈가 있으면 댓글, 없으면 새 이슈. 이슈 내용은 테스트가 만든 것이라 Claude 자동 수정 대상(claude-fix)
+      - name: 실패 이슈 만들기·갱신
+        id: issue
+        if: failure() && env.LIVE == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.existsSync('test-results/summary.md') ? fs.readFileSync('test-results/summary.md', 'utf8') : '(요약 파일 없음)';
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `${summary}\n\n- 실행 기록·스크린샷: ${run}\n- 커밋: ${context.sha}\n- 재현: \`node tests/smoke/smoke.mjs https://www.data-learners.com\``;
+            const { data: open } = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'bug:site-error,source:smoke', per_page: 5 });
+            let url;
+            if (open.length) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: open[0].number, body: `여전히 실패합니다.\n\n${body}` });
+              url = open[0].html_url;
+            } else {
+              const { data } = await github.rest.issues.create({
+                ...context.repo,
+                title: `[사이트 에러] 스모크 테스트 실패 (${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC)`,
+                body: `> 실제 사이트(www.data-learners.com) 스모크 테스트가 두 번 연속 실패해 자동 생성한 이슈입니다.\n\n${body}`,
+                labels: ['bug:site-error', 'source:smoke', 'claude-fix'],
+              });
+              url = data.html_url;
+              // GITHUB_TOKEN으로 만든 이슈는 다른 워크플로우를 깨우지 않으므로 자동 수정을 직접 실행한다
+              await github.rest.actions.createWorkflowDispatch({ ...context.repo, workflow_id: 'claude-fix.yml', ref: 'main', inputs: { issue: String(data.number) } })
+                .catch((e) => core.warning(`Claude 자동 수정 실행 실패: ${e.message}`));
+            }
+            core.setOutput('url', url);
+
+      # Discord 알림은 n8n 사이트 에러 모니터 웹훅을 거친다 (중복 제거·채널 설정을 한 곳에서 관리)
+      - name: 디스코드 알림
+        if: failure() && env.LIVE == 'true'
+        env:
+          ISSUE_URL: ${{ steps.issue.outputs.url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          MSG=$(grep -m1 -A40 '실패 상세' test-results/summary.md 2>/dev/null | grep '^\[' | head -5 | tr '\n' ' ' || true)
+          PAYLOAD=$(jq -nc --arg m "${MSG:-스모크 테스트 실패}" --arg r "$RUN_URL" --arg i "$ISSUE_URL" \
+            '{v:1,type:"smoke",message:$m,page:"/",run_url:$r,issue_url:$i,release:"actions"}')
+          curl -fsS -m 20 -A "data-learners-smoke/1.0" \
+            --data-urlencode "payload=$PAYLOAD" \
+            https://hote.app.n8n.cloud/webhook/dl/site-error || echo "n8n 전송 실패 (이슈는 생성됨)"
+
+      # 실제 사이트가 다시 통과하면 스모크 이슈를 닫는다
+      - name: 복구 시 이슈 닫기
+        if: success() && env.LIVE == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: open } = await github.rest.issues.listForRepo({ ...context.repo, state: 'open', labels: 'bug:site-error,source:smoke', per_page: 10 });
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            for (const i of open) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: i.number, body: `실제 사이트 스모크 테스트가 다시 통과해 닫습니다. ${run}` });
+              await github.rest.issues.update({ ...context.repo, issue_number: i.number, state: 'closed', state_reason: 'completed' });
+            }
