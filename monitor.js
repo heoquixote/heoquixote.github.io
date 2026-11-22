@@ -19,7 +19,7 @@
 (()=>{
   const ENDPOINT='https://hote.app.n8n.cloud/webhook/dl/site-error';
   const PROD_HOSTS=['www.data-learners.com','data-learners.com'];
-  const RELEASE='2026-11-21';
+  const RELEASE='2026-11-22';
   const MAX_PER_PAGE=5,MAX_PER_SESSION=15,RENDER_DELAY=5000;
 
   const me=document.currentScript;
@@ -37,14 +37,16 @@
   const IGNORE=[
     /^Script error\.?$/i,                 // 다른 출처 스크립트의 내용 없는 에러
     /ResizeObserver loop/i,               // 브라우저가 내는 무해한 경고
-    /^(chrome|moz|safari(-web)?)-extension:/i, // 확장 프로그램
-    /extension\//i
+    /Java object is gone|WebViewJavascriptBridge|instantSearchSDKJSBridge/i, // 인앱 브라우저 네이티브 연결 끊김
+    /Can't find variable: (gmo|__gCrWeb|webkit)\b/i
   ];
-  const ignored=(msg,src)=>IGNORE.some(r=>r.test(msg||'')||r.test(src||''));
+  // 사이트 코드가 아닌 곳: 인앱 브라우저(인스타그램·페이스북 iabjs://)가 주입한 스크립트, 확장 프로그램
+  const FOREIGN=/(iabjs|chrome-extension|moz-extension|safari-extension|safari-web-extension|webkit-masked-url|ms-browser-extension):\/\/|extension\//i;
+  const ignored=(msg,src,stack)=>IGNORE.some(r=>r.test(msg||''))||FOREIGN.test(src||'')||FOREIGN.test(stack||'');
 
   const report=(type,data)=>{
     const msg=cut(data.message,300),src=data.source?stripQuery(data.source):'';
-    if(ignored(msg,src))return;
+    if(ignored(msg,data.source,data.stack))return;
     const key=[type,msg,src,data.line||''].join('|');
     if(seen.has(key))return;seen.add(key);
     if(type!=='render'&&sentThisPage>=MAX_PER_PAGE)return; // 렌더링 실패는 한도와 무관하게 보낸다
