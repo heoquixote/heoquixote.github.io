@@ -22,7 +22,10 @@ const VIEWPORTS = [
 ];
 
 const short = (u) => { try { const x = new URL(u); return x.origin === new URL(BASE).origin ? x.pathname + x.search : x.host + x.pathname; } catch { return u; } };
-const ignoredUrl = (u) => IGNORE_URL.some((r) => r.test(u)) || (!LIVE && /\/(kdt-monitoring|runners-buildup)\//.test(u));
+// 다른 저장소가 서빙하는 앱. 자기 경로로 따로 검사하므로, /dashboard/ 같은 페이지가 iframe으로 품었을 때 그 안의 요청·콘솔은 세지 않는다
+const OTHER_APPS = /\/(kdt-monitoring|runners-buildup)\//;
+const ignoredUrl = (u) => IGNORE_URL.some((r) => r.test(u)) || (!LIVE && OTHER_APPS.test(u));
+const frameUrl = (r) => { try { return r.frame().url(); } catch { return ''; } };
 
 async function checkPage(browser, page, vp) {
   const ctx = await browser.newContext({ ...vp.opts, serviceWorkers: 'block' });
@@ -31,6 +34,7 @@ async function checkPage(browser, page, vp) {
   const tab = await ctx.newPage();
   const problems = [];
   const add = (kind, detail) => problems.push({ kind, detail: String(detail).slice(0, 400) });
+  const embedded = (u) => !OTHER_APPS.test(page.path) && OTHER_APPS.test(u || '');
 
   tab.on('pageerror', (e) => add('JS 예외', `${e.message}${e.stack ? '\n' + e.stack.split('\n').slice(1, 4).join('\n') : ''}`));
   if (page.consoleErrors !== false) {
@@ -39,16 +43,16 @@ async function checkPage(browser, page, vp) {
       const t = m.text();
       if (IGNORE_CONSOLE.some((r) => r.test(t))) return;
       const loc = m.location()?.url || '';
-      if (loc && ignoredUrl(loc)) return;
+      if (loc && (ignoredUrl(loc) || embedded(loc))) return;
       add('콘솔 에러', `${t}${loc ? ` (${short(loc)}:${m.location().lineNumber})` : ''}`);
     });
     tab.on('response', (r) => {
       const u = r.url();
-      if (r.status() >= 400 && !ignoredUrl(u) && !N8N.test(u)) add('HTTP 실패', `${r.status()} ${short(u)}`);
+      if (r.status() >= 400 && !ignoredUrl(u) && !N8N.test(u) && !embedded(frameUrl(r))) add('HTTP 실패', `${r.status()} ${short(u)}`);
     });
     tab.on('requestfailed', (r) => {
       const u = r.url(), f = r.failure()?.errorText || '';
-      if (ignoredUrl(u) || N8N.test(u) || /ERR_ABORTED/.test(f)) return;
+      if (ignoredUrl(u) || N8N.test(u) || embedded(frameUrl(r)) || /ERR_ABORTED/.test(f)) return;
       add('로드 실패', `${f} ${short(u)}`);
     });
   }

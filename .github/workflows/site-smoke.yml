@@ -114,9 +114,11 @@ jobs:
           ISSUE_URL: ${{ steps.issue.outputs.url }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          MSG=$(grep -m1 -A40 '실패 상세' test-results/summary.md 2>/dev/null | grep '^\[' | head -5 | tr '\n' ' ' || true)
-          PAYLOAD=$(jq -nc --arg m "${MSG:-스모크 테스트 실패}" --arg r "$RUN_URL" --arg i "$ISSUE_URL" \
-            '{v:1,type:"smoke",message:$m,page:"/",run_url:$r,issue_url:$i,release:"actions"}')
+          # 실패한 페이지 경로와 문제를 함께 보낸다 (중복 제거 후 최대 5줄)
+          PAGE=$(jq -r '[.results[] | select(.problems | length > 0) | .path][0] // "/"' test-results/results.json 2>/dev/null || echo /)
+          MSG=$(jq -r '[.results[] | select(.problems | length > 0) | .path as $p | .problems[] | "\($p) [\(.kind)] \(.detail | split("\n")[0])"] | unique | .[:5] | join(" / ")' test-results/results.json 2>/dev/null || true)
+          PAYLOAD=$(jq -nc --arg m "${MSG:-스모크 테스트 실패}" --arg p "${PAGE:-/}" --arg r "$RUN_URL" --arg i "$ISSUE_URL" \
+            '{v:1,type:"smoke",message:$m,page:$p,run_url:$r,issue_url:$i,release:"actions"}')
           curl -fsS -m 20 -A "data-learners-smoke/1.0" \
             --data-urlencode "payload=$PAYLOAD" \
             https://hote.app.n8n.cloud/webhook/dl/site-error || echo "n8n 전송 실패 (이슈는 생성됨)"
