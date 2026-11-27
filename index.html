@@ -1158,8 +1158,8 @@
         <header class="section-head books-head reveal">
           <div>
             <p class="eyebrow">05 · Books &amp; Library</p>
-            <h2 class="h2" id="books-title">수업에서 끝나지 않는<br>10개의 실무 학습서</h2>
-            <p class="lead" style="margin-top:20px;max-width:600px">SQL과 Python 기초부터 통계, 머신러닝, 딥러닝, 데이터 엔지니어링, Tableau와 n8n까지. 교육에서 다룬 핵심을 언제든 다시 학습할 수 있도록 실무 흐름으로 정리했습니다.</p>
+            <h2 class="h2" id="books-title">수업에서 끝나지 않는<br>11개의 실무 학습서</h2>
+            <p class="lead" style="margin-top:20px;max-width:600px">SQL과 Python 기초부터 통계, 머신러닝, 딥러닝, 데이터 엔지니어링, AI 에이전트, Tableau와 n8n까지. 교육에서 다룬 핵심을 언제든 다시 학습할 수 있도록 실무 흐름으로 정리했습니다.</p>
           </div>
           <a class="btn" href="https://wikidocs.net/profile/info/book/35484" target="_blank" rel="noopener">WikiDocs 전체 보기</a>
         </header>
@@ -1175,6 +1175,7 @@
             <li><a class="shelf-item" href="https://wikidocs.net/book/22069" target="_blank" rel="noopener" style="--book-accent:#fe5a4b" data-idx="7"><span class="si-no">08</span><span class="si-main"><span class="si-title">Learners School : 데이터 엔지니어링</span><span class="si-cat">DATA ENGINEERING</span></span><span class="si-desc">AI가 써 준 파이프라인이 대용량, 스키마 변경, 부분 장애에서 어디서 깨지는지 보고 프로덕션 패턴으로 고칩니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
             <li><a class="shelf-item" href="https://wikidocs.net/book/19534" target="_blank" rel="noopener" style="--book-accent:#c8ff3d" data-idx="8"><span class="si-no">09</span><span class="si-main"><span class="si-title">태블로를 활용한 데이터 시각화</span><span class="si-cat">BI · VISUALIZATION</span></span><span class="si-desc">설치와 기본 차트부터 계산, 전처리, 대시보드, Tableau Cloud 공유까지 실무 흐름으로 익힙니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
             <li><a class="shelf-item" href="https://wikidocs.net/book/19600" target="_blank" rel="noopener" style="--book-accent:#ffcf4a" data-idx="9"><span class="si-no">10</span><span class="si-main"><span class="si-title">n8n을 활용한 데이터 워크플로우 구축</span><span class="si-cat">AUTOMATION</span></span><span class="si-desc">반복 업무를 자동화 문제로 바꾸고 n8n 워크플로우로 구현하는 과정을 다룹니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
+            <li><a class="shelf-item" href="https://wikidocs.net/book/22347" target="_blank" rel="noopener" style="--book-accent:#3ddc97" data-idx="10"><span class="si-no">11</span><span class="si-main"><span class="si-title">Learners School : AI 에이전트 입문</span><span class="si-cat">AI AGENT</span></span><span class="si-desc">Python으로 에이전트 루프를 직접 만들고 도구 호출, MCP, 평가, 배포까지 이어갑니다.</span><span class="si-arrow" aria-hidden="true">↗</span></a></li>
           </ol>
           <div class="shelf-stage" style="--book-accent:#55e5ff" aria-live="polite">
             <span class="stage-num" aria-hidden="true">01</span>
@@ -1189,9 +1190,10 @@
               <img class="stage-cover" src="assets/books/10-data-engineering.webp" width="480" height="672" alt="" data-alt="Learners School 데이터 엔지니어링 표지" fetchpriority="low" loading="lazy" decoding="async">
               <img class="stage-cover" src="assets/books/01-tableau.webp" width="480" height="672" alt="" data-alt="태블로를 활용한 데이터 시각화 표지" fetchpriority="low" loading="lazy" decoding="async">
               <img class="stage-cover" src="assets/books/06-n8n.webp" width="480" height="672" alt="" data-alt="n8n을 활용한 데이터 워크플로우 구축 표지" fetchpriority="low" loading="lazy" decoding="async">
+              <img class="stage-cover" src="assets/books/11-ai-agent.webp" width="480" height="672" alt="" data-alt="Learners School AI 에이전트 입문 표지" fetchpriority="low" loading="lazy" decoding="async">
             </div>
             <div class="stage-info">
-              <p class="stage-cat"><span class="stage-count">01 / 10</span><span class="stage-cat-txt">DATABASE</span></p>
+              <p class="stage-cat"><span class="stage-count">01 / 11</span><span class="stage-cat-txt">DATABASE</span></p>
               <h3 class="stage-title">Learners School : SQL 기초</h3>
               <p class="stage-desc">비즈니스 질문을 데이터 구조로 해석하고 SQL로 표현하는 실습형 입문서입니다.</p>
               <a class="stage-link" href="https://wikidocs.net/book/19579" target="_blank" rel="noopener">WikiDocs에서 읽기 <span aria-hidden="true">↗</span></a>
@@ -1634,7 +1636,7 @@
         it.classList.add('is-active');it.setAttribute('aria-current','true');
         stage.style.setProperty('--book-accent',it.style.getPropertyValue('--book-accent'));
         const no=$('.si-no',it).textContent;
-        num.textContent=no;count.textContent=no+' / 10';
+        num.textContent=no;count.textContent=no+' / '+String(items.length).padStart(2,'0');
         cat.textContent=$('.si-cat',it).textContent;title.textContent=$('.si-title',it).textContent;desc.textContent=$('.si-desc',it).textContent;
         link.href=it.href;
         prev.classList.remove('is-active');prev.alt='';next.classList.add('is-active');next.alt=next.dataset.alt;
