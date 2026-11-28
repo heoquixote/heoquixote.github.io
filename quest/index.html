@@ -145,6 +145,15 @@ input[type=text],input[type=email],input[type=password],input[type=number],input
   width:100%; min-height:44px; padding:10px 12px; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-sm); font-size:16px; color:var(--text);
 }
 textarea { min-height:72px; resize:vertical; }
+.memo-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.memo-count { color:var(--subtle); font-weight:500; font-size:12px; margin-left:4px; font-family:var(--font-en); }
+.memo-tools { display:flex; gap:6px; }
+.memo-tools button { min-height:36px; padding:0 10px; border:1px solid var(--line); border-radius:var(--r-sm); background:var(--surface-2); color:var(--text-2); font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:4px; cursor:pointer; -webkit-user-select:none; user-select:none; }
+.memo-tools button:active { border-color:var(--lime); color:var(--lime); }
+textarea.memo-ta { min-height:156px; max-height:min(52svh, 420px); line-height:1.55; tab-size:4; -moz-tab-size:4; white-space:pre-wrap; overflow-wrap:anywhere; resize:vertical; }
+.memo-hint { color:var(--subtle); font-size:12px; }
+@media (hover:none) and (pointer:coarse) { .memo-hint { display:none; } }
+.memo-text { white-space:pre-wrap; overflow-wrap:anywhere; tab-size:4; -moz-tab-size:4; color:var(--text-2); font-size:12.5px; line-height:1.55; margin-top:6px; padding:6px 10px; background:var(--surface-2); border-left:2px solid var(--c, var(--line-strong)); border-radius:6px; }
 input:focus,select:focus,textarea:focus { outline:none; border-color:var(--lime); }
 .error-msg { color:var(--rose); font-size:13px; }
 
@@ -272,6 +281,10 @@ input:focus,select:focus,textarea:focus { outline:none; border-color:var(--lime)
 .quest.adhoc { grid-template-columns:48px 1fr auto; }
 .quest .del { border:0; background:none; color:var(--subtle); padding:6px; }
 .quest .del:hover { color:var(--rose); }
+.adhoc-acts { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.quest .edit, .log-item .edit { border:0; background:none; color:var(--subtle); padding:6px; min-width:36px; min-height:36px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+.quest .edit:hover, .log-item .edit:hover { color:var(--lime); }
+.log-item.has-edit { grid-template-columns:32px 1fr auto auto auto; gap:6px; }
 .empty { padding:28px 16px; text-align:center; color:var(--muted); border:1px dashed var(--line); border-radius:var(--r-md); font-size:14px; }
 .sub-head { margin:22px 0 10px; font-size:13px; color:var(--muted); font-weight:650; display:flex; justify-content:space-between; align-items:center; }
 
@@ -1151,15 +1164,20 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
       </div>
     </div>
     <div class="chips" id="lfMinChips"></div>
-    <div class="row2">
-      <div class="field">
-        <label for="lfDate">날짜</label>
-        <input type="date" id="lfDate">
+    <div class="field">
+      <label for="lfDate">날짜</label>
+      <input type="date" id="lfDate">
+    </div>
+    <div class="field memo-field">
+      <div class="memo-head">
+        <label for="lfNote">메모 <small class="memo-count" id="lfNoteCount">0/500</small></label>
+        <div class="memo-tools" role="toolbar" aria-label="메모 들여쓰기">
+          <button type="button" data-memo-indent="-1" aria-label="내어쓰기" title="내어쓰기 (Shift+Tab)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H11M21 12H11M21 19H11M7 8l-4 4 4 4"/></svg><span>내어쓰기</span></button>
+          <button type="button" data-memo-indent="1" aria-label="들여쓰기" title="들여쓰기 (Tab)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H11M21 12H11M21 19H11M3 8l4 4-4 4"/></svg><span>들여쓰기</span></button>
+        </div>
       </div>
-      <div class="field">
-        <label for="lfNote">메모</label>
-        <input type="text" id="lfNote" maxlength="500" placeholder="선택">
-      </div>
+      <textarea id="lfNote" class="memo-ta" maxlength="500" rows="6" spellcheck="false" placeholder="선택 · 줄바꿈과 들여쓰기가 그대로 저장돼요&#10;예) 읽은 책&#10;  - 3장 요약&#10;    · 핵심 문장"></textarea>
+      <small class="memo-hint">PC: Tab 들여쓰기 · Shift+Tab 내어쓰기 · Ctrl/⌘+Enter 저장</small>
     </div>
     <div class="error-msg" id="lfError" hidden></div>
     <div class="sheet-actions">
@@ -2168,8 +2186,9 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     $('adhocList').innerHTML = adhoc.length ? adhoc.map(function (l) {
       var c = CATS[l.category] || CATS.life;
       return '<div class="quest adhoc done" style="--c:' + c.color + '"><div class="ico">' + c.emoji + '</div>' +
-        '<div class="body"><div class="t">' + esc(l.title) + '</div><div class="s"><span>' + c.en + ' ' + c.name + '</span>' + (l.minutes ? '<span>' + hm(l.minutes) + '</span>' : '') + '<span class="xp">+' + l.xp + ' XP</span>' + (l.note ? '<span>' + esc(l.note) + '</span>' : '') + '</div></div>' +
-        '<button class="del" data-del="' + esc(l.log_id) + '" aria-label="삭제" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
+        '<div class="body"><div class="t">' + esc(l.title) + '</div><div class="s"><span>' + c.en + ' ' + c.name + '</span>' + (l.minutes ? '<span>' + hm(l.minutes) + '</span>' : '') + '<span class="xp">+' + l.xp + ' XP</span>' + '</div>' + (l.note ? '<div class="memo-text">' + esc(l.note) + '</div>' : '') + '</div>' +
+        '<div class="adhoc-acts"><button class="edit" data-edit-log="' + esc(l.log_id) + '" aria-label="수정" title="수정" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>' +
+        '<button class="del" data-del="' + esc(l.log_id) + '" aria-label="삭제" title="삭제" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div></div>';
     }).join('') : '<div class="empty">독서, 공부, 운동, 사이드 프로젝트처럼 루틴 밖에서 한 일도 기록하면 경험치가 됩니다.</div>';
   }
 
@@ -2286,6 +2305,16 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     return api('log_delete', { log_id: log.log_id }).then(function () { if (key) delete state.pending[key]; renderAll(); }, function (e) {
       if (e.offline) { if (key) delete state.pending[key]; queueOp({ op: 'del', log_id: log.log_id }); saveCache(); renderAll(); return; }
       state.logs.push(log); if (key) delete state.pending[key]; saveCache(); renderAll(); toast(e.message || '삭제 실패', true);
+    });
+  }
+
+  // 기록 수정: 새 기록을 먼저 저장한 뒤 이전 기록 삭제 (API에 수정 액션이 없어 추가+삭제로 덮어쓰기)
+  function updateLog(old, log) {
+    log.created_at = old.created_at || log.created_at;
+    state.logs = state.logs.filter(function (l) { return l.log_id !== old.log_id; });
+    return addLog(log).then(function (ok) {
+      if (!ok) { state.logs.push(old); saveCache(); renderAll(); return false; }
+      state.logs.push(old); removeLog(old); toast('기록을 수정했어요.'); return true;
     });
   }
 
@@ -2605,8 +2634,9 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
         var c = CATS[l.category] || CATS.life, r = routineById(l.routine_id);
         var e = l.kind === 'adhoc' ? c.emoji : (r && r.emoji) || c.emoji;
         var tag = l.kind === 'routine' ? '루틴' : l.kind === 'skip' ? '건너뜀' : '비정기';
-        return '<div class="log-item"><span class="e">' + esc(e) + '</span><div class="m">' + esc(l.title) + '<span class="tag">' + tag + '</span><small>' + c.en + ' ' + c.name + (l.minutes ? ' · ' + hm(l.minutes) : '') + (l.note && l.kind !== 'skip' ? ' · ' + esc(l.note) : '') + '</small></div>' +
+        return '<div class="log-item' + (l.kind === 'adhoc' ? ' has-edit' : '') + '"><span class="e">' + esc(e) + '</span><div class="m">' + esc(l.title) + '<span class="tag">' + tag + '</span><small>' + c.en + ' ' + c.name + (l.minutes ? ' · ' + hm(l.minutes) : '') + '</small>' + (l.note && l.kind !== 'skip' ? '<div class="memo-text" style="--c:' + c.color + '">' + esc(l.note) + '</div>' : '') + '</div>' +
           '<span class="x" style="color:' + c.color + '">' + (l.kind === 'skip' ? '–' : '+' + l.xp) + '</span>' +
+          (l.kind === 'adhoc' ? '<button class="edit btn-ghost" data-edit-log="' + esc(l.log_id) + '" aria-label="수정" title="수정" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>' : '') +
           '<button class="del btn-ghost" style="border:0;background:none;color:var(--subtle);padding:6px" data-del="' + esc(l.log_id) + '" aria-label="삭제"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
       }).join('') + shs.map(function (r) {
         var c = CATS[r.category] || CATS.life;
@@ -2680,8 +2710,24 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     }); });
   }
   function autoXp() { if (!lfXpTouched) $('lfXp').value = Math.max(5, Math.round((+$('lfMin').value || 0) * 0.4)); }
-  function openLogSheet() {
-    lfXpTouched = false; $('lfTitle').value = ''; $('lfNote').value = ''; $('lfMin').value = 30; autoXp();
+  var editingLog = null;
+  function openLogSheet(edit) {
+    editingLog = edit && edit.log_id ? edit : null;
+    $('logSheetTitle').textContent = editingLog ? '기록 수정' : '퀘스트 기록 추가';
+    $('lfSubmit').textContent = editingLog ? '수정 저장' : '기록하고 XP 받기';
+    $('recentTitles').hidden = !!editingLog;
+    if (editingLog) {
+      lfCat = editingLog.category || lfCat; lfXpTouched = true;
+      $('lfTitle').value = editingLog.title || ''; $('lfNote').value = editingLog.note || ''; $('lfMin').value = editingLog.minutes || 0; $('lfXp').value = editingLog.xp || 0;
+      $('lfDate').value = editingLog.log_date; $('lfDate').max = todayStr(); $('lfError').hidden = true;
+      catChips($('lfCats'), lfCat, function (k) { lfCat = k; });
+      $('lfMinChips').innerHTML = [15, 30, 60, 90, 120].map(function (m) { return '<button type="button" data-min="' + m + '">' + hm(m) + '</button>'; }).join('');
+      $('lfMinChips').querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { $('lfMin').value = b.getAttribute('data-min'); lfXpTouched = false; autoXp(); }); });
+      openSheet($('logSheet'));
+      setTimeout(function () { memoFit($('lfNote')); var ta = $('lfNote'); if (window.innerWidth >= 640) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } }, 250);
+      return;
+    }
+    lfXpTouched = false; $('lfTitle').value = ''; $('lfNote').value = ''; memoFit($('lfNote')); $('lfMin').value = 30; autoXp();
     $('lfDate').value = state.viewDate; $('lfDate').max = todayStr(); $('lfError').hidden = true;
     catChips($('lfCats'), lfCat, function (k) { lfCat = k; });
     $('lfMinChips').innerHTML = [15, 30, 60, 90, 120].map(function (m) { return '<button type="button" data-min="' + m + '">' + hm(m) + '</button>'; }).join('');
@@ -2696,16 +2742,84 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     openSheet($('logSheet'));
     setTimeout(function () { if (window.innerWidth >= 640) $('lfTitle').focus(); }, 250);
   }
+  // 메모: 자동 높이 + 들여쓰기(Tab/Shift+Tab, 모바일 버튼) + 줄바꿈 시 들여쓰기 유지
+  var MEMO_IND = '  ';
+  function memoClean(v) { return String(v || '').replace(/\r\n?/g, '\n').replace(/[ \t　]+$/gm, '').replace(/^\n+/, '').replace(/\s+$/, ''); }
+  function memoFit(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(ta.scrollHeight + 2, 156) + 'px';
+    var cnt = $('lfNoteCount'); if (cnt) cnt.textContent = ta.value.length + '/' + (ta.maxLength > 0 ? ta.maxLength : 500);
+  }
+  function memoReplace(ta, start, end, text, selS, selE) {
+    ta.focus(); ta.setSelectionRange(start, end);
+    var ok = false;
+    try { ok = document.execCommand('insertText', false, text); } catch (e) { ok = false; }
+    if (!ok || ta.value.slice(start, start + text.length) !== text) { ta.setRangeText(text, start, end, 'end'); }
+    ta.setSelectionRange(selS, selE);
+    memoFit(ta);
+  }
+  function memoIndent(ta, dir) {
+    var v = ta.value, s = ta.selectionStart, e = ta.selectionEnd;
+    var ls = v.lastIndexOf('\n', s - 1) + 1;
+    var multi = v.slice(s, e).indexOf('\n') >= 0;
+    if (dir > 0 && !multi && s !== ls && s === e && ta === document.activeElement && !memoIndent.btn) {
+      // 줄 중간 커서에서 Tab: 공백 삽입
+      if (v.length + MEMO_IND.length > ta.maxLength && ta.maxLength > 0) return;
+      memoReplace(ta, s, e, MEMO_IND, s + MEMO_IND.length, s + MEMO_IND.length); return;
+    }
+    var endAdj = (e > s && v[e - 1] === '\n') ? e - 1 : e;
+    var le = v.indexOf('\n', endAdj); if (le < 0) le = v.length;
+    var lines = v.slice(ls, le).split('\n'), firstDelta = 0, total = 0;
+    var out = lines.map(function (line, i) {
+      var d;
+      if (dir > 0) { d = MEMO_IND.length; line = MEMO_IND + line; }
+      else { var m = line.match(/^(\t| {1,2}|　)/); d = m ? -m[0].length : 0; if (m) line = line.slice(m[0].length); }
+      if (i === 0) firstDelta = d; total += d; return line;
+    }).join('\n');
+    if (!total) return;
+    if (ta.maxLength > 0 && v.length + total > ta.maxLength) { toast('메모는 ' + ta.maxLength + '자까지예요.', true); return; }
+    var ns = Math.max(ls, s + firstDelta), ne = e === s ? ns : Math.max(ns, e + total);
+    memoReplace(ta, ls, le, out, ns, ne);
+  }
+  (function () {
+    var ta = $('lfNote');
+    ta.addEventListener('input', function (ev) {
+      if ((ev.inputType === 'insertLineBreak' || ev.inputType === 'insertParagraph') && !memoIndent.busy) {
+        var v = ta.value, p = ta.selectionStart;
+        if (p > 0 && v[p - 1] === '\n') {
+          var ps = v.lastIndexOf('\n', p - 2) + 1, ind = (v.slice(ps, p - 1).match(/^[ \t　]*/) || [''])[0];
+          if (ind && !(ta.maxLength > 0 && v.length + ind.length > ta.maxLength)) { memoIndent.busy = true; memoReplace(ta, p, p, ind, p + ind.length, p + ind.length); memoIndent.busy = false; return; }
+        }
+      }
+      memoFit(ta);
+    });
+    ta.addEventListener('keydown', function (ev) {
+      if (ev.isComposing || ev.keyCode === 229) return;
+      if (ev.key === 'Tab' && !ev.altKey && !ev.ctrlKey && !ev.metaKey) { ev.preventDefault(); memoIndent(ta, ev.shiftKey ? -1 : 1); }
+      else if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); $('logForm').requestSubmit ? $('logForm').requestSubmit() : $('lfSubmit').click(); }
+    });
+    document.querySelectorAll('[data-memo-indent]').forEach(function (b) {
+      // 포커스·키보드를 유지하도록 pointerdown 기본 동작 막기
+      b.addEventListener('pointerdown', function (ev) { if (document.activeElement === ta) ev.preventDefault(); });
+      b.addEventListener('mousedown', function (ev) { if (document.activeElement === ta) ev.preventDefault(); });
+      b.addEventListener('click', function () { memoIndent.btn = true; memoIndent(ta, +b.getAttribute('data-memo-indent')); memoIndent.btn = false; });
+    });
+  })();
   $('lfMin').addEventListener('input', autoXp);
   $('lfXp').addEventListener('input', function () { lfXpTouched = true; });
-  $('fab').addEventListener('click', openLogSheet);
-  $('btnAddInline').addEventListener('click', openLogSheet);
+  $('fab').addEventListener('click', function () { openLogSheet(); });
+  $('btnAddInline').addEventListener('click', function () { openLogSheet(); });
   $('logForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var title = $('lfTitle').value.trim(), date = $('lfDate').value || state.viewDate;
     if (!title) { $('lfError').textContent = '무엇을 했는지 적어 주세요.'; $('lfError').hidden = false; return; }
     if (date > todayStr()) { $('lfError').textContent = '미래 날짜에는 기록할 수 없어요.'; $('lfError').hidden = false; return; }
-    var log = { log_id: uid(), log_date: date, routine_id: '', title: title, category: lfCat, kind: 'adhoc', xp: Math.max(0, Math.min(1000, +$('lfXp').value || 0)), minutes: Math.max(0, Math.min(1440, +$('lfMin').value || 0)), note: $('lfNote').value.trim(), created_at: new Date().toISOString() };
+    var log = { log_id: uid(), log_date: date, routine_id: '', title: title, category: lfCat, kind: 'adhoc', xp: Math.max(0, Math.min(1000, +$('lfXp').value || 0)), minutes: Math.max(0, Math.min(1440, +$('lfMin').value || 0)), note: memoClean($('lfNote').value), created_at: new Date().toISOString() };
+    if (editingLog) {
+      var old = editingLog; editingLog = null; closeSheet();
+      if (old.title === log.title && old.category === log.category && old.log_date === log.log_date && +old.xp === log.xp && +old.minutes === log.minutes && (old.note || '') === log.note) { toast('바뀐 내용이 없어요.'); return; }
+      updateLog(old, log); return;
+    }
     closeSheet();
     floatXp($('fab'), '+' + log.xp + ' XP');
     addLog(log).then(function (ok) { if (ok) toast('기록 완료! +' + log.xp + 'XP'); });
@@ -2783,8 +2897,13 @@ button.job-opt:not(:disabled):hover { border-color:color-mix(in srgb, var(--jc) 
     var id = b.getAttribute('data-del'), log = state.logs.filter(function (l) { return l.log_id === id; })[0];
     if (log && confirm('"' + log.title + '" 기록을 삭제할까요?')) removeLog(log);
   }
-  $('adhocList').addEventListener('click', onDelete);
-  $('logList').addEventListener('click', onDelete);
+  function onEditLog(e) {
+    var b = e.target.closest('[data-edit-log]'); if (!b) return false;
+    var id = b.getAttribute('data-edit-log'), log = state.logs.filter(function (l) { return l.log_id === id; })[0];
+    if (log) openLogSheet(log); return true;
+  }
+  $('adhocList').addEventListener('click', function (e) { if (!onEditLog(e)) onDelete(e); });
+  $('logList').addEventListener('click', function (e) { if (!onEditLog(e)) onDelete(e); });
   $('logFilter').addEventListener('change', renderAll);
   $('periodSel').addEventListener('change', function () { state.period = $('periodSel').value; renderAll(); });
   $('cal').addEventListener('click', function (e) { var d = e.target.closest('.day[data-date]'); if (d && !d.classList.contains('future')) { state.viewDate = d.getAttribute('data-date'); setTab('today'); } });
